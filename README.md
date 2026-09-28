@@ -4,6 +4,8 @@ The race-day app for the Beer Club × WRTC (Wharton Run & Tri Club) bar crawl: a
 
 One HTML file, no build step. Hosted on GitHub Pages, with data in its own Supabase project.
 
+Live: https://jason-traum.github.io/wrtc-5k5bars/ (organizers: add `?organizer` or `#organizer`). Supabase project: `wrtc-5k5bars` (ref `gbvovnaxcgcvtevzskyv`).
+
 ## Files
 
 | File | What it is |
@@ -14,7 +16,7 @@ One HTML file, no build step. Hosted on GitHub Pages, with data in its own Supab
 | `sw.js`, `manifest.json`, icons | Home Screen app and offline support. |
 | `PRODUCT.md`, `DESIGN.md`, `STATES.md`, `DECISIONS.md` | Who it's for, the look, every screen state, and why things are the way they are. Read before changing the UI. |
 | `build.py` | Makes `dist/site/` (what Pages serves) and `dist/preview.html` (the demo preview). |
-| `tests/` | `shots.py` (screens at 320 to 390 px, light and dark, iPhone and Android), `test_db.py` (the database rules as anonymous runners and organizers), `firstload.py` (a brand-new phone joining against a mocked Supabase). |
+| `tests/` | `live.py` (smoke test against the live site: join, database rules, tap and undo; leaves bib 299 to release), `shots.py` (screens at 320 to 390 px, light and dark, iPhone and Android), `test_db.py` (the database rules as anonymous runners and organizers), `firstload.py` (a brand-new phone joining against a mocked Supabase). |
 
 ## Run the tests
 
@@ -36,7 +38,7 @@ Supabase (a new project, not In.'s):
 2. **Authentication > Sign In / Providers**: turn on **Allow anonymous sign-ins**. Leave Email on with **Confirm email** on.
 3. **Authentication > Rate Limits**: raise anonymous sign-ins per hour to about 300. Phones on the same Wi-Fi or carrier share an IP, and the default of 30 per hour could lock people out at the start line.
 4. **Authentication > Users > Add user > Create new user**: add each organizer's email with **Auto Confirm** on and a long random password you throw away. Organizers sign in with an emailed code, and the app never creates accounts itself.
-5. **Authentication > Emails > Magic Link**: make the message show the code, for example `Your 5K 5 Bars organizer code: {{ .Token }}`.
+5. Organizers get a sign-in link by email (Supabase's built-in email can't be edited). With custom SMTP you can add the code to the Magic Link template (`{{ .Token }}`); the app accepts either.
 6. Supabase's built-in email only sends to members of the project's team. Either invite the other organizers to the Supabase team, or set up custom SMTP (the way In. uses Gmail SMTP).
 7. **SQL Editor > New query**: paste `supabase.sql`, put the organizer email where it says `YOUR_EMAIL_HERE`, and click Run.
 8. **Project Settings > API Keys**: copy the project URL and the publishable key into `config.js`.
