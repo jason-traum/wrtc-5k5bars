@@ -71,6 +71,8 @@ create table if not exists public.taps (
   unique (runner_id, stop, kind)
 );
 create index if not exists taps_runner_idx on public.taps (runner_id);
+-- Runners can keep themselves off the leaderboard (the join screen box, pre-checked to show).
+alter table public.runners add column if not exists hidden boolean not null default false;
 
 -- ---------------------------------------------------------------------------------------------
 -- Access: signed-in phones (including anonymous runners) can read the race. Every write goes
@@ -84,19 +86,11 @@ alter table public.taps enable row level security;
 
 grant usage on schema public to authenticated;
 revoke all on public.admins, public.event, public.stops, public.runners, public.taps from anon, authenticated;
-grant select on public.event, public.stops to authenticated;
+-- The course and times are public (they're on the event page), so the join screen can show the route.
+grant select on public.event, public.stops to anon, authenticated;
 -- Other runners see when and where you checked in, not how far off your GPS was.
 grant select (id, runner_id, stop, kind, at, verified, source, created_at) on public.taps to authenticated;
-grant select (id, bib, name, created_at) on public.runners to authenticated;
-
-drop policy if exists event_read on public.event;
-drop policy if exists stops_read on public.stops;
-drop policy if exists runners_read on public.runners;
-drop policy if exists taps_read on public.taps;
-create policy event_read on public.event for select to authenticated using (true);
-create policy stops_read on public.stops for select to authenticated using (true);
-create policy runners_read on public.runners for select to authenticated using (true);
-create policy taps_read on public.taps for select to authenticated using (true);
+grant select (id, bib, name, hidden, created_at) on public.runners to authenticated;
 
 -- ---------------------------------------------------------------------------------------------
 -- Functions
@@ -113,10 +107,29 @@ language sql stable security definer set search_path = public as $$
       where m ->> 'method' in ('otp', 'magiclink'));
 $$;
 
-create or replace function public.my_runner() returns table (id uuid, bib smallint, name text)
+drop function if exists public.my_runner();
+create or replace function public.my_runner() returns table (id uuid, bib smallint, name text, hidden boolean)
 language sql stable security definer set search_path = public as $$
-  select r.id, r.bib, r.name from runners r where auth.uid() is not null and r.auth_uid = auth.uid();
+  select r.id, r.bib, r.name, r.hidden from runners r where auth.uid() is not null and r.auth_uid = auth.uid();
 $$;
+
+create or replace function public.me_id() returns uuid
+language sql stable security definer set search_path = public as $$
+  select r.id from runners r where auth.uid() is not null and r.auth_uid = auth.uid();
+$$;
+
+create or replace function public.runner_visible(p_id uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce((select not r.hidden from runners r where r.id = p_id), false);
+$$;
+
+-- Show or hide yourself on the leaderboard.
+create or replace function public.set_show(p_show boolean) returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'Not allowed: sign in first.'; end if;
+  update runners set hidden = not coalesce(p_show, true) where auth_uid = auth.uid();
+end $$;
 
 -- Claim a bib. The same first name on a new phone moves the bib (Safari and the Home Screen app are separate).
 create or replace function public.claim_bib(p_bib integer, p_name text) returns table (id uuid, bib smallint, name text)
@@ -273,11 +286,21 @@ begin
   delete from runners where id = p_id;
 end $$;
 
-revoke execute on function public.is_admin(), public.my_runner(), public.claim_bib(integer, text),
+drop policy if exists event_read on public.event;
+drop policy if exists stops_read on public.stops;
+drop policy if exists runners_read on public.runners;
+drop policy if exists taps_read on public.taps;
+create policy event_read on public.event for select to anon, authenticated using (true);
+create policy stops_read on public.stops for select to anon, authenticated using (true);
+-- Hidden runners and their taps are visible only to themselves and organizers (this also filters live updates).
+create policy runners_read on public.runners for select to authenticated using (not hidden or id = public.me_id() or public.is_admin());
+create policy taps_read on public.taps for select to authenticated using (public.runner_visible(runner_id) or runner_id = public.me_id() or public.is_admin());
+
+revoke execute on function public.is_admin(), public.my_runner(), public.me_id(), public.runner_visible(uuid), public.set_show(boolean), public.claim_bib(integer, text),
   public.add_tap(uuid, integer, text, timestamptz, boolean, integer, integer, text), public.undo_tap(uuid),
   public.set_go(timestamptz), public.admin_save_event(timestamptz), public.admin_save_route(jsonb),
   public.admin_delete_tap(uuid), public.admin_clear_taps(), public.admin_remove_runner(uuid), public.admin_unlock_runner(uuid) from public, anon;
-grant execute on function public.is_admin(), public.my_runner(), public.claim_bib(integer, text),
+grant execute on function public.is_admin(), public.my_runner(), public.me_id(), public.runner_visible(uuid), public.set_show(boolean), public.claim_bib(integer, text),
   public.add_tap(uuid, integer, text, timestamptz, boolean, integer, integer, text), public.undo_tap(uuid),
   public.set_go(timestamptz), public.admin_save_event(timestamptz), public.admin_save_route(jsonb),
   public.admin_delete_tap(uuid), public.admin_clear_taps(), public.admin_remove_runner(uuid), public.admin_unlock_runner(uuid) to authenticated;

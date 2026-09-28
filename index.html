@@ -33,6 +33,7 @@
   --canvas:#E9EDF3; --surface:#FFFFFF; --surface-2:#F3F5F9; --ink:#0F1A2E; --ink-2:#45506A; --line:#C9D1DE;
   --action:#C41E2A; --action-press:#A5151F; --on-action:#FFFFFF; --focus:#C41E2A;
   --navy:#14244A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD; --medal:#F0A53A; --medal-ink:#6B4308;
+  --map-park:#DCE7E0; --map-bldg:#DDE2EA; --map-road:#FFFFFF; --map-road-major:#FFFFFF; --map-rail:#C9D1DE; --map-label:#5A6580;
   --bar:#A8680E; --bar-soft:#FDEFD6; --bar-ink:#6B4308;
   --ok:#1F7A4D; --warn:#8A5A00; --scrim:rgba(10,18,34,.5); --river:#CFDDEE;
   --f-display:"Big Shoulders Display","Arial Narrow","Roboto Condensed",sans-serif;
@@ -46,6 +47,7 @@
     --canvas:#0E1628; --surface:#172238; --surface-2:#1F2C46; --ink:#E6ECF5; --ink-2:#A9B5CB; --line:#34425F;
     --action:#C81E2A; --action-press:#A8161F; --on-action:#FFFFFF; --focus:#FF6B74;
     --navy:#1B2D5A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD;
+    --map-park:#14261F; --map-bldg:#141E34; --map-road:#243250; --map-road-major:#31436A; --map-rail:#26334F; --map-label:#8F9CB6;
     --bar:#F0A53A; --bar-soft:#3A2C12; --bar-ink:#FFD99A;
     --ok:#5FD39A; --warn:#F2C46B; --scrim:rgba(0,0,0,.6); --river:#16304F;
     color-scheme:dark;
@@ -55,6 +57,7 @@
   --canvas:#0E1628; --surface:#172238; --surface-2:#1F2C46; --ink:#E6ECF5; --ink-2:#A9B5CB; --line:#34425F;
   --action:#C81E2A; --action-press:#A8161F; --on-action:#FFFFFF; --focus:#FF6B74;
   --navy:#1B2D5A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD;
+  --map-park:#14261F; --map-bldg:#141E34; --map-road:#243250; --map-road-major:#31436A; --map-rail:#26334F; --map-label:#8F9CB6;
   --bar:#F0A53A; --bar-soft:#3A2C12; --bar-ink:#FFD99A;
   --ok:#5FD39A; --warn:#F2C46B; --scrim:rgba(0,0,0,.6); --river:#16304F;
   color-scheme:dark;
@@ -217,7 +220,7 @@ p{margin:0;text-wrap:pretty;overflow-wrap:break-word}
 :root[data-theme="dark"] .err{color:#FF8A91}
 
 /* tabs */
-.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;padding:6px 8px max(8px,env(safe-area-inset-bottom,0px));z-index:10}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr 1fr;padding:6px 8px max(8px,env(safe-area-inset-bottom,0px));z-index:10}
 .tabs button{min-height:52px;border:0;background:transparent;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:700;font-size:14px;color:var(--ink-2)}
 .tabs button[aria-current="page"]{color:var(--ink);background:var(--surface-2)}
 .tabs svg{width:22px;height:22px}
@@ -258,6 +261,52 @@ dialog.sheet::backdrop{background:var(--scrim)}
 .grid2>*,.row2>*{min-width:0}
 .small-in{min-width:0;max-width:100%;min-height:48px;border-radius:10px;border:2px solid var(--ink-2);background:var(--canvas);padding:0 10px;width:100%}
 .tiny{font-size:14px;color:var(--ink-2)}
+.check{display:flex;align-items:center;gap:12px;min-height:48px;font-size:16px;cursor:pointer}
+.check input{width:24px;height:24px;margin:0;accent-color:var(--action);flex:none}
+.check span{min-width:0}
+/* MapLibre GL 5.7 core styles the app uses (positioning, popups, attribution), inlined */
+.maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0,0,0,0)}.maplibregl-canvas{left:0;position:absolute;top:0}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{pointer-events:none;position:absolute;z-index:2}.maplibregl-ctrl-top-left{left:0;top:0}.maplibregl-ctrl-top-right{right:0;top:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{bottom:0;right:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{float:left;margin:10px 0 0 10px}.maplibregl-ctrl-top-right .maplibregl-ctrl{float:right;margin:10px 10px 0 0}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{float:left;margin:0 0 10px 10px}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{float:right;margin:0 10px 10px 0}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:not(:disabled):active{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl.maplibregl-ctrl-attrib{background-color:hsla(0,0%,100%,.5);margin:0;padding:0 5px}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-popup{display:flex;left:0;pointer-events:none;position:absolute;top:0;will-change:transform}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{border:10px solid transparent;height:0;width:0;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-bottom-color:var(--surface);border-top:none}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-bottom-color:var(--surface);border-left:none;border-top:none}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-bottom-color:var(--surface);border-right:none;border-top:none}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:var(--surface)}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:var(--surface)}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:var(--surface)}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:var(--surface)}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-left-color:var(--surface);border-right:none}.maplibregl-popup-close-button{background-color:transparent;border:0;border-radius:0 3px 0 0;cursor:pointer;position:absolute;right:0;top:0}.maplibregl-popup-close-button:hover{background-color:rgba(0,0,0,.05)}.maplibregl-popup-content{background:var(--surface);border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto;position:relative}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{left:0;position:absolute;top:0;transition:opacity .2s;will-change:transform}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;border-radius:50%;height:15px;width:15px}.maplibregl-user-location-dot:before{animation:maplibregl-user-location-dot-pulse 2s infinite;content:"";position:absolute}.maplibregl-user-location-dot:after{border:2px solid var(--surface);border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,.35);box-sizing:border-box;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;border-radius:100%;height:1px;width:1px}
+/* street map */
+.rmap{position:relative;width:100%;border-radius:14px;overflow:hidden;border:1.5px solid var(--line);background:var(--surface-2)}
+.rmap .lf{position:absolute;inset:0}
+.rmap-tools{position:absolute;top:10px;left:10px;right:10px;z-index:500;display:flex;gap:8px;justify-content:space-between;pointer-events:none}
+.mapbtn{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;border:1.5px solid var(--ink-2);background:var(--surface);color:var(--ink);font:700 15px var(--f-body);box-shadow:0 1px 6px rgba(0,0,0,.18)}
+.mapbtn:active{transform:scale(.97)}
+.rmap-note{position:absolute;left:10px;right:10px;bottom:34px;z-index:500;background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 12px;font-size:14px;box-shadow:0 1px 6px rgba(0,0,0,.18)}
+.rmap .maplibregl-map{font-family:var(--f-body)}
+.rmap .maplibregl-popup-content{background:var(--surface);color:var(--ink);border-radius:14px;padding:14px 16px;font-size:15px;line-height:1.35;box-shadow:0 3px 14px rgba(0,0,0,.3)}
+.rmap .maplibregl-popup-close-button{width:36px;height:36px;font-size:24px;color:var(--ink-2);border-radius:0 14px 0 10px}
+.rmap .maplibregl-ctrl-attrib{font-size:11px;line-height:16px;background:color-mix(in srgb,var(--surface) 75%,transparent);color:var(--ink-2)}
+.rmap .maplibregl-ctrl-attrib a{color:var(--ink-2)}
+.rmap .maplibregl-cooperative-gesture-screen{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;padding:16px;text-align:center;font:700 16px var(--f-body);color:#FFFFFF;background:rgba(14,22,40,.55);opacity:0;pointer-events:none;transition:opacity 200ms ease-out}
+.rmap .maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1}
+.rmap .maplibregl-desktop-message{display:none}
+.rmap-zoom{position:absolute;right:10px;bottom:28px;z-index:500;display:flex;flex-direction:column;gap:6px}
+.rmap-zoom .mapbtn{width:44px;padding:0;justify-content:center;font-size:22px}
+.medot{display:block;width:18px;height:18px;border-radius:50%;background:#2F6FEB;border:3px solid #FFFFFF;box-shadow:0 0 0 6px rgba(47,111,235,.22),0 1px 4px rgba(0,0,0,.35)}
+.pin{cursor:pointer;padding:0;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--surface);color:var(--ink);border:3px solid var(--ink);font:900 17px/1 var(--f-display);box-shadow:0 1px 5px rgba(0,0,0,.35)}
+.pin svg{width:20px;height:20px}
+.pin.done{background:var(--ink);color:var(--canvas)}
+.pin.now{border-color:var(--action);color:var(--action)}
+.pin.here{background:var(--bar);border-color:var(--bar);color:#1A1204}
+.pin.sel{background:var(--action);border-color:var(--action);color:#FFFFFF;transform:scale(1.15)}
+.pop{display:flex;flex-direction:column;gap:3px;min-width:200px}
+.pop b{font-family:var(--f-display);font-weight:900;font-size:22px;line-height:1;text-transform:uppercase;padding-right:18px}
+.pop .ad{color:var(--ink-2)}
+.pop .wh{font-weight:700;margin-top:2px}
+.pop-links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.rmap .pop-links a{display:flex;align-items:center;justify-content:center;min-height:44px;border:2px solid var(--ink-2);border-radius:12px;color:var(--ink);font-weight:700;font-size:14px;text-decoration:none}
+.rmap .pop-links a.first{border-color:var(--ink);background:var(--ink);color:var(--canvas)}
+.mapscreen{height:calc(100svh - 150px - env(safe-area-inset-bottom,0px));min-height:360px}
+.geo-results{display:flex;flex-direction:column;gap:6px}
+.geo-results button{text-align:left;justify-content:flex-start;min-height:48px;height:auto;padding:8px 12px;font-weight:600;white-space:normal;overflow-wrap:anywhere;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
+.geo-results button span{font-weight:400;font-size:14px;color:var(--ink-2)}
+.howto{display:flex;flex-direction:column;gap:12px}
+.howto ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.howto li{display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;align-items:center}
+.howto li .node{width:40px}
+.howto li b{display:block}
+.howto li span{color:var(--ink-2);font-size:15px}
 .map{display:block;width:100%;height:auto;aspect-ratio:1.2;border-radius:12px;border:1.5px solid var(--line);touch-action:manipulation;cursor:crosshair}
 .taprow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:15px}
 @media (hover:hover) and (pointer:fine){.btn:hover,.opt:hover{border-color:var(--ink)}.big:hover{background:var(--action-press)}}
@@ -324,6 +373,9 @@ dialog.sheet::backdrop{background:var(--scrim)}
     ? 'https://maps.apple.com/?ll=' + s.lat + ',' + s.lng + '&q=' + encodeURIComponent(s.name)
     : 'https://www.google.com/maps/search/?api=1&query=' + s.lat + ',' + s.lng;
   const MAPS = APPLE ? 'Apple Maps' : 'Google Maps';
+  const appleDir = s => 'https://maps.apple.com/?daddr=' + s.lat + ',' + s.lng + '&dirflg=w';
+  const googleDir = s => 'https://www.google.com/maps/dir/?api=1&destination=' + s.lat + ',' + s.lng + '&travelmode=walking';
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   /* ---------------- Philly street grid (from In.): miles from 15th & Market, x east, y north, ~9.3 deg off true north ---------------- */
   const GRID = { lat0: 39.95253, lng0: -75.16531, kx: 53.03, ky: 69.05, c: Math.cos(9.3 * Math.PI / 180), s: Math.sin(9.3 * Math.PI / 180) };
@@ -331,9 +383,6 @@ dialog.sheet::backdrop{background:var(--scrim)}
   function latLngOf(p) { const e = p.x * GRID.c + p.y * GRID.s, n = p.y * GRID.c - p.x * GRID.s; return { lat: GRID.lat0 + n / GRID.ky, lng: GRID.lng0 + e / GRID.kx }; }
   // Walking distance on the grid counts blocks both ways.
   function legKm(a, b) { const A = gridOf(a.lat, a.lng), B = gridOf(b.lat, b.lng); return Math.round((Math.abs(A.x - B.x) + Math.abs(A.y - B.y)) * MI * 100) / 100; }
-  const STREETS = [[1.33, 'Columbus'], [1.25, 'Front'], [1.153, '2nd'], [1.049, '3rd'], [0.964, '4th'], [0.878, '5th'], [0.794, '6th'], [0.709, '7th'], [0.624, '8th'], [0.54, '9th'], [0.455, '10th'], [0.371, '11th'], [0.287, '12th'], [0.202, '13th'], [0.082, 'Broad'], [0, '15th'], [-0.088, '16th'], [-0.173, '17th'], [-0.257, '18th'], [-0.342, '19th'], [-0.427, '20th'], [-0.53, '21st'], [-0.615, '22nd'], [-0.677, '23rd'], [-0.733, '24th'], [-0.797, '25th']];
-  const CROSS = [['Spring Garden', 0.7], ['Callowhill', 0.506], ['Vine', 0.375], ['Race', 0.27], ['Arch', 0.141], ['Market', 0], ['Chestnut', -0.107], ['Walnut', -0.214], ['Locust', -0.293], ['Spruce', -0.378], ['Pine', -0.478], ['Lombard', -0.541], ['South', -0.612], ['Bainbridge', -0.672], ['Fitzwater', -0.741], ['Christian', -0.865]];
-  const MAJOR = { 'Broad': 1, 'Market': 1, 'South': 1, 'Vine': 1, 'Columbus': 1 };
 
   /* ---------------- Philadelphia time for the organizer's inputs ---------------- */
   function nyOffset(ms) { const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(new Date(ms)).map(x => [x.type, x.value])); return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - Math.floor(ms / 1000) * 1000; }
@@ -369,7 +418,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     return { legs, reached, timed: timed.length, avg: timed.length ? secSum / miSum : null, moving: secSum, state, target, arr, lv, unverified };
   }
   function board() {
-    const rows = Object.values(S.runners).map(r => ({ r, p: progress(r.id) }));
+    const rows = Object.values(S.runners).filter(r => !r.hidden || (S.me && r.id === S.me.id)).map(r => ({ r, p: progress(r.id) }));
     rows.sort((a, b) => (a.p.avg == null) - (b.p.avg == null) || (a.p.avg || 0) - (b.p.avg || 0) || b.p.timed - a.p.timed || a.r.bib - b.r.bib);
     let rank = 0; rows.forEach(x => { x.rank = x.p.avg == null ? null : ++rank; });
     return rows;
@@ -519,12 +568,13 @@ dialog.sheet::backdrop{background:var(--scrim)}
   const DemoApi = {
     async init() { S.mode = 'demo'; demoScene('live'); },
     async reload() {},
-    async join(bib, name) {
+    async join(bib, name, show) {
       await new Promise(r => setTimeout(r, 400));
       const taken = Object.values(S.runners).find(r => r.bib === bib && r.id !== 'me');
       if (taken && taken.name.toLowerCase() !== name.toLowerCase()) { const e = new Error('Bib ' + bib + ' is already ' + taken.name + "'s. Check the number on your bib, or ask the organizer."); e.code = 'taken'; throw e; }
-      S.me = { id: 'me', bib, name }; S.runners.me = { id: 'me', bib, name }; emit();
+      S.me = { id: 'me', bib, name, hidden: show === false }; S.runners.me = Object.assign({}, S.me); emit();
     },
+    async setShow(v) { S.me.hidden = !v; S.runners.me.hidden = !v; emit(); },
     async addTap(t) {
       if (S.demo.net === 'off') { const e = new Error('offline'); throw e; }
       await new Promise(r => setTimeout(r, 250));
@@ -566,7 +616,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
       /* a phone that hasn't joined can't read the race yet (every read needs a sign-in), so it goes straight to Join */
       const { data } = await this.sb.auth.getSession();
       this.signedIn = !!(data && data.session);
-      if (this.signedIn) { await this.reload(); await this.loadMe(); }
+      if (this.signedIn) { await this.reload(); await this.loadMe(); } else await this.loadPublic();
       this.live();
       setInterval(() => { if (this.signedIn && document.visibilityState === 'visible') this.reload(); }, 20000);
       document.addEventListener('visibilitychange', () => { if (this.signedIn && document.visibilityState === 'visible') { this.reload(); flush(); } });
@@ -577,7 +627,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     async loadMe() {
       const { data } = await this.sb.rpc('my_runner');
       const r = Array.isArray(data) ? data[0] : data;
-      S.me = r && r.id ? { id: r.id, bib: r.bib, name: r.name } : null;
+      S.me = r && r.id ? { id: r.id, bib: r.bib, name: r.name, hidden: !!r.hidden } : null;
       const { data: adm } = await this.sb.rpc('is_admin');
       S.admin = !!adm; emit();
     },
@@ -586,7 +636,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
         const [ev, st, ru, ta] = await Promise.all([
           this.sb.from('event').select('*').eq('id', 1).maybeSingle(),
           this.sb.from('stops').select('*').order('ord'),
-          this.sb.from('runners').select('id,bib,name'),
+          this.sb.from('runners').select('id,bib,name,hidden'),
           this.sb.from('taps').select('id,runner_id,stop,kind,at,verified,source,created_at'),
         ]);
         if (ev.error || st.error || ru.error || ta.error) throw (ev.error || st.error || ru.error || ta.error);
@@ -600,6 +650,14 @@ dialog.sheet::backdrop{background:var(--scrim)}
       } catch (e) { console.warn('reload', e); S.loadFailed = true; }
       emit();
     },
+    async loadPublic() {
+      try {
+        const [ev, st] = await Promise.all([this.sb.from('event').select('start_at,go_at,name').eq('id', 1).maybeSingle(), this.sb.from('stops').select('*').order('ord')]);
+        if (ev.data) S.event = { startMs: Date.parse(ev.data.start_at), goMs: ev.data.go_at ? Date.parse(ev.data.go_at) : null, name: ev.data.name };
+        if (st.data) S.stops = st.data.map(fromStop);
+      } catch (e) { console.warn('public', e); }
+      emit();
+    },
     live() {
       const ch = this.sb.channel('race');
       ch.on('postgres_changes', { event: '*', schema: 'public', table: 'taps' }, p => {
@@ -611,7 +669,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
       ch.subscribe();
       this.channel = ch;
     },
-    async join(bib, name) {
+    async join(bib, name, show) {
       const { data: s } = await this.sb.auth.getSession();
       if (!s || !s.session) { const { error } = await this.sb.auth.signInAnonymously(); if (error) throw cloudErr(error); }
       const { data, error } = await this.sb.rpc('claim_bib', { p_bib: bib, p_name: name });
@@ -622,8 +680,10 @@ dialog.sheet::backdrop{background:var(--scrim)}
       await this.reload();
       if (this.channel) { this.sb.removeChannel(this.channel); this.channel = null; }
       this.live();
-      S.me = { id: r.id, bib: r.bib, name: r.name }; S.runners[r.id] = S.me; emit();
+      if (show === false) await this.sb.rpc('set_show', { p_show: false });
+      S.me = { id: r.id, bib: r.bib, name: r.name, hidden: show === false }; S.runners[r.id] = Object.assign({}, S.me); emit();
     },
+    async setShow(v) { const { error } = await this.sb.rpc('set_show', { p_show: !!v }); if (error) throw cloudErr(error); S.me.hidden = !v; await this.reload(); },
     async addTap(t) {
       const { data, error } = await this.sb.rpc('add_tap', { p_id: t.id, p_stop: t.stop, p_kind: t.kind, p_at: new Date(t.at).toISOString(), p_verified: t.verified, p_dist: t.distM, p_acc: t.accM, p_source: t.source });
       if (error) { if (/Failed to fetch|NetworkError|network/i.test(error.message || '')) throw new Error('offline'); throw cloudErr(error); }
@@ -666,6 +726,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
   const line = d => html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d.map(x => html`<path d=${x} />`)}</svg>`;
   const I = {
     flag: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>`,
+    map: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4L3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg>`,
     list: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>`,
     check: html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`,
     dot: html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>`,
@@ -991,7 +1052,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
           return html`<div class=${'lbitem' + (me ? ' me' : '')} role="listitem">
             <button class="lbrow" id=${me ? 'row-me' : null} aria-expanded=${isOpen ? 'true' : 'false'} onClick=${() => setOpen(isOpen ? null : x.r.id)}>
               <span class="rank num">${x.rank || '–'}</span>
-              <span class="who"><span class="n"><span class="bibn num">${x.r.bib}</span><span>${x.r.name}</span>${me ? html`<span class="chip you">You</span>` : null}${x.r.sample ? html`<span class="chip">Sample</span>` : null}</span>
+              <span class="who"><span class="n"><span class="bibn num">${x.r.bib}</span><span>${x.r.name}</span>${me ? html`<span class="chip you">${x.r.hidden ? 'Only you see this' : 'You'}</span>` : null}${x.r.sample ? html`<span class="chip">Sample</span>` : null}</span>
                 <span class="pos">${where(x.p)}</span></span>
               <span class="pace"><b class="num">${x.p.avg ? pace(x.p.avg) : '–'}</b><span>${x.p.avg ? '/mi' : 'no legs yet'}</span></span>
             </button>
@@ -1000,17 +1061,29 @@ dialog.sheet::backdrop{background:var(--scrim)}
         })}
       </div>
       <p class="tiny">Tap anyone to see their night.</p>
+      ${S.me ? html`<${ShowMe} />` : null}
     </div>`;
   }
+  /* On the leaderboard or not. Pre-checked; you still see your own row and results either way. */
+  function ShowMe() {
+    const [busy, setBusy] = useState(false);
+    async function change(e) {
+      const v = e.target.checked; setBusy(true);
+      try { await S.api.setShow(v); say(v ? "You're on the leaderboard." : 'Hidden. Only you see your results.'); }
+      catch (x) { e.target.checked = !v; say("Couldn't save. Check your signal and try again."); }
+      setBusy(false);
+    }
+    return html`<label class="check"><input type="checkbox" checked=${!S.me.hidden} disabled=${busy} onChange=${change} /><span>Show my results on the leaderboard</span></label>`;
+  }
   function Join() {
-    const [bib, setBib] = useState(''), [name, setName] = useState(''), [err, setErr] = useState(''), [busy, setBusy] = useState(false);
+    const [bib, setBib] = useState(''), [name, setName] = useState(''), [err, setErr] = useState(''), [busy, setBusy] = useState(false), [show, setShow] = useState(true);
     async function submit(e) {
       e.preventDefault(); setErr('');
       const b = parseInt(bib, 10), nm = name.trim().replace(/\s+/g, ' ');
       if (!b || b < 1 || b > 300) { setErr('Type the number on your bib. Bibs run from 1 to 300.'); return; }
       if (!nm) { setErr('Add your first name so people know who bib ' + b + ' is.'); return; }
       setBusy(true);
-      try { await S.api.join(b, nm.slice(0, 24)); }
+      try { await S.api.join(b, nm.slice(0, 24), show); }
       catch (x) { setErr(x.code === 'taken' || x.code === 'rejected' ? x.message : "Couldn't reach the race. Check your signal and try again."); }
       setBusy(false);
     }
@@ -1019,9 +1092,29 @@ dialog.sheet::backdrop{background:var(--scrim)}
         <div class="mid"><p class="word">5K</p><p class="sub">5 bars · 1 drink each</p></div></div>
       <div class="field"><label for="bib">Bib number</label><input id="bib" class="bibin num" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="3" value=${bib} onInput=${e => setBib(e.target.value.replace(/\D/g, ''))} aria-describedby="joinerr" /></div>
       <div class="field"><label for="nm">First name</label><input id="nm" autocomplete="given-name" autocapitalize="words" maxlength="24" value=${name} onInput=${e => setName(e.target.value)} enterkeyhint="go" /></div>
+      <label class="check"><input type="checkbox" checked=${show} onChange=${e => setShow(e.target.checked)} /><span>Show my results on the leaderboard</span></label>
       <p id="joinerr" class="err" role="alert">${err}</p>
       <button class="big" type="submit" aria-disabled=${busy ? 'true' : 'false'}>${busy ? html`<span class="spin" aria-hidden="true"></span><span class="l2">Joining…</span>` : html`<span class="l1">Join the race</span><span class="l2">Only your bib and first name show</span>`}</button>
+      <${HowTo} />
     </form>`;
+  }
+  /* Before race day: what the app does, getting it on the Home Screen, and the route. */
+  function HowTo() {
+    const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+    const android = /Android/i.test(navigator.userAgent);
+    return html`<section class="howto" aria-labelledby="hth">
+      <div class="card howto"><h2 id="hth" class="h2" style="font-size:22px">How it works</h2>
+        <ol>
+          <li><span class="node" aria-hidden="true">${I.shoe}</span><div><b>Tap Start when you set off.</b><span>Go whenever you're ready once the start opens. Run or walk.</span></div></li>
+          <li><span class="node" aria-hidden="true">${I.beer}</span><div><b>Tap "I'm at" as you walk into each bar.</b><span>Allow location when asked, so the app can confirm you made it.</span></div></li>
+          <li><span class="node" aria-hidden="true">${I.beer}</span><div><b>Tap "Leaving" on your way out.</b><span>A countdown shows when the group leaves. Bar time never counts.</span></div></li>
+          <li><span class="node" aria-hidden="true">${I.medal}</span><div><b>Finish at Morgan's Pier.</b><span>Grab your medal and see your whole night.</span></div></li>
+        </ol></div>
+      ${standalone ? null : html`<div class="card howto"><h2 class="h2" style="font-size:22px">Put it on your Home Screen</h2>
+        <p>${android ? html`In Chrome, tap the ⋮ menu, then <b>Add to Home screen</b>.` : APPLE ? html`In Safari, tap <b>Share</b>, then <b>Add to Home Screen</b>.` : html`On iPhone: Safari, Share, Add to Home Screen. On Android: Chrome, ⋮ menu, Add to Home screen.`}</p>
+        <p class="tiny">Do it before race day. It opens full screen, works on bad signal, and keeps you signed in.</p></div>`}
+      ${S.stops.length ? html`<div class="card howto"><h2 class="h2" style="font-size:22px">The route</h2><${RouteMap} mode="join" /></div>` : null}
+    </section>`;
   }
 
   /* ---------------- Organizer ---------------- */
@@ -1032,56 +1125,193 @@ dialog.sheet::backdrop{background:var(--scrim)}
   }
   const copyStops = () => S.stops.map(x => Object.assign({}, x));
 
-  function CourseMap({ sel, zoom, onPick, onPlace }) {
-    const ref = useRef(null);
-    const pts = S.stops.map(x => gridOf(x.lat, x.lng));
-    let w, h, cx, cy;
-    if (zoom && pts[sel]) { w = 0.62; h = 0.5; cx = pts[sel].x; cy = pts[sel].y; }
-    else {
-      const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
-      const minx = Math.min(...xs) - 0.14, maxx = Math.max(...xs) + 0.14, miny = Math.min(...ys) - 0.12, maxy = Math.max(...ys) + 0.2;
-      w = maxx - minx; h = maxy - miny; cx = (minx + maxx) / 2; cy = (miny + maxy) / 2;
-      if (w / h > 1.2) h = w / 1.2; else w = h * 1.2;
+  /* ---------------- The street map ----------------
+     MapLibre drawing OpenStreetMap data from OpenFreeMap (free, no key), in our own quiet style and colors:
+     canvas-colored blocks, white streets, the river in --river, street names only. No shops, no icons.
+     It can't pan away from the course or zoom out past the neighborhood, so a phone only loads a few dozen
+     tiles, and the service worker keeps the ones it has seen for bad signal. */
+  let mapLibP = null;
+  function loadMapLib() {
+    if (window.maplibregl) return Promise.resolve(window.maplibregl);
+    if (!mapLibP) mapLibP = loadScript('https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/5.7.0/maplibre-gl.min.js').then(() => window.maplibregl);
+    return mapLibP;
+  }
+  const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const ROADS_MAJOR = ['motorway', 'trunk', 'primary', 'secondary'], ROADS_MINOR = ['tertiary', 'minor', 'service'];
+  function mapStyle() {
+    const w = (a, b, c) => ['interpolate', ['exponential', 1.6], ['zoom'], 13, a, 16, b, 19, c];
+    const name = ['coalesce', ['get', 'name:en'], ['get', 'name']];
+    return {
+      version: 8,
+      glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
+      sources: { om: { type: 'vector', url: 'https://tiles.openfreemap.org/planet' } },
+      layers: [
+        { id: 'bg', type: 'background', paint: { 'background-color': tok('--canvas') } },
+        { id: 'park', type: 'fill', source: 'om', 'source-layer': 'park', paint: { 'fill-color': tok('--map-park') } },
+        { id: 'green', type: 'fill', source: 'om', 'source-layer': 'landcover', filter: ['in', ['get', 'class'], ['literal', ['grass', 'wood']]], paint: { 'fill-color': tok('--map-park') } },
+        { id: 'water', type: 'fill', source: 'om', 'source-layer': 'water', paint: { 'fill-color': tok('--river') } },
+        { id: 'bldg', type: 'fill', source: 'om', 'source-layer': 'building', minzoom: 15, paint: { 'fill-color': tok('--map-bldg') } },
+        { id: 'rail', type: 'line', source: 'om', 'source-layer': 'transportation', filter: ['==', ['get', 'class'], 'rail'], paint: { 'line-color': tok('--map-rail'), 'line-width': 1.2, 'line-dasharray': [3, 3] } },
+        { id: 'road', type: 'line', source: 'om', 'source-layer': 'transportation', filter: ['in', ['get', 'class'], ['literal', ROADS_MINOR]], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': tok('--map-road'), 'line-width': w(0.6, 4, 16) } },
+        { id: 'road-major', type: 'line', source: 'om', 'source-layer': 'transportation', filter: ['in', ['get', 'class'], ['literal', ROADS_MAJOR]], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': tok('--map-road-major'), 'line-width': w(1.4, 7, 24) } },
+        { id: 'road-name', type: 'symbol', source: 'om', 'source-layer': 'transportation_name', minzoom: 14.5, filter: ['in', ['get', 'class'], ['literal', ROADS_MAJOR.concat(ROADS_MINOR)]],
+          layout: { 'symbol-placement': 'line', 'text-field': name, 'text-font': ['Noto Sans Regular'], 'text-size': ['interpolate', ['linear'], ['zoom'], 14.5, 10, 18, 14], 'text-max-angle': 30 },
+          paint: { 'text-color': tok('--map-label'), 'text-halo-color': tok('--canvas'), 'text-halo-width': 1.6 } },
+        { id: 'water-name', type: 'symbol', source: 'om', 'source-layer': 'water_name', minzoom: 13, layout: { 'text-field': name, 'text-font': ['Noto Sans Italic'], 'text-size': 12 },
+          paint: { 'text-color': tok('--map-label'), 'text-halo-color': tok('--river'), 'text-halo-width': 1.2 } },
+      ],
+    };
+  }
+  function recolor(map) {
+    const set = (id, prop, v) => { if (map.getLayer(id)) map.setPaintProperty(id, prop, v); };
+    set('bg', 'background-color', tok('--canvas')); set('park', 'fill-color', tok('--map-park')); set('green', 'fill-color', tok('--map-park'));
+    set('water', 'fill-color', tok('--river')); set('bldg', 'fill-color', tok('--map-bldg')); set('rail', 'line-color', tok('--map-rail'));
+    set('road', 'line-color', tok('--map-road')); set('road-major', 'line-color', tok('--map-road-major'));
+    set('road-name', 'text-color', tok('--map-label')); set('road-name', 'text-halo-color', tok('--canvas'));
+    set('water-name', 'text-color', tok('--map-label')); set('water-name', 'text-halo-color', tok('--river'));
+    set('route', 'line-color', tok('--ink'));
+  }
+  function ring(lat, lng, m) {  // a circle of m meters, as a polygon
+    const pts = [], dLat = m / 111320, dLng = m / (111320 * Math.cos(lat * Math.PI / 180));
+    for (let k = 0; k <= 48; k++) { const a = k / 48 * 2 * Math.PI; pts.push([lng + dLng * Math.cos(a), lat + dLat * Math.sin(a)]); }
+    return { type: 'Feature', geometry: { type: 'Polygon', coordinates: [pts] }, properties: {} };
+  }
+  function stopWhen(i) {
+    const s = S.stops[i], n = lastOrd();
+    if (i === 0) return S.event.startMs ? 'Start opens ' + clockAP(S.event.startMs) : 'The start';
+    if (i === n) return 'The finish. Medals here.';
+    return s.leaveBy ? 'Group leaves by ' + clockAP(s.leaveBy) : '';
+  }
+  function popHtml(i) {
+    const s = S.stops[i], a = [appleDir(s), 'Apple Maps'], g = [googleDir(s), 'Google Maps'], links = APPLE ? [a, g] : [g, a];
+    return '<div class="pop"><b>' + esc(i === 0 ? 'Start · ' + s.name : i + '. ' + s.name) + '</b>' + (s.addr ? '<span class="ad">' + esc(s.addr) + '</span>' : '') +
+      '<span class="wh">' + esc(stopWhen(i)) + '</span><div class="pop-links">' +
+      links.map((l, k) => '<a class="' + (k ? '' : 'first') + '" href="' + esc(l[0]) + '" target="_blank" rel="noopener">' + l[1] + '</a>').join('') + '</div></div>';
+  }
+  const svgStr = d => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d.map(x => '<path d="' + x + '"/>').join('') + '</svg>';
+  const MEDAL_STR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="15.5" r="5"/><path d="M9 11.2L6.5 3h4l1.5 4.5L13.5 3h4L15 11.2"/></svg>';
+
+  /* mode "runner": your progress colors the pins. "org": the picked stop is red and check-in circles show at real size.
+     "join": the route before you've joined. Pins open details; nothing on the map moves a bar. */
+  function RouteMap({ mode, p, sel, onSelect, cls }) {
+    const box = useRef(null), st = useRef({ markers: [] });
+    const [note, setNote] = useState('');
+    const n = lastOrd();
+    const inline = mode !== 'runner';  // inside a scrolling page: two fingers move the map, one finger scrolls the page
+    function pinClass(i) {
+      if (mode === 'org') return i === sel ? 'sel' : '';
+      if (!p) return '';
+      if ((p.state === 'atbar' || p.state === 'ready') && p.target === i) return 'here';
+      if (p.state === 'enroute' && p.target === i) return 'now';
+      const done = i === 0 ? !!p.lv[0] || p.reached > 0 : i === n ? !!p.arr[n] : !!p.lv[i] || p.reached > i;
+      return done ? 'done' : '';
     }
-    const L = cx - w / 2, T = cy + h / 2, U = 1000, fs = w * U / 24;
-    const X = x => x * U, Y = y => -y * U;
-    function pick(list, pos, gap) { const out = []; [...list].sort((a, b) => (MAJOR[b[1]] ? 1 : 0) - (MAJOR[a[1]] ? 1 : 0)).forEach(it => { if (!out.some(o => Math.abs(pos(o) - pos(it)) < gap)) out.push(it); }); return out; }
-    const vis = STREETS.filter(([x]) => x > L && x < L + w);
-    const edge = fs / U;
-    const hor = CROSS.filter(([, y]) => y < T && y > T - h);
-    const stLabels = pick(vis.filter(([x, n]) => x > L + edge * (n.length * 0.35 + 5.5) && x < L + w - edge * n.length * 0.35).map(([x, n]) => [x, n]), o => o[0], fs * 3.4 / U);
-    /* street names sit on the left edge; drop any that a bar marker would cover */
-    const clear = (y, n) => !pts.some(p => p.x < L + edge * (n.length * 0.6 + 1.6) && Math.abs(p.y - (y + edge * 0.6)) < edge * 1.9);
-    const crLabels = pick(hor.filter(([n, y]) => y < T - edge * 2.6 && y > T - h + edge * 0.6 && clear(y, n)).map(([n, y]) => [y, n]), o => o[0], fs * 1.6 / U);
-    function click(e) {
-      const svg = ref.current; if (!svg) return;
-      const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
-      const q = pt.matrixTransform(svg.getScreenCTM().inverse());
-      onPlace(latLngOf({ x: q.x / U, y: -q.y / U }));
+    function bounds() {
+      const b = new st.current.ml.LngLatBounds();
+      S.stops.forEach(x => b.extend([x.lng, x.lat])); return b;
     }
-    const lbl = { fill: 'var(--ink-2)', 'font-size': fs, 'font-weight': 600, 'font-family': 'var(--f-body)', stroke: 'var(--canvas)', 'stroke-width': fs * 0.28, 'paint-order': 'stroke', 'stroke-linejoin': 'round' };
-    return html`<svg ref=${ref} class="map" viewBox=${[L * U, -T * U, w * U, h * U].join(' ')} onClick=${click} role="img" aria-label=${'Course map. Tap to move ' + (S.stops[sel] ? S.stops[sel].name : 'a bar') + '.'}>
-      <rect x=${L * U} y=${-T * U} width=${w * U} height=${h * U} fill="var(--canvas)" />
-      <rect x=${X(1.4)} y=${-T * U - 10} width=${Math.max(0, (L + w - 1.4) * U + 20)} height=${h * U + 20} fill="var(--river)" />
-      ${hor.map(([n, y]) => html`<line x1=${L * U} x2=${(L + w) * U} y1=${Y(y)} y2=${Y(y)} stroke=${MAJOR[n] ? 'var(--ink-2)' : 'var(--line)'} stroke-width=${MAJOR[n] ? 1.6 : 1} vector-effect="non-scaling-stroke" />`)}
-      ${vis.map(([x, n]) => html`<line x1=${X(x)} x2=${X(x)} y1=${-T * U} y2=${(-T + h) * U} stroke=${MAJOR[n] ? 'var(--ink-2)' : 'var(--line)'} stroke-width=${MAJOR[n] ? 1.6 : 1} vector-effect="non-scaling-stroke" />`)}
-      <polyline points=${pts.map(p => X(p.x) + ',' + Y(p.y)).join(' ')} fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-dasharray="7 6" vector-effect="non-scaling-stroke" />
-      ${S.stops.map((st, i) => html`<circle cx=${X(pts[i].x)} cy=${Y(pts[i].y)} r=${st.radius / 1609.344 * U} fill=${i === sel ? 'var(--action)' : 'var(--ink)'} fill-opacity=${i === sel ? 0.16 : 0.07} stroke=${i === sel ? 'var(--action)' : 'none'} stroke-width="1.5" vector-effect="non-scaling-stroke" />`)}
-      ${stLabels.map(([x, n]) => html`<text x=${X(x)} y=${-T * U + fs * 1.3} text-anchor="middle" ...${lbl}>${n}</text>`)}
-      ${crLabels.map(([y, n]) => html`<text x=${L * U + fs * 0.4} y=${Y(y) - fs * 0.3} ...${lbl}>${n}</text>`)}
-      ${S.stops.map((st, i) => html`<g onClick=${e => { e.stopPropagation(); onPick(i); }} style="cursor:pointer">
-        <circle cx=${X(pts[i].x)} cy=${Y(pts[i].y)} r=${fs * 1.7} fill="transparent" />
-        <circle cx=${X(pts[i].x)} cy=${Y(pts[i].y)} r=${fs * (i === sel ? 1.05 : 0.85)} fill=${i === sel ? 'var(--action)' : 'var(--ink)'} stroke="var(--canvas)" stroke-width="2" vector-effect="non-scaling-stroke" />
-        <text x=${X(pts[i].x)} y=${Y(pts[i].y) + fs * (i === sel ? 0.42 : 0.36)} text-anchor="middle" font-size=${fs * (i === sel ? 1.25 : 1.05)} font-weight="900" font-family="var(--f-display)" fill=${i === sel ? '#FFFFFF' : 'var(--canvas)'}>${i === 0 ? 'S' : i}</text>
-      </g>`)}
-    </svg>`;
+    function draw() {
+      const c = st.current; if (!c.map || !c.ready || !S.stops.length) return;
+      const map = c.map, ml = c.ml;
+      map.getSource('route').setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: S.stops.map(x => [x.lng, x.lat]) }, properties: {} });
+      map.getSource('rings').setData({ type: 'FeatureCollection', features: mode === 'org' ? S.stops.map((x, i) => Object.assign(ring(x.lat, x.lng, x.radius), { properties: { sel: i === sel } })) : [] });
+      c.markers.forEach(m => m.remove()); c.markers = [];
+      S.stops.forEach((x, i) => {
+        const el = document.createElement('button');
+        el.type = 'button'; el.className = 'pin ' + pinClass(i);
+        el.setAttribute('aria-label', (i === 0 ? 'Start, ' : i === n ? 'Finish, ' : 'Bar ' + i + ', ') + x.name + '. Details and directions.');
+        el.innerHTML = i === 0 ? svgStr(SHOE_D) : i === n ? MEDAL_STR : String(i);
+        el.addEventListener('click', () => onSelect && onSelect(i));
+        const pop = new ml.Popup({ offset: 22, anchor: 'bottom', maxWidth: '270px', focusAfterOpen: false }).setHTML(popHtml(i));
+        pop.on('open', () => map.easeTo({ center: [x.lng, x.lat], offset: [0, 110], duration: 300 }));  // room for the card above the pin
+        c.markers.push(new ml.Marker({ element: el }).setLngLat([x.lng, x.lat]).setPopup(pop).addTo(map));
+      });
+    }
+    function fit(animate) {
+      const c = st.current; if (!c.map || !S.stops.length) return;
+      c.map.fitBounds(bounds(), { padding: { top: 70, bottom: 40, left: 40, right: 40 }, maxZoom: 16, duration: animate ? 500 : 0 });
+    }
+    useEffect(() => {
+      let dead = false;
+      loadMapLib().then(ml => {
+        if (dead || !box.current) return;
+        let map;
+        try {
+          map = new ml.Map({ container: box.current, style: mapStyle(), minZoom: 12.5, maxZoom: 19, attributionControl: { compact: false },
+            cooperativeGestures: inline, dragRotate: false, pitchWithRotate: false, touchPitch: false, fadeDuration: 0 });
+        } catch (e) { setNote("This phone can't draw the map. Directions still work."); return; }
+        map.touchZoomRotate.disableRotation();
+        const c = st.current; c.ml = ml; c.map = map;
+        let tiles = 0;
+        map.on('data', e => { if (e.dataType === 'source' && e.sourceId === 'om' && e.tile) { tiles++; setNote(''); } });
+        map.on('error', () => { if (!tiles) setNote(S.mode === 'demo' ? 'Street map shows on the live site. The preview can only draw the route.' : "Street map didn't load. Check your signal; the pins still work."); });
+        map.on('load', () => {
+          map.addSource('route', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+          map.addSource('rings', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+          map.addLayer({ id: 'rings-fill', type: 'fill', source: 'rings', paint: { 'fill-color': ['case', ['get', 'sel'], tok('--action'), tok('--ink-2')], 'fill-opacity': ['case', ['get', 'sel'], 0.16, 0.06] } });
+          map.addLayer({ id: 'rings-line', type: 'line', source: 'rings', paint: { 'line-color': ['case', ['get', 'sel'], tok('--action'), tok('--ink-2')], 'line-width': ['case', ['get', 'sel'], 2, 1] } });
+          map.addLayer({ id: 'route', type: 'line', source: 'route', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': tok('--ink'), 'line-width': 3.5, 'line-opacity': 0.8, 'line-dasharray': [0.1, 2.2] } });
+          c.ready = true; draw(); fit(false);
+        });
+        if (S.stops.length) {
+          // a few km around the course in every direction: enough for a tall phone screen to show all of it
+          const b = bounds();
+          map.setMaxBounds([[b.getWest() - 0.045, b.getSouth() - 0.035], [b.getEast() + 0.045, b.getNorth() + 0.035]]);
+        }
+        fit(false);
+        c.mq = matchMedia('(prefers-color-scheme: dark)'); c.swap = () => { recolor(map); draw(); }; c.mq.addEventListener('change', c.swap);
+        // the map box can change size after it's drawn (fonts, the tab bar, rotating the phone)
+        if (window.ResizeObserver) { c.ro = new ResizeObserver(() => map.resize()); c.ro.observe(box.current); }
+      }).catch(() => setNote("Couldn't load the map. Check your signal."));
+      return () => { dead = true; const c = st.current; if (c.map) { if (c.mq) c.mq.removeEventListener('change', c.swap); if (c.ro) c.ro.disconnect(); c.map.remove(); c.map = null; c.ready = false; c.me = null; } };
+    }, []);
+    useEffect(() => { draw(); }, [S.stops, sel, p && p.state, p && p.target, p && p.reached]);
+    useEffect(() => { const c = st.current; if (c.map && mode === 'org' && S.stops[sel]) c.map.easeTo({ center: [S.stops[sel].lng, S.stops[sel].lat], duration: 400 }); }, [sel]);
+    async function findMe() {
+      const c = st.current; if (!c.map) return;
+      const fix = await locate();
+      if (fix.error) { say(fix.error === 'denied' ? 'Location is off for this site.' : "Couldn't get your location."); return; }
+      let ll = [fix.lng, fix.lat];
+      if (fix.sim) { const t = S.stops[(p && p.target) || 1] || S.stops[0]; ll = [t.lng - 0.0004, t.lat - (fix.sim === 'far' ? 0.004 : 0.0003)]; }
+      if (!c.me) { const el = document.createElement('span'); el.className = 'medot'; el.setAttribute('role', 'img'); el.setAttribute('aria-label', 'You are here'); c.me = new c.ml.Marker({ element: el }); }
+      c.me.setLngLat(ll).addTo(c.map);
+      c.map.easeTo({ center: ll, zoom: Math.max(c.map.getZoom(), 16), duration: 500 });
+    }
+    const zoomBy = d => { const c = st.current; if (c.map) c.map.zoomTo(c.map.getZoom() + d, { duration: 200 }); };
+    return html`<div class=${'rmap ' + (cls || '')} style=${cls ? null : 'aspect-ratio:1.1'}>
+      <div class="lf" ref=${box} role="region" aria-label="Course map. Tap a bar for details and directions."></div>
+      <div class="rmap-tools"><button class="mapbtn" onClick=${() => fit(true)}>Whole course</button>${mode === 'join' ? null : html`<button class="mapbtn" onClick=${findMe}>${I.pin}Where am I</button>`}</div>
+      <div class="rmap-zoom"><button class="mapbtn" aria-label="Zoom in" onClick=${() => zoomBy(1)}>+</button><button class="mapbtn" aria-label="Zoom out" onClick=${() => zoomBy(-1)}>−</button></div>
+      ${note ? html`<p class="rmap-note" role="status">${note}</p>` : null}
+    </div>`;
+  }
+  function MapScreen() {
+    useTick(30000);
+    const p = S.me ? progress(S.me.id) : null;
+    return html`<div class="page" style="padding-bottom:0">
+      <${RouteMap} mode="runner" p=${p} cls="mapscreen" />
+      <p class="tiny">Tap a bar for its address, leave time and directions.</p>
+    </div>`;
+  }
+
+  /* Organizer: find a bar by name or address (OpenStreetMap search), paste coordinates, or stand there. */
+  async function geocode(q) {
+    const query = /philadelphia|phila\b|\bpa\b/i.test(q) ? q : q + ', Philadelphia, PA';
+    const u = 'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&bounded=1&viewbox=-75.30,40.14,-74.95,39.86&q=' + encodeURIComponent(query);
+    const r = await fetch(u, { headers: { 'Accept-Language': 'en' } });
+    if (!r.ok) throw new Error('search');
+    return (await r.json()).map(x => {
+      const a = x.address || {}, street = [a.house_number, a.road].filter(Boolean).join(' ');
+      return { name: x.name || street, addr: street || (x.display_name || '').split(',').slice(0, 2).join(','), label: x.display_name, lat: +(+x.lat).toFixed(5), lng: +(+x.lon).toFixed(5) };
+    });
   }
 
   function Organizer({ back }) {
     useTick(5000);
     const [email, setEmail] = useState(''), [code, setCode] = useState(''), [sent, setSent] = useState(false), [err, setErr] = useState('');
     const [open, setOpen] = useState(null), [goUndo, setGoUndo] = useState(false);
-    const [sel, setSel] = useState(1), [zoom, setZoom] = useState(false), [coord, setCoord] = useState(''), [cErr, setCErr] = useState('');
+    const [sel, setSel] = useState(1), [coord, setCoord] = useState(''), [cErr, setCErr] = useState('');
+    const [q, setQ] = useState(''), [hits, setHits] = useState(null), [qBusy, setQBusy] = useState(false);
     if (S.mode === 'cloud' && !S.admin) {
       return html`<div class="page"><h1 class="h2">Organizer</h1>
         <p class="sub2">Organizers sign in with their email. We'll send a sign-in link.</p>
@@ -1096,9 +1326,17 @@ dialog.sheet::backdrop{background:var(--scrim)}
     const n = lastOrd(), st = S.stops[Math.min(sel, n)], si = Math.min(sel, n);
     const structLocked = Object.keys(S.taps).length > 0;
     async function save(stops, msg) { try { await S.api.saveRoute(withKm(stops)); if (msg) say(msg); } catch (x) { say(x.message || "Couldn't save. Try again."); } }
-    async function place(ll) {
+    async function place(ll, extra) {
       const stops = copyStops(); stops[si].lat = +ll.lat.toFixed(5); stops[si].lng = +ll.lng.toFixed(5);
+      if (extra && extra.addr) stops[si].addr = extra.addr.slice(0, 60);
+      if (extra && extra.name && /^(bar \d+|new bar)$/i.test(stops[si].name)) { stops[si].name = extra.name.slice(0, 40); stops[si].short = extra.name.slice(0, 18); }
       await save(stops, 'Moved ' + stops[si].short + '.');
+    }
+    async function search(e) {
+      e && e.preventDefault(); if (!q.trim()) return;
+      setQBusy(true); setHits(null);
+      try { setHits(await geocode(q.trim())); } catch (x) { setHits([]); say(S.mode === 'demo' ? 'Address search works on the live site.' : "Search didn't answer. Try again, or paste coordinates."); }
+      setQBusy(false);
     }
     async function setHere() {
       const fix = await locate();
@@ -1117,7 +1355,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     async function addAfter() {
       const stops = copyStops(), a = stops[si], b = stops[si + 1] || a;
       const nb = { name: 'New bar', short: 'New bar', addr: '', lat: +((a.lat + b.lat) / 2 + (b === a ? 0.002 : 0)).toFixed(5), lng: +((a.lng + b.lng) / 2).toFixed(5), radius: 150, leaveBy: (a.leaveBy || S.event.startMs) + 40 * 60000 };
-      stops.splice(si + 1, 0, nb); setSel(si + 1); await save(stops, 'Added a bar after ' + a.short + '. Tap the map to place it.');
+      stops.splice(si + 1, 0, nb); setSel(si + 1); await save(stops, 'Added a bar after ' + a.short + '. Search for it to place it.');
     }
     async function remove() { const stops = copyStops(); stops.splice(si, 1); setSel(Math.max(1, si - 1)); await save(stops, 'Removed ' + st.short + '.'); }
     async function rename(v) { const stops = copyStops(); stops[si].name = v.slice(0, 40); stops[si].short = v.slice(0, 18); await save(stops); }
@@ -1148,17 +1386,20 @@ dialog.sheet::backdrop{background:var(--scrim)}
       </div>
 
       <div class="card" style="display:flex;flex-direction:column;gap:12px">
-        <div class="lbhead"><h2 class="h2" style="font-size:22px">Course</h2><button class="btn small" aria-pressed=${zoom ? 'true' : 'false'} onClick=${() => setZoom(!zoom)}>${zoom ? 'Whole course' : 'Zoom to ' + st.short}</button></div>
-        <div class="opts" role="group" aria-label="Pick a stop">${S.stops.map((x, i) => html`<button class="opt" aria-pressed=${i === si ? 'true' : 'false'} onClick=${() => setSel(i)}><span class="num">${i === 0 ? 'S' : i}</span> ${x.short}</button>`)}</div>
-        <${CourseMap} sel=${si} zoom=${zoom} onPick=${setSel} onPlace=${place} />
-        <p class="tiny">Tap the map to move <b>${st.name}</b>. Good to about half a block. Standing at the bar, Use my location is more exact.</p>
+        <h2 class="h2" style="font-size:22px">Course</h2>
+        <div class="opts" role="group" aria-label="Pick a stop">${S.stops.map((x, i) => html`<button class="opt" aria-pressed=${i === si ? 'true' : 'false'} onClick=${() => { setSel(i); setHits(null); }}><span class="num">${i === 0 ? 'S' : i}</span> ${x.short}</button>`)}</div>
+        <${RouteMap} mode="org" sel=${si} onSelect=${i => { setSel(i); setHits(null); }} />
         <div class="field"><label class="tiny" for="sn">Name</label><input id="sn" class="small-in" value=${st.name} onChange=${e => rename(e.target.value.trim() || st.name)} /></div>
+        <form class="field" onSubmit=${search}><label class="tiny" for="gq">Find ${st.short} by name or address</label>
+          <div class="row2" style="grid-template-columns:minmax(0,1fr) auto"><input id="gq" class="small-in" type="search" enterkeyhint="search" placeholder="e.g. McGillin's or 1310 Drury St" value=${q} onInput=${e => setQ(e.target.value)} /><button class="btn small" type="submit" aria-disabled=${qBusy ? 'true' : 'false'}>${qBusy ? 'Searching…' : 'Search'}</button></div>
+          ${hits && hits.length ? html`<div class="geo-results">${hits.map(h => html`<button type="button" class="btn small full" onClick=${async () => { await place({ lat: h.lat, lng: h.lng }, h); setHits(null); setQ(''); }}><b>${h.name || h.addr}</b><span>${[h.name && h.addr !== h.name ? h.addr : '', h.label.split(', ').slice(-5, -3).join(', ')].filter(Boolean).join(' · ')}</span></button>`)}</div>` : null}
+          ${hits && !hits.length ? html`<p class="tiny">Nothing found in Philadelphia. Try the street address.</p>` : null}</form>
         <div><p class="tiny" style="margin-bottom:6px">Check-in radius</p><div class="opts">${[75, 120, 150, 200].map(r => html`<button class="opt" aria-pressed=${st.radius === r ? 'true' : 'false'} onClick=${() => setRadius(r)}>${r} m</button>`)}</div></div>
         <div class="row2"><button class="btn small" onClick=${setHere}>${I.pin}Use my location</button><a class="btn small" href=${pinUrl(st)} target="_blank" rel="noopener">Check in ${APPLE ? 'Apple' : 'Google'}</a></div>
         <div class="field"><label class="tiny" for="pc">Or paste coordinates from Google or Apple Maps</label>
           <div class="row2" style="grid-template-columns:1fr auto"><input id="pc" class="small-in num" inputmode="decimal" placeholder="39.95016, -75.16204" value=${coord} onInput=${e => setCoord(e.target.value)} /><button class="btn small" onClick=${pasteCoord}>Place</button></div>
           ${cErr ? html`<p class="err" role="alert">${cErr}</p>` : null}</div>
-        <p class="tiny num">${st.lat.toFixed(5)}, ${st.lng.toFixed(5)}${si ? ' · leg ' + si + ' is ' + km(st.km) + ' on the grid' : ''}</p>
+        <p class="tiny num">${st.addr ? st.addr + ' · ' : ''}${st.lat.toFixed(5)}, ${st.lng.toFixed(5)}${si ? ' · leg ' + si + ' is about ' + km(st.km) + ' on foot' : ''}</p>
         ${structLocked ? html`<p class="tiny">Adding and removing bars is locked once anyone has checked in. Names, pins and times can still change.</p>`
           : html`<div class="row2">${si < n ? html`<button class="btn small" onClick=${addAfter}>Add a bar after this</button>` : html`<span></span>`}${si > 0 && n > 1 ? html`<button class="btn small red" onClick=${remove}>Remove this bar</button>` : html`<span></span>`}</div>`}
       </div>
@@ -1188,7 +1429,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
         ${runners.map(r => {
           const ts = Object.values(S.taps).filter(t => t.runnerId === r.id).sort((a, b) => a.at - b.at);
           return html`<div class="orgstop">
-            <button class="btn full" style="justify-content:space-between" aria-expanded=${open === r.id ? 'true' : 'false'} onClick=${() => setOpen(open === r.id ? null : r.id)}><span class="num">${r.bib} · ${r.name}${r.sample ? ' (sample)' : ''}</span><span class="tiny">${ts.length} taps ›</span></button>
+            <button class="btn full" style="justify-content:space-between" aria-expanded=${open === r.id ? 'true' : 'false'} onClick=${() => setOpen(open === r.id ? null : r.id)}><span class="num">${r.bib} · ${r.name}${r.sample ? ' (sample)' : ''}${r.hidden ? ' (hidden)' : ''}</span><span class="tiny">${ts.length} taps ›</span></button>
             ${open === r.id ? html`<div>${ts.map(t => html`<div class="taprow num"><span>${t.kind === 'arrive' ? 'At' : 'Left'} ${S.stops[t.stop] ? S.stops[t.stop].short : 'stop ' + t.stop} · ${clock(t.at)}${t.kind === 'arrive' && !t.verified ? ' · not GPS' : ''}</span><button class="btn small red" onClick=${() => S.api.deleteTap(t.id).then(() => say('Tap removed.'))}>Remove tap</button></div>`)}
               <button class="btn small full" style="margin-top:10px" onClick=${() => S.api.unlockRunner(r.id).then(() => say('Bib ' + r.bib + ' can move to a new phone. Taps kept.'))}>Let bib ${r.bib} move to a new phone</button>
               <button class="btn small red full" style="margin-top:10px" onClick=${() => S.api.removeRunner(r.id).then(() => say('Bib ' + r.bib + ' released.'))}>Release bib ${r.bib} and delete its taps</button></div>` : null}
@@ -1255,9 +1496,10 @@ dialog.sheet::backdrop{background:var(--scrim)}
     const offline = queue().length > 0 || (S.mode === 'demo' ? S.demo.net === 'off' : !S.online);
     return html`<div class="shell">${header}
       ${offline ? html`<p class="banner warn" style="margin:12px 16px 0" role="status">${I.dot}No signal. Taps save on this phone and sync later.</p>` : null}
-      <main>${tab === 'race' ? html`<${Race} />` : html`<${Board} />`}</main>
+      <main>${tab === 'race' ? html`<${Race} />` : tab === 'map' ? html`<${MapScreen} />` : html`<${Board} />`}</main>
       <nav class="tabs" aria-label="Sections">
         <button aria-current=${tab === 'race' ? 'page' : null} onClick=${() => { setTab('race'); window.scrollTo(0, 0); }}>${I.flag}Race</button>
+        <button aria-current=${tab === 'map' ? 'page' : null} onClick=${() => { setTab('map'); window.scrollTo(0, 0); }}>${I.map}Map</button>
         <button aria-current=${tab === 'board' ? 'page' : null} onClick=${() => { setTab('board'); window.scrollTo(0, 0); }}>${I.list}Leaderboard</button>
       </nav>${toast}</div>`;
   }

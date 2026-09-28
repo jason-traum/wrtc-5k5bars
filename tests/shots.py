@@ -8,7 +8,7 @@ async def scene(pg, name):
     await pg.wait_for_timeout(250)
 async def main():
     async with async_playwright() as p:
-        b = await p.chromium.launch()
+        b = await p.chromium.launch(args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"])
         problems = []
         IPHONE = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Mobile/15E148 Safari/604.1"
         ANDROID = "Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36"
@@ -20,6 +20,7 @@ async def main():
             pg.on("console", lambda m: errs.append("console: "+m.text) if m.type=="error" and "manifest" not in m.text and "apple-touch" not in m.text and "favicon" not in m.text else None)
             await pg.route("**/htm@3.1.1/preact/standalone.umd.js", lambda r: r.fulfill(path="tests/vendor/htm-preact-standalone.js", content_type="application/javascript"))
             await pg.route("**/config.js", lambda r: r.fulfill(body="/* no config: demo mode */", content_type="application/javascript"))
+            await pg.route("**/maplibre-gl/5.7.0/maplibre-gl.min.js", lambda r: r.fulfill(path="tests/vendor/maplibre-gl-5.7.0.js", content_type="application/javascript"))
             await pg.goto(URL); await pg.wait_for_selector(".big")
             tag = f"{scheme}-{w}"
             async def shot(n):
@@ -66,13 +67,25 @@ async def main():
                 await pg.click(".big"); await pg.wait_for_timeout(1400); await shot("ready-after")
                 txt = (await pg.inner_text("main")).upper()
                 if "I'M AT PHS GARDEN" not in txt: problems.append(f"start tap did not move on {tag}: {txt[:120]}")
-                await pg.click("text=Preview"); await pg.click("dialog >> text=Open the organizer view"); await pg.wait_for_timeout(200); await shot("organizer")
-                # tap the map
-                box = await pg.locator("svg.map").bounding_box()
-                await pg.mouse.click(box["x"]+box["width"]*0.55, box["y"]+box["height"]*0.5); await pg.wait_for_timeout(300)
-                await pg.click("text=Zoom to"); await pg.wait_for_timeout(200); await shot("organizer-zoom")
+                # the map tab: real streets, tap a bar for details
+                await pg.click(".tabs >> text=Map"); await pg.wait_for_selector(".pin", timeout=15000); await pg.wait_for_timeout(3500); await shot("map")
+                await pg.click(".pin >> nth=2"); await pg.wait_for_timeout(500)
+                pop = await pg.inner_text(".maplibregl-popup") if await pg.is_visible(".maplibregl-popup") else ""
+                if "Apple Maps" not in pop or "Google Maps" not in pop: problems.append(f"bar popup missing links {tag}: {pop[:80]}")
+                await shot("map-pop")
+                await pg.click("text=Where am I"); await pg.wait_for_timeout(1500)
+                if not await pg.is_visible(".medot"): problems.append(f"where am I dot missing {tag}")
+                await pg.click(".tabs >> text=Race")
+                await pg.click("text=Preview"); await pg.click("dialog >> text=Open the organizer view"); await pg.wait_for_selector(".pin", timeout=15000); await pg.wait_for_timeout(3000); await shot("organizer")
+                await pg.click(".opts >> text=Bar 4"); await pg.fill("#gq", "Khyber Pass Pub"); await pg.click("form >> text=Search"); await pg.wait_for_timeout(3500)
+                await shot("org-search")
+                if await pg.locator(".geo-results button").count():
+                    await pg.click(".geo-results button >> nth=0"); await pg.wait_for_timeout(600)
+                    t = await pg.inner_text(".toast")
+                    if "Moved" not in t: problems.append(f"search pick didn't move the bar {tag}: {t}")
+                else: problems.append(f"no search results {tag}")
                 await pg.click("text=Back to the race")
-                await scene(pg, "Join screen"); await shot("join")
+                await scene(pg, "Join screen"); await pg.wait_for_selector(".pin", timeout=15000); await pg.wait_for_timeout(3000); await shot("join")
                 await pg.fill("#bib","12"); await pg.fill("#nm","Alex"); await pg.click("text=Join the race"); await pg.wait_for_timeout(700); await shot("join-taken")
             if errs: problems.append(f"{tag}: {errs[:5]}")
             await ctx.close()

@@ -25,7 +25,8 @@ async def api(route):
     if "/auth/v1/" in url:
         return await route.fulfill(status=200, content_type="application/json", body=json.dumps(USER))
     if "/rest/v1/" in url:
-        if not signed:
+        public = "/rest/v1/event" in url or "/rest/v1/stops" in url  # the course and times are public
+        if not signed and not public:
             return await route.fulfill(status=401, content_type="application/json", body=json.dumps({"code": "42501", "message": "permission denied for table event"}))
         if "rpc/claim_bib" in url:
             return await route.fulfill(status=200, content_type="application/json", body=json.dumps([{"id": "r1", "bib": 23, "name": "Jason"}]))
@@ -57,11 +58,11 @@ async def main():
         await pg.click("button[type=submit]")
         await pg.wait_for_timeout(2500)
         screen = (await pg.inner_text("main")).replace("\n", " | ")
-        before = [r for r in reqs if "/rest/v1/" in r[1] and r[2] == "no session"]
+        before = [r for r in reqs if "/rest/v1/" in r[1] and r[2] == "no session" and "/rest/v1/event" not in r[1] and "/rest/v1/stops" not in r[1]]
         problems = []
         if errs: problems.append(f"page errors: {errs}")
         if "I'M AT" not in screen.upper() and "RITTENHOUSE" not in screen.upper() and "BAR 0" not in screen.upper(): problems.append(f"race screen not shown: {screen[:160]}")
-        if before: problems.append(f"read the race before signing in: {before}")
+        if before: problems.append(f"read runners or taps before signing in: {before}")
         print("FIRST LOAD PROBLEMS:", problems or "none")
         await b.close()
     srv.shutdown()

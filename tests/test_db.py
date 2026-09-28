@@ -103,12 +103,16 @@ def tap(who, stop, kind, at="now()", tid=None, verified=True, source="gps"):
 
 
 # --- Not signed in ---------------------------------------------------------------------------
-for t in ["runners", "taps", "stops", "event", "admins"]:
+for t in ["runners", "taps", "admins"]:
     expect_err(f"anon cannot read {t}", "anon", f"select * from public.{t}", contains="permission denied")
+for t in ["stops", "event"]:
+    expect_ok(f"anon can read the public {t}", "anon", f"select * from public.{t}")
+expect_err("anon cannot write stops", "anon", "update public.stops set lat = 40", contains="permission denied")
 expect_err("anon cannot claim a bib", "anon", "select * from claim_bib(5, 'Sam')", contains="permission denied")
 cur.execute("""select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
                where n.nspname = 'public' and has_function_privilege('anon', p.oid, 'execute')""")
 check("anon can execute no public function", cur.fetchall() == [], "")
+expect_err("anon cannot hide anyone", "anon", "select set_show(false)", contains="permission denied")
 
 # --- Joining ---------------------------------------------------------------------------------
 rows = expect_ok("A claims bib 12 as Dev", "a", "select * from claim_bib(12, 'Dev')")
@@ -262,6 +266,22 @@ expect_ok("with no taps, bars can be removed", "admin", "select admin_save_route
 cur.execute("select count(*), max(ord) from stops")
 check("course is now 4 stops", cur.fetchone() == (4, 3))
 expect_err("a course needs 2+ stops", "admin", "select admin_save_route(%s::jsonb)", (route(1),), contains="start, a finish")
+
+# --- Hiding from the leaderboard -----------------------------------------------------------------
+dev = run("b", "select id from my_runner()")[0][0][0]
+tb2, _ = tap("b", 1, "arrive")
+expect_ok("B hides from the leaderboard", "b", "select set_show(false)")
+check("my_runner reports hidden", run("b", "select hidden from my_runner()")[0] == [(True,)])
+check("others can't see a hidden runner", run("c", "select count(*) from runners where id = %s", (dev,))[0] == [(0,)])
+check("others can't see a hidden runner's taps", run("c", "select count(*) from taps where runner_id = %s", (dev,))[0] == [(0,)])
+check("hidden runner still sees self", run("b", "select count(*) from runners where id = %s", (dev,))[0] == [(1,)])
+check("hidden runner still sees own taps", run("b", "select count(*) from taps where runner_id = %s", (dev,))[0] == [(1,)])
+check("organizer sees hidden runners", run("admin", "select count(*) from runners where id = %s", (dev,))[0] == [(1,)])
+check("organizer sees hidden taps", run("admin", "select count(*) from taps where runner_id = %s", (dev,))[0] == [(1,)])
+run("c", "select set_show(false)"); run("c", "select set_show(true)")
+check("C's own toggle didn't touch B", run("b", "select hidden from my_runner()")[0] == [(True,)])
+expect_ok("B shows again", "b", "select set_show(true)")
+check("visible again to others", run("c", "select count(*) from runners where id = %s", (dev,))[0] == [(1,)])
 
 # --- Setup -----------------------------------------------------------------------------------
 cur.execute("select array_agg(tablename::text order by tablename) from pg_publication_tables where pubname = 'supabase_realtime'")
