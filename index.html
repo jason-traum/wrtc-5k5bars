@@ -644,7 +644,8 @@ dialog.sheet::backdrop{background:var(--scrim)}
     async deleteTap(id) { const { error } = await this.sb.rpc('admin_delete_tap', { p_id: id }); if (error) throw cloudErr(error); await this.reload(); },
     async clearTaps() { const { error } = await this.sb.rpc('admin_clear_taps'); if (error) throw cloudErr(error); await this.reload(); },
     async removeRunner(id) { const { error } = await this.sb.rpc('admin_remove_runner', { p_id: id }); if (error) throw cloudErr(error); await this.reload(); },
-    async sendCode(email) { const { error } = await this.sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } }); if (error) throw cloudErr(error); },
+    /* the email carries a sign-in link (Supabase's built-in email) and, once custom SMTP is set up, a code too */
+    async sendCode(email) { const { error } = await this.sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: location.origin + location.pathname + '?organizer' } }); if (error) throw cloudErr(error); },
     async verifyCode(email, token) {
       const prev = S.me;
       const { error } = await this.sb.auth.verifyOtp({ email, token, type: 'email' }); if (error) throw cloudErr(error);
@@ -1083,10 +1084,11 @@ dialog.sheet::backdrop{background:var(--scrim)}
     const [sel, setSel] = useState(1), [zoom, setZoom] = useState(false), [coord, setCoord] = useState(''), [cErr, setCErr] = useState('');
     if (S.mode === 'cloud' && !S.admin) {
       return html`<div class="page"><h1 class="h2">Organizer</h1>
-        <p class="sub2">Organizers sign in with their email. We'll send a 6-digit code.</p>
+        <p class="sub2">Organizers sign in with their email. We'll send a sign-in link.</p>
         ${!sent ? html`<div class="field"><label for="oe">Email</label><input id="oe" type="email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" value=${email} onInput=${e => setEmail(e.target.value)} /></div>
-          <button class="btn solid full" onClick=${async () => { setErr(''); try { await S.api.sendCode(email.trim()); setSent(true); } catch (x) { setErr(x.message); } }}>Email me a code</button>`
-        : html`<div class="field"><label for="oc">6-digit code</label><input id="oc" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" value=${code} onInput=${e => setCode(e.target.value.replace(/\D/g, ''))} /></div>
+          <button class="btn solid full" onClick=${async () => { setErr(''); try { await S.api.sendCode(email.trim()); setSent(true); } catch (x) { setErr(x.message); } }}>Email me a sign-in link</button>`
+        : html`<p><b>Check your email</b> and open the link on this phone. It brings you back here signed in. If the email shows a 6-digit code instead, type it below.</p>
+          <div class="field"><label for="oc">6-digit code</label><input id="oc" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" value=${code} onInput=${e => setCode(e.target.value.replace(/\D/g, ''))} /></div>
           <button class="btn solid full" onClick=${async () => { setErr(''); try { await S.api.verifyCode(email.trim(), code); } catch (x) { setErr(x.message); } }}>Sign in</button>`}
         <p class="err" role="alert">${err}</p>
         <button class="btn full" onClick=${back}>Back to the race</button></div>`;
@@ -1239,7 +1241,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
   function App() {
     useStore();
     const [tab, setTab] = useState(location.hash === '#board' ? 'board' : 'race');
-    const [org, setOrg] = useState(location.hash === '#organizer');
+    const [org, setOrg] = useState(location.hash === '#organizer' || new URLSearchParams(location.search).has('organizer'));
     useEffect(() => { let lock = null; const req = () => { try { if (navigator.wakeLock && document.visibilityState === 'visible') navigator.wakeLock.request('screen').then(l => { lock = l; }).catch(() => {}); } catch (e) {} }; req(); document.addEventListener('visibilitychange', req); return () => { document.removeEventListener('visibilitychange', req); try { lock && lock.release(); } catch (e) {} }; }, []);
     if (S.mode === 'loading') return html`<p class="boot">Loading the race…</p>`;
     if (S.mode === 'setup') return html`<div class="page"><h1 class="h2">Setup needed</h1><p>${S.problem}</p></div>`;
@@ -1247,7 +1249,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     const header = html`<header class="top"><span class="mark">5K<b>5</b>BARS</span>${S.mode === 'demo' ? html`<${Preview} onOrg=${() => setOrg(true)} />` : null}
       ${S.me ? html`<span class="bibchip" aria-label=${'Bib ' + S.me.bib + ', ' + S.me.name}><span class="num">${S.me.bib}</span><span>${S.me.name}</span></span>` : null}</header>`;
     const toast = html`${S.toast ? html`<div class="toast" role="status">${S.toast}</div>` : html`<div class="toast" role="status" hidden></div>`}${S.celebrate && S.me ? html`<${Celebrate} />` : null}`;
-    if (org) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Organizer} back=${() => { setOrg(false); if (location.hash === '#organizer') history.replaceState(null, '', location.pathname); }} /></main>${toast}</div>`;
+    if (org) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Organizer} back=${() => { setOrg(false); if (location.hash === '#organizer' || location.search) history.replaceState(null, '', location.pathname); }} /></main>${toast}</div>`;
     if (!S.me) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Join} /></main>${toast}</div>`;
     if (!S.stops.length) return html`<div class="shell" style="padding-bottom:24px">${header}<main><div class="page"><div class="alert" role="alert"><p><b>Couldn't load the race.</b> Check your signal.</p><button class="btn" onClick=${() => S.api.reload()}>Retry</button></div></div></main>${toast}</div>`;
     const offline = queue().length > 0 || (S.mode === 'demo' ? S.demo.net === 'off' : !S.online);
