@@ -1,0 +1,16 @@
+{
+  "name": "Beer Club × WRTC 5K 5 Bars",
+  "short_name": "5K 5 Bars",
+  "description": "Check in at every bar and follow the leaderboard.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E9EDF3",
+  "theme_color": "#14244A",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

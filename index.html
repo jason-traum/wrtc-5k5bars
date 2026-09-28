@@ -1,0 +1,1271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>5K 5 Bars</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Check in at every bar, see your leg paces, and follow the Beer Club × WRTC 5K 5 Bars leaderboard.">
+<meta name="theme-color" content="#E9EDF3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E1628" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-title" content="5K 5 Bars">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Instrument+Sans:wght@400;600;700&display=swap">
+<style>
+/* ============================================================================================
+   5K 5 BARS DESIGN RULES (Sep 28, 2026). Read PRODUCT.md, DESIGN.md and STATES.md before any UI change.
+   1. Source: a race bib. Navy band, one bib red, amber only for "at the bar". Not In.'s green.
+   2. One job per screen. The race screen is the next bar and one big button. Nothing else competes.
+      During the race, no stats on the Race tab. Numbers live on the finish screen and behind a tap on the leaderboard.
+   3. The big button: full width, >=104px tall, radius 20, bib red, always on the canvas, lower half.
+   4. Secondary actions are outlined and >=48px. Nothing tappable is plain text.
+   5. Big Shoulders Display for bar names, the button label and big numbers. Instrument Sans for the rest.
+      Body 17px; nothing under 14px. tabular-nums on every time, pace, rank and bib.
+   6. State is never color alone: "At the bar" says so in words; a check-in without location says so in words.
+   7. Never fake a number: untimed legs show a dash and are left out of pace. Samples are labeled.
+   8. Your own row is a full-surface tint plus a "You" chip. No colored side borders.
+   9. Tokens only (below). 120ms ease-out state changes, press scale .97, no page-load reveals.
+  10. Check at 320, 375 and 390 wide, light and dark, with "Independence Beer Garden". No sideways scroll.
+   ============================================================================================ */
+:root{
+  --canvas:#E9EDF3; --surface:#FFFFFF; --surface-2:#F3F5F9; --ink:#0F1A2E; --ink-2:#45506A; --line:#C9D1DE;
+  --action:#C41E2A; --action-press:#A5151F; --on-action:#FFFFFF; --focus:#C41E2A;
+  --navy:#14244A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD; --medal:#F0A53A; --medal-ink:#6B4308;
+  --bar:#A8680E; --bar-soft:#FDEFD6; --bar-ink:#6B4308;
+  --ok:#1F7A4D; --warn:#8A5A00; --scrim:rgba(10,18,34,.5); --river:#CFDDEE;
+  --f-display:"Big Shoulders Display","Arial Narrow","Roboto Condensed",sans-serif;
+  --f-body:"Instrument Sans",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+  --r-big:20px; --r-card:14px; --r-pill:999px;
+  --ease-out:cubic-bezier(0.23,1,0.32,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --canvas:#0E1628; --surface:#172238; --surface-2:#1F2C46; --ink:#E6ECF5; --ink-2:#A9B5CB; --line:#34425F;
+    --action:#C81E2A; --action-press:#A8161F; --on-action:#FFFFFF; --focus:#FF6B74;
+    --navy:#1B2D5A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD;
+    --bar:#F0A53A; --bar-soft:#3A2C12; --bar-ink:#FFD99A;
+    --ok:#5FD39A; --warn:#F2C46B; --scrim:rgba(0,0,0,.6); --river:#16304F;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --canvas:#0E1628; --surface:#172238; --surface-2:#1F2C46; --ink:#E6ECF5; --ink-2:#A9B5CB; --line:#34425F;
+  --action:#C81E2A; --action-press:#A8161F; --on-action:#FFFFFF; --focus:#FF6B74;
+  --navy:#1B2D5A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD;
+  --bar:#F0A53A; --bar-soft:#3A2C12; --bar-ink:#FFD99A;
+  --ok:#5FD39A; --warn:#F2C46B; --scrim:rgba(0,0,0,.6); --river:#16304F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--canvas)}
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{margin:0;color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,a,[role="button"]{touch-action:manipulation}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;font-size:max(17px,1rem);color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0;text-wrap:pretty;overflow-wrap:break-word}
+.num{font-variant-numeric:tabular-nums}
+.boot{padding:40px 16px;color:var(--ink-2)}
+[hidden]{display:none!important}
+
+.shell{min-height:100svh;display:flex;flex-direction:column;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+.top{background:var(--navy);color:var(--on-navy);padding:max(10px,env(safe-area-inset-top,0px)) 16px 10px;display:flex;align-items:center;gap:10px}
+.mark{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.02em;line-height:1}
+.mark b{color:#FF6B74}
+.bibchip{margin-left:auto;display:flex;align-items:center;gap:8px;background:#FFFFFF;color:#0F1A2E;border-radius:8px;padding:4px 10px 4px 8px;font-weight:700;font-size:15px;max-width:60%}
+.bibchip span:first-child{font-family:var(--f-display);font-weight:900;font-size:20px;color:#C41E2A;line-height:1}
+.bibchip span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prev-btn{border:1.5px solid var(--on-navy-2);background:transparent;color:var(--on-navy);border-radius:var(--r-pill);min-height:36px;padding:0 12px;font-size:14px;font-weight:600}
+.page{padding:16px;display:flex;flex-direction:column;gap:16px;max-width:560px;width:100%;margin:0 auto}
+
+/* route strip */
+/* start shoe, a pint per bar, finish medal; the runs are the lines. Outline = ahead, filled = done (inverted), red = running there now */
+.strip{display:flex;align-items:center;gap:0;padding:6px 2px 0}
+.node{flex:0 0 auto;width:36px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;border:2px solid var(--ink-2);color:var(--ink-2);background:var(--canvas)}
+.node svg{width:64%;height:64%;display:block}
+.node.done{background:var(--ink);border-color:var(--ink);color:var(--canvas)}
+.node.now{border:3px solid var(--action);color:var(--action);background:var(--surface);transform:scale(1.14)}
+.node.here{background:var(--bar);border-color:var(--bar);color:#1A1204;transform:scale(1.14)}
+.seg{flex:1 1 auto;height:3px;background:var(--line);min-width:8px}
+.seg.done{background:var(--ink)}
+.seg.run{background:var(--action)}
+@media (prefers-reduced-motion:no-preference){.node{transition:background-color 120ms ease-out,transform 120ms ease-out}}
+.strip-cap{display:flex;justify-content:space-between;font-size:14px;color:var(--ink-2);margin-top:6px}
+.stripbtn{display:block;width:100%;background:none;border:0;padding:6px 0 4px;margin:-6px 0 -4px;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:14px;-webkit-tap-highlight-color:transparent}
+.stripbtn:active{transform:scale(.99)}
+.strip-more{color:var(--ink);font-weight:700}
+
+/* next bar */
+.where{display:flex;flex-direction:column;gap:6px}
+.where .step{font-size:15px;font-weight:600;color:var(--ink-2)}
+.barname{font-family:var(--f-display);font-weight:900;font-size:clamp(38px,11vw,52px);line-height:.95;text-transform:uppercase;letter-spacing:.005em}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:16px;color:var(--ink-2)}
+.meta b{color:var(--ink);font-weight:700}
+.atpanel{background:var(--bar-soft);color:var(--bar-ink);border-radius:var(--r-card);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.atpanel .lbl{font-weight:700;font-size:15px}
+.atpanel .bigt{font-family:var(--f-display);font-weight:900;font-size:34px;line-height:1}
+.atpanel .sub{font-size:15px}
+.atpanel .count{font-family:var(--f-display);font-weight:900;font-size:64px;line-height:.95;letter-spacing:.01em}
+
+/* buttons */
+.big{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-height:112px;border:0;border-radius:var(--r-big);background:var(--action);color:var(--on-action);padding:14px 16px;text-align:center;transition:transform 120ms var(--ease-out),background-color 120ms var(--ease-out)}
+.big:active{transform:scale(.97);background:var(--action-press)}
+.big[disabled]{cursor:default}
+.btn[disabled]{opacity:.55;cursor:default}
+.big .l1{font-family:var(--f-display);font-weight:900;font-size:clamp(30px,9vw,40px);line-height:1;text-transform:uppercase}
+.big .l2{font-size:15px;font-weight:600;opacity:.92}
+.big.saved{background:var(--ok);color:#FFFFFF}
+.spin{width:22px;height:22px;border-radius:50%;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:2.4s}.big:active{transform:none}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 16px;border-radius:12px;border:2px solid var(--ink-2);background:transparent;color:var(--ink);font-weight:700;font-size:16px;text-decoration:none;transition:transform 120ms var(--ease-out)}
+.btn:active{transform:scale(.97)}
+.btn.full{width:100%}
+.btn.red{border-color:var(--action);color:var(--action)}
+.btn.small{min-height:44px;font-size:15px;padding:0 14px;white-space:nowrap}
+.btn.solid{background:var(--ink);border-color:var(--ink);color:var(--canvas)}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+
+/* status + splits */
+.status{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600}
+.status.ok{color:var(--ok)}.status.warn{color:var(--warn)}
+.ico{width:18px;height:18px;flex:0 0 auto}
+.card{background:var(--surface);border-radius:var(--r-card);padding:14px 16px}
+.alert{background:var(--surface);border:2px solid var(--ink-2);border-radius:var(--r-card);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.alert p b{font-weight:700}
+.split{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.split .k{font-size:15px;color:var(--ink-2);font-weight:600}
+.split .v{font-family:var(--f-display);font-weight:900;font-size:30px;line-height:1}
+.split .u{font-size:15px;color:var(--ink-2)}
+.timer{font-family:var(--f-display);font-weight:900;font-size:30px;line-height:1}
+.legs{width:100%;border-collapse:collapse;font-size:16px}
+.legs th{font-size:14px;color:var(--ink-2);font-weight:600;text-align:left;padding:0 0 6px}
+.legs td{padding:8px 0;border-top:1px solid var(--line)}
+.legs td.r,.legs th.r{text-align:right;white-space:nowrap;padding-left:12px}
+.sched{display:flex;flex-direction:column}
+.sched div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:16px}
+.sched div:first-child{border-top:0}
+.sched span:last-child{color:var(--ink-2);white-space:nowrap}
+.sched .cur{font-weight:700}
+.h2{font-family:var(--f-display);font-weight:900;font-size:28px;line-height:1;text-transform:uppercase}
+.sub2{font-size:15px;color:var(--ink-2)}
+
+/* finish */
+.finbib{background:#FFFFFF;color:#0F1A2E;border-radius:var(--r-card);overflow:hidden}
+.finbib .band{background:#14244A;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+.finbib .mid{padding:14px 16px 16px;text-align:center}
+.finbib .word{font-family:var(--f-display);font-weight:900;font-size:64px;line-height:.9;color:#C41E2A}
+.finbib .who{font-weight:700;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.stats div{background:#F3F5F9;border-radius:10px;padding:10px 6px}
+.stats b{display:block;font-family:var(--f-display);font-weight:900;font-size:26px;line-height:1}
+.stats span{font-size:13.5px;color:#45506A;font-weight:600}
+
+/* leaderboard */
+.lbhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.lb{background:var(--surface);border-radius:var(--r-card);overflow:hidden}
+.lbitem{border-top:1px solid var(--line)}
+.lbitem:first-child{border-top:0}
+.lbitem.me{background:var(--surface-2)}
+.lbrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;width:100%;min-height:64px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color 120ms ease-out}
+.lbrow:active{background:var(--surface-2)}
+.lbrow .who,.lbrow .n,.lbrow .pos{display:flex}
+.lbrow .who{flex-direction:column;min-width:0}
+.lbrow .pace b,.lbrow .pace span{display:block}
+.lbmore{padding:2px 14px 14px}
+.night{display:flex;gap:2px;height:22px;border-radius:6px;overflow:hidden;background:var(--canvas)}
+.night span{flex-basis:0;min-width:3px}
+.nb-run{background:var(--action)}
+.nb-bar{background:var(--bar)}
+.nb-gap{background:var(--line)}
+.nkey{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:15px;color:var(--ink-2)}
+.nkey span{display:inline-flex;align-items:center;gap:6px}
+.nkey b{color:var(--ink)}
+.nkey i{display:inline-block;width:12px;height:12px;border-radius:3px}
+.hi{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:12px 0 4px}
+.hi div{background:var(--surface-2);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;font-size:14px;color:var(--ink-2);font-weight:600}
+.hi b{font-family:var(--f-display);font-weight:900;font-size:24px;line-height:1;color:var(--ink)}
+.legs tr.atrow td{color:var(--ink-2)}
+.rank{font-family:var(--f-display);font-weight:900;font-size:24px;line-height:1;text-align:center}
+.who .n{font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.who .bibn{font-family:var(--f-display);font-weight:900;color:var(--action);font-size:19px}
+.who .pos{font-size:14.5px;color:var(--ink-2)}
+.pace{text-align:right}
+.pace b{display:block;font-family:var(--f-display);font-weight:900;font-size:24px;line-height:1}
+.pace span{font-size:14px;color:var(--ink-2)}
+.chip{display:inline-flex;align-items:center;border-radius:var(--r-pill);padding:1px 8px;font-size:13px;font-weight:700;border:1.5px solid var(--ink-2);color:var(--ink-2)}
+.chip.you{border-color:var(--ink);color:var(--ink)}
+
+/* join */
+.join{padding:24px 16px;display:flex;flex-direction:column;gap:18px;max-width:480px;margin:0 auto;width:100%}
+.hero{background:#FFFFFF;color:#0F1A2E;border-radius:var(--r-card);overflow:hidden}
+.hero .band{background:#14244A;color:#fff;padding:10px 16px;font-weight:700;font-size:15px}
+.hero .mid{padding:10px 16px 16px;text-align:center}
+.hero .word{font-family:var(--f-display);font-weight:900;font-size:clamp(64px,22vw,110px);line-height:.9;color:#C41E2A}
+.hero .sub{font-family:var(--f-display);font-weight:900;font-size:24px;text-transform:uppercase}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:700;font-size:16px}
+.field input{min-height:56px;border-radius:12px;border:2px solid var(--ink-2);background:var(--surface);padding:0 14px}
+.field input.bibin{font-family:var(--f-display);font-weight:900;font-size:36px;letter-spacing:.04em}
+.err{color:var(--action);font-weight:600;font-size:15px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .err{color:#FF8A91}}
+:root[data-theme="dark"] .err{color:#FF8A91}
+
+/* tabs */
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;padding:6px 8px max(8px,env(safe-area-inset-bottom,0px));z-index:10}
+.tabs button{min-height:52px;border:0;background:transparent;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:700;font-size:14px;color:var(--ink-2)}
+.tabs button[aria-current="page"]{color:var(--ink);background:var(--surface-2)}
+.tabs svg{width:22px;height:22px}
+
+/* sheet + toast */
+dialog.sheet{border:0;padding:0;margin:auto auto 0;width:100%;max-width:560px;max-height:90svh;border-radius:20px 20px 0 0;background:var(--surface);color:var(--ink);overflow-y:auto;overscroll-behavior:contain}
+dialog.sheet::backdrop{background:var(--scrim)}
+.sheet-in{padding:18px 16px max(20px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{min-height:44px;border-radius:var(--r-pill);border:2px solid var(--ink-2);background:transparent;padding:0 14px;font-weight:600;font-size:15px}
+.opt[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--canvas)}
+/* finish moment */
+.cele{position:fixed;inset:0;z-index:60;background:var(--navy);display:grid;place-items:center;padding:16px;animation:cele-in 160ms ease-out both;cursor:pointer}
+.cele.out{animation:cele-out 260ms ease-in forwards}
+.cele canvas{position:absolute;inset:0;width:100%;height:100%}
+.cele-in{position:relative;text-align:center;color:var(--on-navy);display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:-6svh}
+.cele-medal{color:var(--on-navy)}
+.cele-medal svg{width:124px;height:auto;display:block;animation:medal-pop 560ms cubic-bezier(.2,1.5,.4,1) both}
+.cele-word{font-family:var(--f-display);font-weight:900;font-size:76px;line-height:.9;text-transform:uppercase;animation:rise 320ms 160ms ease-out both}
+.cele-sub{font-weight:700;font-size:20px;color:var(--medal);animation:rise 320ms 260ms ease-out both}
+@keyframes cele-in{from{opacity:0}}
+@keyframes cele-out{to{opacity:0}}
+@keyframes medal-pop{from{transform:scale(.2) rotate(-18deg);opacity:0}}
+@keyframes rise{from{transform:translateY(14px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.cele,.cele *,.cele.out{animation:none!important}}
+.medalbtn{display:block;margin:0 auto 6px;background:none;border:0;padding:4px;min-width:48px;min-height:48px;cursor:pointer;border-radius:12px}
+.medalbtn svg{width:58px;height:auto;display:block;color:#14244A}
+.medalbtn:active{transform:scale(.97)}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--canvas);border-radius:12px;padding:12px 14px;font-weight:600;font-size:15px;max-width:528px;margin:0 auto}
+.banner{background:var(--surface);border-radius:12px;padding:10px 14px;font-size:15px;display:flex;gap:8px;align-items:center}
+.banner.warn{color:var(--warn)}
+
+/* organizer */
+.orgstop{display:flex;flex-direction:column;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.orgstop:first-of-type{border-top:0}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.grid2>*,.row2>*{min-width:0}
+.small-in{min-width:0;max-width:100%;min-height:48px;border-radius:10px;border:2px solid var(--ink-2);background:var(--canvas);padding:0 10px;width:100%}
+.tiny{font-size:14px;color:var(--ink-2)}
+.map{display:block;width:100%;height:auto;aspect-ratio:1.2;border-radius:12px;border:1.5px solid var(--line);touch-action:manipulation;cursor:crosshair}
+.taprow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:15px}
+@media (hover:hover) and (pointer:fine){.btn:hover,.opt:hover{border-color:var(--ink)}.big:hover{background:var(--action-press)}}
+</style>
+</head>
+<body>
+<div id="app"><p class="boot">Loading the race…</p></div>
+<noscript><p class="boot">This race app needs JavaScript turned on.</p></noscript>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/preact/standalone.umd.js"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var root = document.getElementById('app');
+  if (!window.htmPreact) { root.innerHTML = '<p class="boot">The race app could not load. Check your signal and reload.</p>'; return; }
+  const { html, render, useState, useEffect, useRef } = window.htmPreact;
+  const CFG = window.RACE_CONFIG || null;
+  const MI = 1.609344;
+  const TZ = 'America/New_York';
+
+  /* ---------------- The route. Organizer can edit names, times and locations. ---------------- */
+  const DEFAULT_STOPS = [
+    { ord: 0, name: 'Rittenhouse Square', short: 'Rittenhouse', addr: 'Start, 18th & Walnut', lat: 39.9495, lng: -75.1719, radius: 150, km: 0, leaveMin: 0 },
+    { ord: 1, name: 'PHS Pop Up Garden', short: 'PHS Garden', addr: '1438 South St', lat: 39.94368, lng: -75.16623, radius: 120, km: 1.14, leaveMin: 45 },
+    { ord: 2, name: "McGillin's Olde Ale House", short: "McGillin's", addr: '1310 Drury St', lat: 39.95016, lng: -75.16204, radius: 120, km: 1.0, leaveMin: 85 },
+    { ord: 3, name: 'Independence Beer Garden', short: 'Indy Beer Garden', addr: '100 S Independence Mall W', lat: 39.94918, lng: -75.15085, radius: 150, km: 1.01, leaveMin: 125 },
+    { ord: 4, name: 'Bar 4', short: 'Bar 4', addr: 'Still being picked', lat: 39.95224, lng: -75.14508, radius: 150, km: 0.85, leaveMin: 165 },
+    { ord: 5, name: "Morgan's Pier", short: "Morgan's Pier", addr: '221 N Columbus Blvd', lat: 39.9553, lng: -75.1393, radius: 150, km: 0.85, leaveMin: null },
+  ];
+
+  /* ---------------- Store ---------------- */
+  const S = {
+    mode: 'loading', problem: '', me: null, event: { startMs: 0, goMs: null }, stops: [], runners: {}, taps: {},
+    online: navigator.onLine !== false, lastSync: 0, loadFailed: false, admin: false, adminEmail: '',
+    demo: { loc: 'here', net: 'on', scene: 'live' }, api: null, lastMine: null, toast: '',
+  };
+  const subs = new Set();
+  const emit = () => subs.forEach(f => { try { f(); } catch (e) { console.error(e); } });
+  function useStore() { const [, set] = useState(0); useEffect(() => { const f = () => set(x => x + 1); subs.add(f); f(); return () => subs.delete(f); }, []); return S; }
+  function useTick(ms) { const [, set] = useState(0); useEffect(() => { const id = setInterval(() => set(x => x + 1), ms); return () => clearInterval(id); }, [ms]); }
+  const now = () => Date.now();
+  const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
+  let toastTimer = null;
+  function say(msg) { S.toast = msg; emit(); clearTimeout(toastTimer); toastTimer = setTimeout(() => { S.toast = ''; emit(); }, 3200); }
+
+  /* ---------------- Formatting ---------------- */
+  const clock = ms => new Date(ms).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: TZ }).replace(/\s?[AP]M$/, '');
+  const clockAP = ms => new Date(ms).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: TZ });
+  function dur(sec) { sec = Math.max(0, Math.round(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); }
+  const pace = spm => spm == null ? '–' : dur(spm);
+  const km = k => (k < 1 ? k.toFixed(2) : k.toFixed(1)) + ' km';
+  const meters = m => (m < 1000 ? Math.round(m / 10) * 10 + ' m' : (m / 1000).toFixed(1) + ' km');
+  const ordinal = n => n + (n % 100 >= 11 && n % 100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][n % 10] || 'th');
+  const mins = ms => { const m = Math.round(ms / 60000); return m <= 0 ? 'now' : m < 60 ? m + ' min' : Math.floor(m / 60) + ' hr ' + (m % 60) + ' min'; };
+  function haversine(a, b) { const R = 6371000, t = x => x * Math.PI / 180; const dLat = t(b.lat - a.lat), dLng = t(b.lng - a.lng); const h = Math.sin(dLat / 2) ** 2 + Math.cos(t(a.lat)) * Math.cos(t(b.lat)) * Math.sin(dLng / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); }
+  /* Directions open the phone's own maps: Apple Maps on iPhone, iPad and Mac; Google Maps on Android and everything else. Walking, to the pin. */
+  const APPLE = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) && !/Android/i.test(navigator.userAgent);
+  const dirUrl = s => APPLE
+    ? 'https://maps.apple.com/?daddr=' + s.lat + ',' + s.lng + '&dirflg=w'
+    : 'https://www.google.com/maps/dir/?api=1&destination=' + s.lat + ',' + s.lng + '&travelmode=walking';
+  const pinUrl = s => APPLE
+    ? 'https://maps.apple.com/?ll=' + s.lat + ',' + s.lng + '&q=' + encodeURIComponent(s.name)
+    : 'https://www.google.com/maps/search/?api=1&query=' + s.lat + ',' + s.lng;
+  const MAPS = APPLE ? 'Apple Maps' : 'Google Maps';
+
+  /* ---------------- Philly street grid (from In.): miles from 15th & Market, x east, y north, ~9.3 deg off true north ---------------- */
+  const GRID = { lat0: 39.95253, lng0: -75.16531, kx: 53.03, ky: 69.05, c: Math.cos(9.3 * Math.PI / 180), s: Math.sin(9.3 * Math.PI / 180) };
+  function gridOf(lat, lng) { const e = (lng - GRID.lng0) * GRID.kx, n = (lat - GRID.lat0) * GRID.ky; return { x: e * GRID.c - n * GRID.s, y: e * GRID.s + n * GRID.c }; }
+  function latLngOf(p) { const e = p.x * GRID.c + p.y * GRID.s, n = p.y * GRID.c - p.x * GRID.s; return { lat: GRID.lat0 + n / GRID.ky, lng: GRID.lng0 + e / GRID.kx }; }
+  // Walking distance on the grid counts blocks both ways.
+  function legKm(a, b) { const A = gridOf(a.lat, a.lng), B = gridOf(b.lat, b.lng); return Math.round((Math.abs(A.x - B.x) + Math.abs(A.y - B.y)) * MI * 100) / 100; }
+  const STREETS = [[1.33, 'Columbus'], [1.25, 'Front'], [1.153, '2nd'], [1.049, '3rd'], [0.964, '4th'], [0.878, '5th'], [0.794, '6th'], [0.709, '7th'], [0.624, '8th'], [0.54, '9th'], [0.455, '10th'], [0.371, '11th'], [0.287, '12th'], [0.202, '13th'], [0.082, 'Broad'], [0, '15th'], [-0.088, '16th'], [-0.173, '17th'], [-0.257, '18th'], [-0.342, '19th'], [-0.427, '20th'], [-0.53, '21st'], [-0.615, '22nd'], [-0.677, '23rd'], [-0.733, '24th'], [-0.797, '25th']];
+  const CROSS = [['Spring Garden', 0.7], ['Callowhill', 0.506], ['Vine', 0.375], ['Race', 0.27], ['Arch', 0.141], ['Market', 0], ['Chestnut', -0.107], ['Walnut', -0.214], ['Locust', -0.293], ['Spruce', -0.378], ['Pine', -0.478], ['Lombard', -0.541], ['South', -0.612], ['Bainbridge', -0.672], ['Fitzwater', -0.741], ['Christian', -0.865]];
+  const MAJOR = { 'Broad': 1, 'Market': 1, 'South': 1, 'Vine': 1, 'Columbus': 1 };
+
+  /* ---------------- Philadelphia time for the organizer's inputs ---------------- */
+  function nyOffset(ms) { const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(new Date(ms)).map(x => [x.type, x.value])); return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - Math.floor(ms / 1000) * 1000; }
+  function fromNY(date, time) { const [y, mo, d] = date.split('-').map(Number), [h, mi] = time.split(':').map(Number); const g = Date.UTC(y, mo - 1, d, h, mi); return g - nyOffset(g); }
+  const nyDate = ms => new Date(ms).toLocaleDateString('en-CA', { timeZone: TZ });
+  const nyTime = ms => new Date(ms).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: TZ });
+
+  /* ---------------- Race math: moving pace only ---------------- */
+  const lastOrd = () => S.stops.length - 1;
+  const started = () => S.event.goMs != null || (S.event.startMs && now() >= S.event.startMs);
+  function tapsOf(rid) { const t = now(); return Object.values(S.taps).filter(x => x.runnerId === rid && x.at <= t); }
+  function progress(rid) {
+    const arr = {}, lv = {};
+    tapsOf(rid).forEach(t => { (t.kind === 'arrive' ? arr : lv)[t.stop] = t; });
+    const n = lastOrd(), legs = [];
+    for (let i = 1; i <= n; i++) {
+      const fromAt = lv[i - 1] ? lv[i - 1].at : null;  /* leg 1 counts from this runner's own Start tap */
+      const to = arr[i], k = S.stops[i] ? S.stops[i].km : 0;
+      const sec = fromAt != null && to && to.at > fromAt ? (to.at - fromAt) / 1000 : null;
+      legs.push({ i, km: k, sec, pace: sec && k ? sec / (k / MI) : null, arrive: to || null, leave: lv[i] || null });
+    }
+    let reached = 0;
+    for (let i = 1; i <= n; i++) if (arr[i]) reached = i;
+    const timed = legs.filter(l => l.sec && l.km);
+    const secSum = timed.reduce((a, l) => a + l.sec, 0), miSum = timed.reduce((a, l) => a + l.km / MI, 0);
+    let state, target;
+    if (reached === n && n > 0) state = 'finished';
+    else if (reached === 0 && lv[0]) { state = 'enroute'; target = 1; }
+    else if (reached === 0) { state = started() ? 'ready' : 'pre'; target = 0; }
+    else if (!lv[reached]) { state = 'atbar'; target = reached; }
+    else { state = 'enroute'; target = reached + 1; }
+    const unverified = Object.values(arr).filter(t => !t.verified).length;
+    return { legs, reached, timed: timed.length, avg: timed.length ? secSum / miSum : null, moving: secSum, state, target, arr, lv, unverified };
+  }
+  function board() {
+    const rows = Object.values(S.runners).map(r => ({ r, p: progress(r.id) }));
+    rows.sort((a, b) => (a.p.avg == null) - (b.p.avg == null) || (a.p.avg || 0) - (b.p.avg || 0) || b.p.timed - a.p.timed || a.r.bib - b.r.bib);
+    let rank = 0; rows.forEach(x => { x.rank = x.p.avg == null ? null : ++rank; });
+    return rows;
+  }
+  /* The night as segments: running (leave to next arrive), at a bar (arrive to leave), or unknown (a missed tap). For after the race. */
+  function night(p) {
+    const n = lastOrd(), pts = [];
+    for (let i = 0; i <= n; i++) { if (i && p.arr[i]) pts.push({ t: p.arr[i].at, k: 'arrive', i }); if (p.lv[i]) pts.push({ t: p.lv[i].at, k: 'leave', i }); }
+    pts.sort((a, b) => a.t - b.t);
+    const segs = [];
+    for (let j = 1; j < pts.length; j++) {
+      const a = pts[j - 1], b = pts[j], sec = (b.t - a.t) / 1000;
+      if (sec <= 0) continue;
+      const kind = a.k === 'leave' && b.k === 'arrive' ? 'run' : a.k === 'arrive' && b.k === 'leave' && a.i === b.i ? 'bar' : 'gap';
+      segs.push({ kind, sec, i: b.i });
+    }
+    const bars = [];
+    for (let i = 1; i < n; i++) if (p.arr[i] && p.lv[i] && p.lv[i].at > p.arr[i].at) bars.push({ i, sec: (p.lv[i].at - p.arr[i].at) / 1000 });
+    return { segs, bars, barSec: bars.reduce((a, b) => a + b.sec, 0), total: segs.reduce((a, s) => a + s.sec, 0) };
+  }
+  const stay = sec => sec < 60 ? 'under 1 min' : mins(sec * 1000);
+  function myLastTap() { if (!S.me) return null; const mine = Object.values(S.taps).filter(t => t.runnerId === S.me.id); mine.sort((a, b) => b.created - a.created); return mine[0] || null; }
+
+  /* ---------------- Location: read only on a tap; keep only the distance ---------------- */
+  function locate() {
+    if (S.mode === 'demo') {
+      return new Promise(res => setTimeout(() => {
+        if (S.demo.loc === 'off') res({ error: 'denied' });
+        else res({ sim: S.demo.loc, acc: 25 });
+      }, 700));
+    }
+    return new Promise(res => {
+      if (!navigator.geolocation) { res({ error: 'unavailable' }); return; }
+      navigator.geolocation.getCurrentPosition(
+        p => res({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy }),
+        e => res({ error: e && e.code === 1 ? 'denied' : 'unavailable' }),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 15000 });
+    });
+  }
+  function judge(fix, stop) {
+    if (fix.error) return { ok: false, reason: fix.error };
+    const dist = fix.sim ? (fix.sim === 'far' ? 640 : 30) : haversine(fix, stop);
+    const acc = Math.round(fix.acc || 0);
+    const ok = dist - Math.min(acc, 150) <= stop.radius;
+    return { ok, reason: ok ? '' : 'far', dist: Math.round(dist), acc };
+  }
+
+  /* ---------------- Offline queue: taps keep their real time and sync later ---------------- */
+  const QKEY = 'race-queue-v1';
+  function queue() { try { return JSON.parse(lsGet(QKEY) || '[]'); } catch (e) { return []; } }
+  function saveQueue(q) { lsSet(QKEY, JSON.stringify(q)); }
+  let flushing = false;
+  async function flush() {
+    if (flushing || !S.api) return; flushing = true;
+    try {
+      let q = queue();
+      for (const t of q.slice()) {
+        try {
+          const saved = await S.api.addTap(t);
+          if (saved) Object.assign(S.taps[t.id] || (S.taps[t.id] = t), saved, { pending: false });
+          q = q.filter(x => x.id !== t.id); saveQueue(q); S.online = true;
+        } catch (e) {
+          if (e && e.code === 'dup') { q = q.filter(x => x.id !== t.id); saveQueue(q); delete S.taps[t.id]; await S.api.reload(); }
+          else if (e && e.code === 'rejected') { q = q.filter(x => x.id !== t.id); saveQueue(q); delete S.taps[t.id]; say(e.message || "That tap wasn't accepted."); }
+          else { S.online = false; break; }
+        }
+      }
+    } finally { flushing = false; emit(); }
+  }
+  async function tap(stop, kind, v) {
+    const t = { id: uuid(), runnerId: S.me.id, stop, kind, at: now(), created: now(), verified: !!v.verified, distM: v.dist != null ? v.dist : null, accM: v.acc != null ? v.acc : null, source: v.source, pending: true };
+    S.taps[t.id] = t; S.lastMine = t.id; emit();
+    const q = queue(); q.push(t); saveQueue(q);
+    await flush();
+    return t;
+  }
+  async function undo(t) {
+    const q = queue().filter(x => x.id !== t.id);
+    const wasQueued = q.length !== queue().length; saveQueue(q);
+    delete S.taps[t.id]; emit();
+    if (!wasQueued) { try { await S.api.undoTap(t.id); } catch (e) { S.taps[t.id] = t; emit(); say("Couldn't undo. Check your signal and try again."); return; } }
+    say('Undone.');
+  }
+
+  /* ---------------- Demo: a preview with simulated runners and location ---------------- */
+  const SAMPLES = [
+    ['Priya', 7, 440, [9, 8, 7, 8]], ['Dev', 12, 455, [10, 9, 9, 6]], ['Maya', 18, 470, [12, 10, 11, 9]], ['Tomás', 31, 500, [8, 12, 8, 10]],
+    ['Aisha', 44, 515, [15, 14, 13, 12]], ['Leo', 52, 530, [11, 9, 14, 10]], ['Hannah', 67, 560, [16, 13, 12, 11]], ['Sam', 88, 590, [14, 15, 12, 13]],
+    ['Inés', 95, 610, [13, 12, 16, 10]], ['Marcus', 101, 650, [18, 16, 15, 14]], ['Kelly', 135, 700, [17, 15, 14, 12]], ['Chris', 142, 900, [12, 11, 10, 9]],
+    ['Grace', 160, 1150, [9, 9, 8, 7]], ['Ben', 188, 1200, [8, 8, 7, 6]],
+  ];
+  function demoStops(startMs) { return DEFAULT_STOPS.map(s => Object.assign({}, s, { leaveBy: s.leaveMin == null ? null : startMs + s.leaveMin * 60000 })); }
+  function demoTimeline(go, paceSec, dwell, opts) {
+    const stops = S.stops; let t = go + (opts.delay || 0) * 60000;
+    if (t > now()) return [];
+    const out = [{ stop: 0, kind: 'leave', at: t, verified: true }];
+    for (let i = 1; i < stops.length; i++) {
+      const arrive = t + stops[i].km / MI * paceSec * 1000;
+      if (arrive > now()) break;
+      out.push({ stop: i, kind: 'arrive', at: arrive, verified: !(opts.unverified === i) });
+      if (i < stops.length - 1) {
+        const leave = Math.min(stops[i].leaveBy, arrive + dwell[i - 1] * 60000);
+        const lv = Math.max(leave, arrive + 60000);
+        if (lv > now()) break;
+        if (opts.forget !== i) out.push({ stop: i, kind: 'leave', at: lv, verified: true });
+        t = lv;
+      }
+    }
+    return out;
+  }
+  function demoScene(scene) {
+    const n = now();
+    S.demo.scene = scene;
+    S.celebrate = scene === 'finished';
+    const go = scene === 'pre' || scene === 'join' ? null : n - (scene === 'finished' ? 170 : scene === 'atbar' ? 55 : scene === 'ready' ? 3 : 48) * 60000;
+    const startMs = go != null ? go : n + 12 * 60000;
+    S.event = { startMs, goMs: go, name: 'Beer Club × WRTC 5K 5 Bars' };
+    S.stops = demoStops(startMs);
+    S.runners = {}; S.taps = {};
+    SAMPLES.forEach(([name, bib, p, dwell], idx) => {
+      const id = 'sample-' + bib;
+      S.runners[id] = { id, bib, name, sample: true };
+      if (go == null) return;
+      /* people set off over a few minutes, and one walker starts late */
+      const delay = idx === 12 ? 14 : (idx % 4) * 1.5;
+      demoTimeline(go, p, dwell, { delay, forget: idx === 5 ? 2 : null, unverified: idx === 3 ? 3 : null }).forEach((x, j) => {
+        const tid = id + '-' + j; S.taps[tid] = Object.assign({ id: tid, runnerId: id, created: x.at, source: 'gps' }, x);
+      });
+    });
+    if (scene === 'join') { S.me = null; emit(); return; }
+    S.me = { id: 'me', bib: 23, name: 'Jason' };
+    S.runners.me = { id: 'me', bib: 23, name: 'Jason' };
+    const mine = [];
+    if (scene === 'live' || scene === 'atbar' || scene === 'finished') {
+      mine.push({ stop: 0, kind: 'leave', at: go + 0.4 * 60000 }, { stop: 1, kind: 'arrive', at: go + 6.7 * 60000 }, { stop: 1, kind: 'leave', at: go + 41 * 60000 });
+    }
+    if (scene === 'atbar') mine.push({ stop: 2, kind: 'arrive', at: go + 47.2 * 60000 });
+    if (scene === 'finished') {
+      mine.push({ stop: 2, kind: 'arrive', at: go + 46.6 * 60000 }, { stop: 2, kind: 'leave', at: go + 82 * 60000 },
+        { stop: 3, kind: 'arrive', at: go + 87.4 * 60000 }, { stop: 3, kind: 'leave', at: go + 121 * 60000 },
+        { stop: 4, kind: 'arrive', at: go + 125.6 * 60000 }, { stop: 4, kind: 'leave', at: go + 160 * 60000 },
+        { stop: 5, kind: 'arrive', at: go + 164.4 * 60000 });
+    }
+    mine.forEach((x, j) => { const tid = 'me-' + j; S.taps[tid] = Object.assign({ id: tid, runnerId: 'me', created: x.at - 1, verified: true, source: 'gps' }, x); });
+    emit();
+  }
+  const DemoApi = {
+    async init() { S.mode = 'demo'; demoScene('live'); },
+    async reload() {},
+    async join(bib, name) {
+      await new Promise(r => setTimeout(r, 400));
+      const taken = Object.values(S.runners).find(r => r.bib === bib && r.id !== 'me');
+      if (taken && taken.name.toLowerCase() !== name.toLowerCase()) { const e = new Error('Bib ' + bib + ' is already ' + taken.name + "'s. Check the number on your bib, or ask the organizer."); e.code = 'taken'; throw e; }
+      S.me = { id: 'me', bib, name }; S.runners.me = { id: 'me', bib, name }; emit();
+    },
+    async addTap(t) {
+      if (S.demo.net === 'off') { const e = new Error('offline'); throw e; }
+      await new Promise(r => setTimeout(r, 250));
+      const dup = Object.values(S.taps).find(x => x.runnerId === t.runnerId && x.stop === t.stop && x.kind === t.kind && x.id !== t.id && !x.pending);
+      if (dup) { const e = new Error('dup'); e.code = 'dup'; throw e; }
+      return {};
+    },
+    async undoTap() {},
+    async setGo(ms) { S.event.goMs = ms; if (ms != null) { S.event.startMs = ms; S.stops = demoStops(ms); } emit(); },
+    async saveStop(ord, f) { Object.assign(S.stops[ord], f); emit(); },
+    async saveRoute(stops) { S.stops = stops; emit(); },
+    async saveEvent(f) { if (f.startMs) S.event.startMs = f.startMs; emit(); },
+    async deleteTap(id) { delete S.taps[id]; emit(); },
+    async clearTaps() { S.taps = {}; S.event.goMs = null; S.lastMine = null; emit(); },
+    async unlockRunner(id) {},
+    async removeRunner(id) { Object.keys(S.taps).forEach(k => { if (S.taps[k].runnerId === id) delete S.taps[k]; }); delete S.runners[id]; if (S.me && S.me.id === id) S.me = null; emit(); },
+    async adminSignIn() { S.admin = true; emit(); },
+  };
+
+  /* ---------------- Cloud: Supabase (config.js). Anonymous sign-in for runners, email code for organizers. ---------------- */
+  function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); }
+  const fromTap = r => ({ id: r.id, runnerId: r.runner_id, stop: r.stop, kind: r.kind, at: Date.parse(r.at), created: Date.parse(r.created_at), verified: r.verified, distM: r.dist_m, accM: r.acc_m, source: r.source, pending: false });
+  const fromStop = r => ({ ord: r.ord, name: r.name, short: r.short || r.name, addr: r.addr || '', lat: r.lat, lng: r.lng, radius: r.radius_m, km: Number(r.km) || 0, leaveBy: r.leave_by ? Date.parse(r.leave_by) : null });
+  function cloudErr(e) { const m = (e && e.message) || String(e || ''); const err = new Error(m); if (/already tapped/i.test(m)) err.code = 'dup'; else if (/taken|is already/i.test(m)) err.code = 'taken'; else if (/P0001|taken|range|not allowed|no runner|closed/i.test((e && e.code) + ' ' + m)) err.code = 'rejected'; return err; }
+  const CloudApi = {
+    sb: null,
+    problem() {
+      const c = CFG || {};
+      if (!c.supabaseUrl || !/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/.test(c.supabaseUrl)) return 'config.js needs the Supabase project URL.';
+      if (!c.supabaseKey || /^sb_secret_/.test(c.supabaseKey) || /service_role/.test(c.supabaseKey)) return 'config.js needs the publishable key, never a secret key.';
+      return '';
+    },
+    async init() {
+      const p = this.problem(); if (p) { S.mode = 'setup'; S.problem = p; emit(); return; }
+      try { await loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js'); }
+      catch (e) { S.mode = 'error'; S.problem = "Couldn't load. Check your signal and reload."; emit(); return; }
+      this.sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+      S.mode = 'cloud';
+      /* a phone that hasn't joined can't read the race yet (every read needs a sign-in), so it goes straight to Join */
+      const { data } = await this.sb.auth.getSession();
+      this.signedIn = !!(data && data.session);
+      if (this.signedIn) { await this.reload(); await this.loadMe(); }
+      this.live();
+      setInterval(() => { if (this.signedIn && document.visibilityState === 'visible') this.reload(); }, 20000);
+      document.addEventListener('visibilitychange', () => { if (this.signedIn && document.visibilityState === 'visible') { this.reload(); flush(); } });
+      window.addEventListener('online', () => { S.online = true; flush(); emit(); });
+      window.addEventListener('offline', () => { S.online = false; emit(); });
+      flush();
+    },
+    async loadMe() {
+      const { data } = await this.sb.rpc('my_runner');
+      const r = Array.isArray(data) ? data[0] : data;
+      S.me = r && r.id ? { id: r.id, bib: r.bib, name: r.name } : null;
+      const { data: adm } = await this.sb.rpc('is_admin');
+      S.admin = !!adm; emit();
+    },
+    async reload() {
+      try {
+        const [ev, st, ru, ta] = await Promise.all([
+          this.sb.from('event').select('*').eq('id', 1).maybeSingle(),
+          this.sb.from('stops').select('*').order('ord'),
+          this.sb.from('runners').select('id,bib,name'),
+          this.sb.from('taps').select('id,runner_id,stop,kind,at,verified,source,created_at'),
+        ]);
+        if (ev.error || st.error || ru.error || ta.error) throw (ev.error || st.error || ru.error || ta.error);
+        S.event = { startMs: ev.data && ev.data.start_at ? Date.parse(ev.data.start_at) : 0, goMs: ev.data && ev.data.go_at ? Date.parse(ev.data.go_at) : null, name: (ev.data && ev.data.name) || '5K 5 Bars' };
+        S.stops = (st.data || []).map(fromStop);
+        S.runners = {}; (ru.data || []).forEach(r => { S.runners[r.id] = r; });
+        const pend = Object.values(S.taps).filter(t => t.pending);
+        S.taps = {}; (ta.data || []).forEach(r => { S.taps[r.id] = fromTap(r); });
+        pend.forEach(t => { if (!S.taps[t.id]) S.taps[t.id] = t; });
+        S.lastSync = now(); S.loadFailed = false; S.online = true;
+      } catch (e) { console.warn('reload', e); S.loadFailed = true; }
+      emit();
+    },
+    live() {
+      const ch = this.sb.channel('race');
+      ch.on('postgres_changes', { event: '*', schema: 'public', table: 'taps' }, p => {
+        if (p.eventType === 'DELETE') delete S.taps[p.old.id]; else S.taps[p.new.id] = fromTap(p.new);
+        S.lastSync = now(); emit();
+      });
+      /* bursts of changes (a rename, a course save) refetch once, not once per row */
+      ['runners', 'event', 'stops'].forEach(t => ch.on('postgres_changes', { event: '*', schema: 'public', table: t }, () => { clearTimeout(this.rt); this.rt = setTimeout(() => this.reload(), 1500); }));
+      ch.subscribe();
+      this.channel = ch;
+    },
+    async join(bib, name) {
+      const { data: s } = await this.sb.auth.getSession();
+      if (!s || !s.session) { const { error } = await this.sb.auth.signInAnonymously(); if (error) throw cloudErr(error); }
+      const { data, error } = await this.sb.rpc('claim_bib', { p_bib: bib, p_name: name });
+      if (error) throw cloudErr(error);
+      const r = Array.isArray(data) ? data[0] : data;
+      /* a first-time phone couldn't read the race before it signed in: load it now, and join live updates as this phone */
+      this.signedIn = true;
+      await this.reload();
+      if (this.channel) { this.sb.removeChannel(this.channel); this.channel = null; }
+      this.live();
+      S.me = { id: r.id, bib: r.bib, name: r.name }; S.runners[r.id] = S.me; emit();
+    },
+    async addTap(t) {
+      const { data, error } = await this.sb.rpc('add_tap', { p_id: t.id, p_stop: t.stop, p_kind: t.kind, p_at: new Date(t.at).toISOString(), p_verified: t.verified, p_dist: t.distM, p_acc: t.accM, p_source: t.source });
+      if (error) { if (/Failed to fetch|NetworkError|network/i.test(error.message || '')) throw new Error('offline'); throw cloudErr(error); }
+      const r = Array.isArray(data) ? data[0] : data; return r ? fromTap(r) : {};
+    },
+    async undoTap(id) { const { error } = await this.sb.rpc('undo_tap', { p_id: id }); if (error) throw cloudErr(error); },
+    async setGo(ms) { const { error } = await this.sb.rpc('set_go', { p_at: ms == null ? null : new Date(ms).toISOString() }); if (error) throw cloudErr(error); await this.reload(); },
+    async saveStop(ord, f) {
+      const row = {}; if (f.name != null) row.name = f.name; if (f.short != null) row.short = f.short; if (f.lat != null) { row.lat = f.lat; row.lng = f.lng; } if (f.radius != null) row.radius_m = f.radius; if (f.leaveBy !== undefined) row.leave_by = f.leaveBy == null ? null : new Date(f.leaveBy).toISOString();
+      const { error } = await this.sb.from('stops').update(row).eq('ord', ord); if (error) throw cloudErr(error); await this.reload();
+    },
+    async saveRoute(stops) {
+      const rows = stops.map(x => ({ ord: x.ord, name: x.name, short: x.short, addr: x.addr || '', lat: x.lat, lng: x.lng, radius_m: x.radius, km: x.km, leave_by: x.leaveBy ? new Date(x.leaveBy).toISOString() : null }));
+      S.stops = stops; emit();
+      const { error } = await this.sb.rpc('admin_save_route', { p_stops: rows }); if (error) { await this.reload(); throw cloudErr(error); } await this.reload();
+    },
+    async saveEvent(f) { const { error } = await this.sb.rpc('admin_save_event', { p_start: new Date(f.startMs).toISOString() }); if (error) throw cloudErr(error); },
+    async deleteTap(id) { const { error } = await this.sb.rpc('admin_delete_tap', { p_id: id }); if (error) throw cloudErr(error); await this.reload(); },
+    async clearTaps() { const { error } = await this.sb.rpc('admin_clear_taps'); if (error) throw cloudErr(error); await this.reload(); },
+    async removeRunner(id) { const { error } = await this.sb.rpc('admin_remove_runner', { p_id: id }); if (error) throw cloudErr(error); await this.reload(); },
+    async sendCode(email) { const { error } = await this.sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false } }); if (error) throw cloudErr(error); },
+    async verifyCode(email, token) {
+      const prev = S.me;
+      const { error } = await this.sb.auth.verifyOtp({ email, token, type: 'email' }); if (error) throw cloudErr(error);
+      /* signing in as the organizer swaps this phone's sign-in; bring the organizer's own bib along */
+      if (prev) await this.sb.rpc('claim_bib', { p_bib: prev.bib, p_name: prev.name });
+      this.signedIn = true;
+      await this.reload();
+      if (this.channel) { this.sb.removeChannel(this.channel); this.channel = null; }
+      this.live();
+      await this.loadMe(); if (!S.admin) throw new Error('That email is not an organizer.');
+    },
+    async unlockRunner(id) { const { error } = await this.sb.rpc('admin_unlock_runner', { p_id: id }); if (error) throw cloudErr(error); },
+  };
+
+  /* ---------------- Icons (one family: 2px strokes) ---------------- */
+  const SHOE_D = ['M2.5 16.5h16.2a2.8 2.8 0 0 0 2.8-2.8c0-1.2-.8-2.2-2-2.5l-4.4-1.1-2.6-3.6H9.8L8.6 8.4H6.2L4.8 6.5H2.5z', 'M2.5 13.5h19', 'M10.4 9.3l1.4 1.3M12.2 8.1l1.4 1.3'];
+  const BEER_D = ['M5.5 9h10v10a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2z', 'M15.5 11.5h1.8a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1.8', 'M5.5 9a2.6 2.6 0 0 1 2.8-3.4A3.2 3.2 0 0 1 13.9 5a2.6 2.6 0 0 1 1.6 4', 'M9 12.5v5M12 12.5v5'];
+  const line = d => html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d.map(x => html`<path d=${x} />`)}</svg>`;
+  const I = {
+    flag: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>`,
+    list: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>`,
+    check: html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`,
+    dot: html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>`,
+    /* strip icons: a running shoe, a pint, and the finish medal (same 2px stroke family) */
+    shoe: line(SHOE_D),
+    beer: line(BEER_D),
+    medal: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="15.5" r="5"/><path d="M9 11.2L6.5 3h4l1.5 4.5L13.5 3h4L15 11.2"/></svg>`,
+    pin: html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>`,
+  };
+
+  /* ---------------- Pieces ---------------- */
+  /* Six icons: the start (shoe), each bar (pint), the finish (medal). The runs are the lines between them. */
+  function Strip({ p, onOpen }) {
+    const n = lastOrd(), items = [];
+    for (let i = 0; i <= n; i++) {
+      const name = S.stops[i] ? S.stops[i].short : '';
+      const icon = i === 0 ? I.shoe : i === n ? I.medal : I.beer;
+      const done = i === 0 ? !!p.lv[0] || p.reached > 0 : i === n ? !!p.arr[n] : !!p.lv[i] || p.reached > i;
+      const here = (p.state === 'atbar' || p.state === 'ready') && p.target === i;
+      const next = p.state === 'enroute' && p.target === i;
+      if (i) {
+        const run = p.state === 'enroute' && p.target === i;
+        items.push(html`<span class=${'seg' + (run ? ' run' : p.arr[i] ? ' done' : '')} aria-hidden="true"></span>`);
+      }
+      const cls = 'node' + (here ? ' here' : next ? ' now' : done ? ' done' : '');
+      const label = (i === 0 ? 'Start' : i === n ? 'Finish, ' + name : name) + ', ' + (here ? 'you are here' : next ? 'running here now' : done ? 'done' : 'ahead');
+      items.push(html`<span class=${cls} role="img" aria-label=${label}>${icon}</span>`);
+    }
+    const inner = html`<div class="strip">${items}</div><div class="strip-cap"><span>Start</span>${onOpen ? html`<span class="strip-more">Your legs ›</span>` : null}<span>Finish</span></div>`;
+    if (!onOpen) return html`<div>${inner}</div>`;
+    return html`<button class="stripbtn" onClick=${onOpen} aria-label=${'Your legs: ' + p.reached + ' of ' + n + ' bars reached. Open details.'}>${inner}</button>`;
+  }
+  function Schedule({ p }) {
+    return html`<div class="card"><h2 class="h2" style="font-size:22px;margin-bottom:6px">Schedule</h2><div class="sched">
+      ${S.stops.map((s, i) => html`<div class=${p && p.target === i ? 'cur' : ''}><span>${i === 0 ? 'Start · ' : i + '. '}${s.name}</span><span class="num">${i === 0 ? (S.event.goMs ? 'opened ' + clock(S.event.goMs) : 'opens ' + clock(S.event.startMs)) : s.leaveBy ? 'leave by ' + clock(s.leaveBy) : 'finish'}</span></div>`)}
+    </div></div>`;
+  }
+  function Status({ t }) {
+    if (!t) return null;
+    if (t.pending) return html`<p class="status warn" role="status">${I.dot}<span>Saved on this phone at ${clock(t.at)}. Syncs when you have signal.</span></p>`;
+    if (t.kind === 'leave') return html`<p class="status ok" role="status">${I.check}<span>${t.stop === 0 ? 'Started' : 'Left'} at ${clock(t.at)}. Saved.</span></p>`;
+    if (t.verified) return html`<p class="status ok" role="status">${I.check}<span>Checked in at ${clock(t.at)}.</span></p>`;
+    return html`<p class="status warn" role="status">${I.dot}<span>Checked in at ${clock(t.at)}, without location.</span></p>`;
+  }
+  function UndoLast() {
+    useTick(15000);
+    const t = myLastTap();
+    if (!t || now() - t.created > 120000) return null;
+    const what = t.kind === 'leave' ? (t.stop === 0 ? 'Start' : 'Leaving ' + S.stops[t.stop].short) : "I'm at " + S.stops[t.stop].short;
+    return html`<button class="btn small" onClick=${() => undo(t)}>Undo “${what}”</button>`;
+  }
+
+  /* ---------------- The big button with its location check ---------------- */
+  function CheckIn({ stop, p }) {
+    const [phase, setPhase] = useState({ k: 'idle' });
+    const [slow, setSlow] = useState(false);
+    const s = S.stops[stop];
+    useEffect(() => { setPhase({ k: 'idle' }); }, [stop]);
+    async function go() {
+      if (phase.k === 'locating') return;
+      setPhase({ k: 'locating' }); setSlow(false);
+      const t = setTimeout(() => setSlow(true), 500);
+      const fix = await locate(); clearTimeout(t);
+      const j = judge(fix, s);
+      if (j.ok) { await save(true, j); return; }
+      setPhase({ k: j.reason, dist: j.dist, acc: j.acc });
+    }
+    async function save(verified, j) {
+      setPhase({ k: 'saved' });
+      if (stop === lastOrd()) { S.celebrate = true; emit(); }
+      await tap(stop, 'arrive', { verified, dist: j && j.dist, acc: j && j.acc, source: verified ? 'gps' : 'anyway' });
+      setTimeout(() => setPhase({ k: 'idle' }), 900);
+    }
+    const busy = phase.k === 'locating';
+    return html`<div style="display:flex;flex-direction:column;gap:12px">
+      ${phase.k === 'saved'
+        ? html`<button class="big saved" disabled><span class="l1">Checked in</span><span class="l2">${s.short} · ${clock(now())}</span></button>`
+        : html`<button class="big" onClick=${go} aria-disabled=${busy ? 'true' : 'false'}>
+            ${busy && slow ? html`<span class="spin" aria-hidden="true"></span><span class="l2">Checking location…</span>` : html`<span class="l1">I'm at ${s.short}</span><span class="l2">Tap when you walk in</span>`}
+          </button>`}
+      ${phase.k === 'far' ? html`<div class="alert" role="alert">
+          <p><b>Your phone says ${meters(phase.dist)} from ${s.short}.</b> GPS is often off inside bars.</p>
+          <div class="row2"><button class="btn" onClick=${go}>Try again</button><button class="btn" onClick=${() => save(false, phase)}>Check in anyway</button></div>
+        </div>` : null}
+      ${phase.k === 'denied' || phase.k === 'unavailable' ? html`<div class="alert" role="alert">
+          <p><b>${phase.k === 'denied' ? 'Location is off for this site.' : "Couldn't get your location."}</b> You can still check in.</p>
+          <div class="row2"><button class="btn" onClick=${go}>Try again</button><button class="btn" onClick=${() => save(false, {})}>Check in anyway</button></div>
+          ${phase.k === 'denied' ? html`<p class="tiny">To turn it on: Settings, Privacy & Security, Location Services, Safari Websites.</p>` : null}
+        </div>` : null}
+    </div>`;
+  }
+  function LeaveButton({ stop }) {
+    const [saved, setSaved] = useState(false);
+    const s = S.stops[stop];
+    async function go() { if (saved) return; setSaved(true); await tap(stop, 'leave', { verified: true, source: 'gps' }); setTimeout(() => setSaved(false), 900); }
+    const first = stop === 0;
+    return saved
+      ? html`<button class="big saved" disabled><span class="l1">Go</span><span class="l2">${first ? 'Started' : 'Left ' + s.short} · ${clock(now())}</span></button>`
+      : html`<button class="big" onClick=${go}><span class="l1">${first ? 'Start' : 'Leaving ' + s.short}</span><span class="l2">${first ? 'Tap as you set off' : 'Tap as you walk out'}</span></button>`;
+  }
+
+  /* ---------------- Screens ---------------- */
+  function Race() {
+    useTick(1000);
+    const p = progress(S.me.id);
+    const last = S.lastMine ? S.taps[S.lastMine] : null;
+    const n = lastOrd();
+    const [legs, setLegs] = useState(false);
+    const open = p.reached || p.lv[0] ? () => setLegs(true) : null;
+    const sheet = legs ? html`<${MyLegs} p=${p} onClose=${() => setLegs(false)} />` : null;
+
+    if (p.state === 'finished') {
+      const rows = board(), mine = rows.find(x => x.r.id === S.me.id), count = rows.filter(x => x.rank).length;
+      return html`<${Finished} p=${p} rank=${mine && mine.rank} count=${count} />`;
+    }
+
+    if (p.state === 'pre') {
+      const s0 = S.stops[0];
+      return html`<div class="page">
+        <${Strip} p=${p} />
+        <div class="where"><p class="step">Start line</p><h1 class="barname">${s0.name}</h1>
+          <p class="meta"><span>Start any time after it opens. Your clock starts when you tap Start.</span></p></div>
+        <${Countdown} at=${S.event.startMs} plain=${true} label="Start opens in" done="Any minute" doneSub="Waiting for the organizer's GO" />
+        <a class="btn full" href=${dirUrl(s0)} target="_blank" rel="noopener">${I.pin}Directions to the start</a>
+        <${Schedule} p=${p} />
+      </div>`;
+    }
+
+    if (p.state === 'ready') {
+      const s0 = S.stops[0];
+      return html`<div class="page">
+        <${Strip} p=${p} onOpen=${open} />${sheet}
+        <div class="where"><p class="step">Start line · open</p><h1 class="barname">${s0.name}</h1>
+          <p class="meta"><span>Go whenever you're ready. Run or walk, your clock starts when you tap.</span></p></div>
+        <${LeaveButton} stop=${0} />
+        <${Status} t=${last && last.runnerId === S.me.id ? last : null} />
+        <${AlreadyNext} p=${p} />
+        <${UndoLast} />
+      </div>`;
+    }
+
+    const s = S.stops[p.target];
+    if (p.state === 'atbar') {
+      const leaveBy = s.leaveBy;
+      return html`<div class="page">
+        <${Strip} p=${p} onOpen=${open} />${sheet}
+        <div class="where"><p class="step">At the bar · ${p.target} of ${n}</p><h1 class="barname">${s.name}</h1>
+          ${(() => { const l = p.legs.find(x => x.i === p.target); return l && l.pace ? html`<p class="meta"><span>Last leg <b class="num">${pace(l.pace)}/mi</b></span></p>` : null; })()}</div>
+        <${Countdown} at=${leaveBy} label="Group leaves in" done="Time to go" doneSub=${leaveBy ? 'The group left at ' + clockAP(leaveBy) : ''} />
+        <${LeaveButton} stop=${p.target} />
+        <${Status} t=${last && last.runnerId === S.me.id ? last : null} />
+        <${AlreadyNext} p=${p} />
+        <${UndoLast} />
+      </div>`;
+    }
+
+    return html`<div class="page">
+      <${Strip} p=${p} onOpen=${open} />${sheet}
+      <div class="where"><p class="step">Next · ${p.target === n ? 'the finish' : 'bar ' + p.target + ' of ' + n}</p><h1 class="barname">${s.name}</h1>
+        <p class="meta"><span><b class="num">${km(s.km)}</b> from ${S.stops[p.target - 1].short}</span></p></div>
+      <${CheckIn} stop=${p.target} p=${p} />
+      <${Status} t=${last && last.runnerId === S.me.id ? last : null} />
+      <div class="row2"><a class="btn" href=${dirUrl(s)} target="_blank" rel="noopener" aria-label=${'Walking directions to ' + s.short + ' in ' + MAPS}>${I.pin}Directions</a><${UndoLast} /></div>
+    </div>`;
+  }
+  /* A ticking countdown to the start or to the group's leave time. Over an hour out it shows the clock time instead. */
+  function Countdown({ at, label, done, doneSub, plain }) {
+    const style = plain ? 'background:var(--surface);color:var(--ink)' : null;
+    if (!at) return null;
+    const left = (at - now()) / 1000;
+    if (left <= 0) return html`<div class="atpanel" style=${style} role="status"><span class="count">${done}</span>${doneSub ? html`<span class="sub">${doneSub}</span>` : null}</div>`;
+    if (left > 3600) return html`<div class="atpanel" style=${style}><span class="lbl">${plain ? 'Starts at' : 'Group leaves at'}</span><span class="bigt num">${clockAP(at)}</span><span class="sub num">${left > 86400 ? new Date(at).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: TZ }) : 'in ' + mins(at - now())}</span></div>`;
+    return html`<div class=${'atpanel' + (!plain && left <= 300 ? ' soon' : '')} style=${style} role="timer" aria-label=${label + ' ' + mins(at - now())}>
+      <span class="lbl">${label}</span><span class="count num" aria-hidden="true">${dur(left)}</span>
+      <span class="sub num">at ${clockAP(at)}${!plain && left <= 300 ? ' · finish up' : ''}</span></div>`;
+  }
+  function AlreadyNext({ p }) {
+    const next = S.stops[p.target + 1];
+    const [ask, setAsk] = useState(false);
+    if (!next) return null;
+    if (!ask) return html`<button class="btn full" onClick=${() => setAsk(true)}>Already at ${next.short}?</button>`;
+    return html`<div class="alert"><p><b>Forgot to tap ${p.target === 0 ? 'Start' : 'Leaving'}?</b> Check in at ${next.short} now. Leg ${p.target + 1} won't be timed, and the rest of your legs still count.</p>
+      <${CheckIn} stop=${p.target + 1} p=${p} />
+      <button class="btn full" onClick=${() => setAsk(false)}>I'm still at ${S.stops[p.target].short}</button></div>`;
+  }
+  /* One bar for the whole night: red = running, amber = at a bar, grey = a missed tap. */
+  function NightBar({ nt, p }) {
+    if (!nt.total) return null;
+    return html`<div>
+      <div class="night" role="img" aria-label=${'Running ' + (p.timed ? dur(p.moving) : 'not timed') + ', at bars ' + stay(nt.barSec)}>
+        ${nt.segs.map(s => html`<span class=${'nb-' + s.kind} style=${'flex-grow:' + Math.round(s.sec)}></span>`)}
+      </div>
+      <div class="nkey"><span><i class="nb-run"></i>Running <b class="num">${p.timed ? dur(p.moving) : '–'}</b></span><span><i class="nb-bar"></i>At bars <b class="num">${nt.bars.length ? stay(nt.barSec) : '–'}</b></span></div>
+    </div>`;
+  }
+  /* Every run and bar so far (all of them once finished). Nothing ahead is listed, so there are no rows of dashes. */
+  function Splits({ p, nt }) {
+    const n = lastOrd(), rows = [];
+    p.legs.forEach(l => {
+      if (l.i > p.reached) return;
+      rows.push(html`<tr><td>Run to ${S.stops[l.i].short}</td><td class="r num">${l.sec ? dur(l.sec) : '–'}</td><td class="r num">${l.sec ? pace(l.pace) + '/mi' : 'not timed'}</td></tr>`);
+      if (l.i >= n) return;
+      if (l.i === p.reached && p.state === 'atbar') { rows.push(html`<tr class="atrow"><td>At ${S.stops[l.i].short}</td><td class="r num">${stay((now() - p.arr[l.i].at) / 1000)}</td><td class="r">so far</td></tr>`); return; }
+      const b = nt.bars.find(x => x.i === l.i);
+      rows.push(html`<tr class="atrow"><td>At ${S.stops[l.i].short}</td><td class="r num">${b ? stay(b.sec) : '–'}</td><td></td></tr>`);
+    });
+    if (p.state === 'enroute' && p.target <= n) rows.push(html`<tr class="atrow"><td>Run to ${S.stops[p.target].short}</td><td class="r">now</td><td></td></tr>`);
+    return html`<table class="legs"><tbody>${rows}</tbody></table>`;
+  }
+  /* The tracker: tap the progress strip to see your night so far. */
+  function MyLegs({ p, onClose }) {
+    const ref = useRef(null);
+    useEffect(() => { const d = ref.current; if (d && !d.open) d.showModal(); }, []);
+    const nt = night(p), n = lastOrd();
+    const rows = board(), mine = rows.find(x => x.r.id === S.me.id), count = rows.filter(x => x.rank).length;
+    return html`<dialog class="sheet" ref=${ref} onClose=${onClose} aria-labelledby="mlh">
+      <div class="sheet-in">
+        <div class="sheet-h"><h2 id="mlh" class="h2" style="font-size:24px">Your legs</h2><button class="btn small" onClick=${() => ref.current.close()}>Done</button></div>
+        ${p.timed ? html`<div class="hi">
+          <div><span>Average pace</span><b class="num">${pace(p.avg)}/mi</b><span>${p.timed} of ${n} legs timed</span></div>
+          <div><span>Place</span><b class="num">${mine && mine.rank ? ordinal(mine.rank) : '–'}</b><span>of ${count} so far</span></div>
+        </div>` : null}
+        ${nt.total ? html`<${NightBar} nt=${nt} p=${p} />` : null}
+        ${p.reached || p.lv[0] ? html`<${Splits} p=${p} nt=${nt} />` : html`<p class="tiny">Nothing yet. Your legs show up here as you check in.</p>`}
+      </div></dialog>`;
+  }
+  /* The finish moment (Jason asked for one): the medal pops, one burst of shoes and pints, about 2 seconds, then the results.
+     Plays once on the finish check-in, or when the medal on the finish card is tapped. Tap skips. Reduced motion: medal only, no burst. */
+  const BIG_MEDAL = html`<svg viewBox="0 0 120 150" aria-hidden="true">
+    <path d="M36 0h22l14 52H50z" fill="var(--action)" /><path d="M62 0h22L70 52H48z" fill="currentColor" />
+    <circle cx="60" cy="96" r="46" fill="var(--medal)" /><circle cx="60" cy="96" r="36" fill="none" stroke="var(--medal-ink)" stroke-width="3" opacity=".45" />
+    <text x="60" y="113" text-anchor="middle" font-family="var(--f-display)" font-weight="900" font-size="50" fill="var(--medal-ink)">5K5</text></svg>`;
+  function Celebrate() {
+    const cv = useRef(null), medal = useRef(null);
+    const [out, setOut] = useState(false);
+    const rows = board(), mine = S.me && rows.find(x => x.r.id === S.me.id), count = rows.filter(x => x.rank).length;
+    function close() { setOut(true); setTimeout(() => { S.celebrate = false; emit(); }, 260); }
+    useEffect(() => {
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      try { if (navigator.vibrate) navigator.vibrate([40, 60, 90]); } catch (e) {}
+      const end = setTimeout(close, reduce ? 1600 : 2400);
+      const key = e => { if (e.key === 'Escape') close(); };
+      document.addEventListener('keydown', key);
+      const c = cv.current;
+      if (reduce || !c || !c.getContext) return () => { clearTimeout(end); document.removeEventListener('keydown', key); };
+      const ctx = c.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
+      const W = c.clientWidth, H = c.clientHeight; c.width = W * dpr; c.height = H * dpr; ctx.scale(dpr, dpr);
+      const m = medal.current.getBoundingClientRect(), cx = m.left + m.width / 2, cy = m.top + m.height * 0.64;
+      const cs = getComputedStyle(document.documentElement), col = [cs.getPropertyValue('--action').trim(), cs.getPropertyValue('--medal').trim(), '#FFFFFF'];
+      const shapes = [SHOE_D.map(d => new Path2D(d)), BEER_D.map(d => new Path2D(d))];
+      const ps = Array.from({ length: 28 }, (_, k) => { const a = Math.random() * Math.PI * 2, v = 4 + Math.random() * 7;
+        return { x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 4, r: Math.random() * 6.3, vr: (Math.random() - 0.5) * 0.25, s: 0.9 + Math.random() * 0.8, k: k % 2, c: col[k % 3] }; });
+      let raf, t0 = performance.now(), last = t0;
+      function frame(t) {
+        const e = (t - t0) / 1000, dt = Math.min(3, (t - last) / 16.7); last = t;
+        ctx.clearRect(0, 0, W, H);
+        if (e < 0.6) { const q = e / 0.6; ctx.beginPath(); ctx.arc(cx, cy, 50 + q * Math.max(W, H) * 0.55, 0, 7); ctx.globalAlpha = 1 - q; ctx.strokeStyle = col[1]; ctx.lineWidth = 3 + 5 * (1 - q); ctx.stroke(); ctx.globalAlpha = 1; }
+        if (e > 0.1) ps.forEach(p => {
+          p.vy += 0.26 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.vr * dt;
+          ctx.save(); ctx.globalAlpha = Math.max(0, 1 - Math.max(0, e - 1.2) / 0.7);
+          ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.scale(p.s, p.s); ctx.translate(-12, -12);
+          ctx.strokeStyle = p.c; ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+          shapes[p.k].forEach(path => ctx.stroke(path)); ctx.restore();
+        });
+        if (e < 2.2) raf = requestAnimationFrame(frame);
+      }
+      raf = requestAnimationFrame(frame);
+      return () => { cancelAnimationFrame(raf); clearTimeout(end); document.removeEventListener('keydown', key); };
+    }, []);
+    return html`<div class=${'cele' + (out ? ' out' : '')} role="dialog" aria-modal="true" aria-label="Finished" onClick=${close}>
+      <canvas ref=${cv} aria-hidden="true"></canvas>
+      <div class="cele-in"><div class="cele-medal" ref=${medal}>${BIG_MEDAL}</div>
+        <p class="cele-word">Finished</p>
+        <p class="cele-sub num">${mine && mine.rank ? ordinal(mine.rank) + ' of ' + count + ' · ' : ''}${S.stops[lastOrd()].short}</p></div>
+    </div>`;
+  }
+  function Finished({ p, rank, count }) {
+    const n = lastOrd(), nt = night(p);
+    const fast = p.legs.filter(l => l.pace).sort((a, b) => a.pace - b.pace)[0];
+    const long = [...nt.bars].sort((a, b) => b.sec - a.sec)[0];
+    return html`<div class="page">
+      <div class="finbib"><div class="band num"><span>Beer Club × WRTC</span><span>Bib ${S.me.bib}</span></div>
+        <div class="mid"><button class="medalbtn" onClick=${() => { S.celebrate = true; emit(); }} aria-label="Replay the finish">${BIG_MEDAL}</button><p class="word">Finished</p><p class="who">${S.me.name} · ${S.stops[n].name}</p>
+          <div class="stats">
+            <div><b class="num">${rank ? ordinal(rank) : '–'}</b><span>of ${count}</span></div>
+            <div><b class="num">${pace(p.avg)}</b><span>per mile</span></div>
+            <div><b class="num">${p.timed ? dur(p.moving) : '–'}</b><span>running</span></div>
+          </div></div></div>
+      <p class="sub2">Medals are at ${S.stops[n].name}. Get some water.</p>
+      <div class="card">
+        <h2 class="h2" style="font-size:22px;margin-bottom:10px">Your night</h2>
+        <${NightBar} nt=${nt} p=${p} />
+        ${fast || long ? html`<div class="hi">
+          ${fast ? html`<div><span>Fastest leg</span><b class="num">${pace(fast.pace)}/mi</b><span>to ${S.stops[fast.i].short}</span></div>` : null}
+          ${long ? html`<div><span>Longest stop</span><b class="num">${stay(long.sec)}</b><span>at ${S.stops[long.i].short}</span></div>` : null}
+        </div>` : null}
+        <${Splits} p=${p} nt=${nt} />
+        <p class="tiny" style="margin-top:8px">Ranked on running pace only. ${p.timed < n ? p.timed + ' of ' + n + ' legs timed.' : ''}</p>
+      </div>
+      <${UndoLast} />
+    </div>`;
+  }
+  function Board() {
+    useTick(15000);
+    const rows = board(), n = lastOrd();
+    const stale = S.mode === 'cloud' && S.lastSync && now() - S.lastSync > 90000;
+    function where(p) {
+      if (p.state === 'finished') return 'Finished';
+      if (p.state === 'pre' || p.state === 'ready') return 'At the start';
+      if (p.state === 'atbar') return 'At ' + S.stops[p.target].short;
+      return 'To ' + S.stops[p.target].short;
+    }
+    const [open, setOpen] = useState(null);
+    function jump() { const el = document.getElementById('row-me'); if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); } }
+    return html`<div class="page">
+      <div class="lbhead"><div><h1 class="h2">Leaderboard</h1><p class="sub2" style="margin-top:6px">Running pace. Bar time doesn't count.</p></div>
+        <button class="btn small" onClick=${jump}>Jump to me</button></div>
+      ${S.loadFailed ? html`<div class="alert" role="alert"><p><b>Couldn't load the leaderboard.</b> Check your signal.</p><button class="btn" onClick=${() => S.api.reload()}>Retry</button></div>` : null}
+      ${stale && !S.loadFailed ? html`<p class="banner warn" role="status">${I.dot}Last updated ${mins(now() - S.lastSync)} ago.</p>` : null}
+      <div class="lb" role="list">
+        ${rows.map(x => {
+          const me = S.me && x.r.id === S.me.id, isOpen = open === x.r.id;
+          return html`<div class=${'lbitem' + (me ? ' me' : '')} role="listitem">
+            <button class="lbrow" id=${me ? 'row-me' : null} aria-expanded=${isOpen ? 'true' : 'false'} onClick=${() => setOpen(isOpen ? null : x.r.id)}>
+              <span class="rank num">${x.rank || '–'}</span>
+              <span class="who"><span class="n"><span class="bibn num">${x.r.bib}</span><span>${x.r.name}</span>${me ? html`<span class="chip you">You</span>` : null}${x.r.sample ? html`<span class="chip">Sample</span>` : null}</span>
+                <span class="pos">${where(x.p)}</span></span>
+              <span class="pace"><b class="num">${x.p.avg ? pace(x.p.avg) : '–'}</b><span>${x.p.avg ? '/mi' : 'no legs yet'}</span></span>
+            </button>
+            ${isOpen ? (() => { const nt = night(x.p); return html`<div class="lbmore">${nt.total ? html`<${NightBar} nt=${nt} p=${x.p} /><${Splits} p=${x.p} nt=${nt} />` : html`<p class="tiny">No check-ins yet.</p>`}</div>`; })() : null}
+          </div>`;
+        })}
+      </div>
+      <p class="tiny">Tap anyone to see their night.</p>
+    </div>`;
+  }
+  function Join() {
+    const [bib, setBib] = useState(''), [name, setName] = useState(''), [err, setErr] = useState(''), [busy, setBusy] = useState(false);
+    async function submit(e) {
+      e.preventDefault(); setErr('');
+      const b = parseInt(bib, 10), nm = name.trim().replace(/\s+/g, ' ');
+      if (!b || b < 1 || b > 300) { setErr('Type the number on your bib. Bibs run from 1 to 300.'); return; }
+      if (!nm) { setErr('Add your first name so people know who bib ' + b + ' is.'); return; }
+      setBusy(true);
+      try { await S.api.join(b, nm.slice(0, 24)); }
+      catch (x) { setErr(x.code === 'taken' || x.code === 'rejected' ? x.message : "Couldn't reach the race. Check your signal and try again."); }
+      setBusy(false);
+    }
+    return html`<form class="join" onSubmit=${submit} noValidate>
+      <div class="hero"><div class="band num">Beer Club × WRTC · ${S.event.startMs ? new Date(S.event.startMs).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: TZ }) + ' · ' + clockAP(S.event.startMs) : 'Philly'}</div>
+        <div class="mid"><p class="word">5K</p><p class="sub">5 bars · 1 drink each</p></div></div>
+      <div class="field"><label for="bib">Bib number</label><input id="bib" class="bibin num" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="3" value=${bib} onInput=${e => setBib(e.target.value.replace(/\D/g, ''))} aria-describedby="joinerr" /></div>
+      <div class="field"><label for="nm">First name</label><input id="nm" autocomplete="given-name" autocapitalize="words" maxlength="24" value=${name} onInput=${e => setName(e.target.value)} enterkeyhint="go" /></div>
+      <p id="joinerr" class="err" role="alert">${err}</p>
+      <button class="big" type="submit" aria-disabled=${busy ? 'true' : 'false'}>${busy ? html`<span class="spin" aria-hidden="true"></span><span class="l2">Joining…</span>` : html`<span class="l1">Join the race</span><span class="l2">Only your bib and first name show</span>`}</button>
+    </form>`;
+  }
+
+  /* ---------------- Organizer ---------------- */
+  function withKm(stops) {
+    stops.forEach((x, i) => { x.ord = i; x.km = i ? legKm(stops[i - 1], x) : 0; });
+    stops.forEach((x, i) => { if (i === stops.length - 1) x.leaveBy = null; else if (i > 0 && !x.leaveBy) x.leaveBy = (i > 1 ? stops[i - 1].leaveBy : S.event.startMs) + 40 * 60000; });
+    return stops;
+  }
+  const copyStops = () => S.stops.map(x => Object.assign({}, x));
+
+  function CourseMap({ sel, zoom, onPick, onPlace }) {
+    const ref = useRef(null);
+    const pts = S.stops.map(x => gridOf(x.lat, x.lng));
+    let w, h, cx, cy;
+    if (zoom && pts[sel]) { w = 0.62; h = 0.5; cx = pts[sel].x; cy = pts[sel].y; }
+    else {
+      const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+      const minx = Math.min(...xs) - 0.14, maxx = Math.max(...xs) + 0.14, miny = Math.min(...ys) - 0.12, maxy = Math.max(...ys) + 0.2;
+      w = maxx - minx; h = maxy - miny; cx = (minx + maxx) / 2; cy = (miny + maxy) / 2;
+      if (w / h > 1.2) h = w / 1.2; else w = h * 1.2;
+    }
+    const L = cx - w / 2, T = cy + h / 2, U = 1000, fs = w * U / 24;
+    const X = x => x * U, Y = y => -y * U;
+    function pick(list, pos, gap) { const out = []; [...list].sort((a, b) => (MAJOR[b[1]] ? 1 : 0) - (MAJOR[a[1]] ? 1 : 0)).forEach(it => { if (!out.some(o => Math.abs(pos(o) - pos(it)) < gap)) out.push(it); }); return out; }
+    const vis = STREETS.filter(([x]) => x > L && x < L + w);
+    const edge = fs / U;
+    const hor = CROSS.filter(([, y]) => y < T && y > T - h);
+    const stLabels = pick(vis.filter(([x, n]) => x > L + edge * (n.length * 0.35 + 5.5) && x < L + w - edge * n.length * 0.35).map(([x, n]) => [x, n]), o => o[0], fs * 3.4 / U);
+    /* street names sit on the left edge; drop any that a bar marker would cover */
+    const clear = (y, n) => !pts.some(p => p.x < L + edge * (n.length * 0.6 + 1.6) && Math.abs(p.y - (y + edge * 0.6)) < edge * 1.9);
+    const crLabels = pick(hor.filter(([n, y]) => y < T - edge * 2.6 && y > T - h + edge * 0.6 && clear(y, n)).map(([n, y]) => [y, n]), o => o[0], fs * 1.6 / U);
+    function click(e) {
+      const svg = ref.current; if (!svg) return;
+      const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+      const q = pt.matrixTransform(svg.getScreenCTM().inverse());
+      onPlace(latLngOf({ x: q.x / U, y: -q.y / U }));
+    }
+    const lbl = { fill: 'var(--ink-2)', 'font-size': fs, 'font-weight': 600, 'font-family': 'var(--f-body)', stroke: 'var(--canvas)', 'stroke-width': fs * 0.28, 'paint-order': 'stroke', 'stroke-linejoin': 'round' };
+    return html`<svg ref=${ref} class="map" viewBox=${[L * U, -T * U, w * U, h * U].join(' ')} onClick=${click} role="img" aria-label=${'Course map. Tap to move ' + (S.stops[sel] ? S.stops[sel].name : 'a bar') + '.'}>
+      <rect x=${L * U} y=${-T * U} width=${w * U} height=${h * U} fill="var(--canvas)" />
+      <rect x=${X(1.4)} y=${-T * U - 10} width=${Math.max(0, (L + w - 1.4) * U + 20)} height=${h * U + 20} fill="var(--river)" />
+      ${hor.map(([n, y]) => html`<line x1=${L * U} x2=${(L + w) * U} y1=${Y(y)} y2=${Y(y)} stroke=${MAJOR[n] ? 'var(--ink-2)' : 'var(--line)'} stroke-width=${MAJOR[n] ? 1.6 : 1} vector-effect="non-scaling-stroke" />`)}
+      ${vis.map(([x, n]) => html`<line x1=${X(x)} x2=${X(x)} y1=${-T * U} y2=${(-T + h) * U} stroke=${MAJOR[n] ? 'var(--ink-2)' : 'var(--line)'} stroke-width=${MAJOR[n] ? 1.6 : 1} vector-effect="non-scaling-stroke" />`)}
+      <polyline points=${pts.map(p => X(p.x) + ',' + Y(p.y)).join(' ')} fill="none" stroke="var(--ink)" stroke-width="2.5" stroke-dasharray="7 6" vector-effect="non-scaling-stroke" />
+      ${S.stops.map((st, i) => html`<circle cx=${X(pts[i].x)} cy=${Y(pts[i].y)} r=${st.radius / 1609.344 * U} fill=${i === sel ? 'var(--action)' : 'var(--ink)'} fill-opacity=${i === sel ? 0.16 : 0.07} stroke=${i === sel ? 'var(--action)' : 'none'} stroke-width="1.5" vector-effect="non-scaling-stroke" />`)}
+      ${stLabels.map(([x, n]) => html`<text x=${X(x)} y=${-T * U + fs * 1.3} text-anchor="middle" ...${lbl}>${n}</text>`)}
+      ${crLabels.map(([y, n]) => html`<text x=${L * U + fs * 0.4} y=${Y(y) - fs * 0.3} ...${lbl}>${n}</text>`)}
+      ${S.stops.map((st, i) => html`<g onClick=${e => { e.stopPropagation(); onPick(i); }} style="cursor:pointer">
+        <circle cx=${X(pts[i].x)} cy=${Y(pts[i].y)} r=${fs * 1.7} fill="transparent" />
+        <circle cx=${X(pts[i].x)} cy=${Y(pts[i].y)} r=${fs * (i === sel ? 1.05 : 0.85)} fill=${i === sel ? 'var(--action)' : 'var(--ink)'} stroke="var(--canvas)" stroke-width="2" vector-effect="non-scaling-stroke" />
+        <text x=${X(pts[i].x)} y=${Y(pts[i].y) + fs * (i === sel ? 0.42 : 0.36)} text-anchor="middle" font-size=${fs * (i === sel ? 1.25 : 1.05)} font-weight="900" font-family="var(--f-display)" fill=${i === sel ? '#FFFFFF' : 'var(--canvas)'}>${i === 0 ? 'S' : i}</text>
+      </g>`)}
+    </svg>`;
+  }
+
+  function Organizer({ back }) {
+    useTick(5000);
+    const [email, setEmail] = useState(''), [code, setCode] = useState(''), [sent, setSent] = useState(false), [err, setErr] = useState('');
+    const [open, setOpen] = useState(null), [goUndo, setGoUndo] = useState(false);
+    const [sel, setSel] = useState(1), [zoom, setZoom] = useState(false), [coord, setCoord] = useState(''), [cErr, setCErr] = useState('');
+    if (S.mode === 'cloud' && !S.admin) {
+      return html`<div class="page"><h1 class="h2">Organizer</h1>
+        <p class="sub2">Organizers sign in with their email. We'll send a 6-digit code.</p>
+        ${!sent ? html`<div class="field"><label for="oe">Email</label><input id="oe" type="email" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" value=${email} onInput=${e => setEmail(e.target.value)} /></div>
+          <button class="btn solid full" onClick=${async () => { setErr(''); try { await S.api.sendCode(email.trim()); setSent(true); } catch (x) { setErr(x.message); } }}>Email me a code</button>`
+        : html`<div class="field"><label for="oc">6-digit code</label><input id="oc" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" maxlength="6" value=${code} onInput=${e => setCode(e.target.value.replace(/\D/g, ''))} /></div>
+          <button class="btn solid full" onClick=${async () => { setErr(''); try { await S.api.verifyCode(email.trim(), code); } catch (x) { setErr(x.message); } }}>Sign in</button>`}
+        <p class="err" role="alert">${err}</p>
+        <button class="btn full" onClick=${back}>Back to the race</button></div>`;
+    }
+    const n = lastOrd(), st = S.stops[Math.min(sel, n)], si = Math.min(sel, n);
+    const structLocked = Object.keys(S.taps).length > 0;
+    async function save(stops, msg) { try { await S.api.saveRoute(withKm(stops)); if (msg) say(msg); } catch (x) { say(x.message || "Couldn't save. Try again."); } }
+    async function place(ll) {
+      const stops = copyStops(); stops[si].lat = +ll.lat.toFixed(5); stops[si].lng = +ll.lng.toFixed(5);
+      await save(stops, 'Moved ' + stops[si].short + '.');
+    }
+    async function setHere() {
+      const fix = await locate();
+      if (fix.sim) { say('Preview: your location is simulated, so tap the map instead.'); return; }
+      if (fix.error) { say("Couldn't get your location. Tap the map instead."); return; }
+      await place({ lat: fix.lat, lng: fix.lng }); say(st.short + ' set to where you are (within ' + meters(fix.acc) + ').');
+    }
+    async function pasteCoord() {
+      setCErr('');
+      const m = coord.match(/(-?\d+\.\d+)\s*[, ]\s*(-?\d+\.\d+)/);
+      if (!m) { setCErr('Paste coordinates like 39.95016, -75.16204.'); return; }
+      const lat = +m[1], lng = +m[2];
+      if (Math.abs(lat - 39.95) > 0.2 || Math.abs(lng + 75.16) > 0.3) { setCErr("Those coordinates aren't in Philadelphia."); return; }
+      await place({ lat, lng }); setCoord('');
+    }
+    async function addAfter() {
+      const stops = copyStops(), a = stops[si], b = stops[si + 1] || a;
+      const nb = { name: 'New bar', short: 'New bar', addr: '', lat: +((a.lat + b.lat) / 2 + (b === a ? 0.002 : 0)).toFixed(5), lng: +((a.lng + b.lng) / 2).toFixed(5), radius: 150, leaveBy: (a.leaveBy || S.event.startMs) + 40 * 60000 };
+      stops.splice(si + 1, 0, nb); setSel(si + 1); await save(stops, 'Added a bar after ' + a.short + '. Tap the map to place it.');
+    }
+    async function remove() { const stops = copyStops(); stops.splice(si, 1); setSel(Math.max(1, si - 1)); await save(stops, 'Removed ' + st.short + '.'); }
+    async function rename(v) { const stops = copyStops(); stops[si].name = v.slice(0, 40); stops[si].short = v.slice(0, 18); await save(stops); }
+    async function setRadius(r) { const stops = copyStops(); stops[si].radius = r; await save(stops); }
+    async function setLeave(i, v) { if (!v) return; const stops = copyStops(); stops[i].leaveBy = fromNY(nyDate(stops[i].leaveBy || S.event.startMs), v); await save(stops); }
+    async function setStart(date, time) {
+      const ms = fromNY(date, time), delta = ms - S.event.startMs;
+      const stops = copyStops(); stops.forEach(x => { if (x.leaveBy) x.leaveBy += delta; });
+      await S.api.saveEvent({ startMs: ms }); await save(stops, 'Start set to ' + clockAP(ms) + '. Leave-by times moved with it.');
+    }
+    async function doGo() { await S.api.setGo(now()); setGoUndo(true); say('GO. The start is open.'); setTimeout(() => setGoUndo(false), 60000); }
+    const runners = Object.values(S.runners).sort((a, b) => a.bib - b.bib);
+    // Arrival estimates for planning: runners at 8:00/mi, walkers at 20:00/mi, leaving at the previous leave-by time.
+    function window_(i) {
+      const prev = i === 1 ? S.event.startMs : S.stops[i - 1].leaveBy, s = S.stops[i];
+      if (!prev) return null;
+      const mi = s.km / MI, run = prev + mi * 8 * 60000, walk = prev + mi * 20 * 60000;
+      return { run, walk, walkBar: s.leaveBy ? (s.leaveBy - walk) / 60000 : null, runBar: s.leaveBy ? (s.leaveBy - run) / 60000 : null };
+    }
+    return html`<div class="page">
+      <div class="lbhead"><h1 class="h2">Organizer</h1><button class="btn small" onClick=${back}>Back to the race</button></div>
+
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        ${S.event.goMs == null
+          ? html`<p><b>Not started.</b> Scheduled for ${clockAP(S.event.startMs)}.</p><button class="big" onClick=${doGo}><span class="l1">GO</span><span class="l2">Opens the start. Everyone starts their own clock</span></button>`
+          : html`<p><b>Start opened at ${clockAP(S.event.goMs)}.</b> Runners start their own clock with the Start button, whenever they set off.</p>
+            ${goUndo ? html`<button class="btn red full" onClick=${async () => { await S.api.setGo(null); setGoUndo(false); say('GO undone.'); }}>Undo GO</button>` : null}`}
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <div class="lbhead"><h2 class="h2" style="font-size:22px">Course</h2><button class="btn small" aria-pressed=${zoom ? 'true' : 'false'} onClick=${() => setZoom(!zoom)}>${zoom ? 'Whole course' : 'Zoom to ' + st.short}</button></div>
+        <div class="opts" role="group" aria-label="Pick a stop">${S.stops.map((x, i) => html`<button class="opt" aria-pressed=${i === si ? 'true' : 'false'} onClick=${() => setSel(i)}><span class="num">${i === 0 ? 'S' : i}</span> ${x.short}</button>`)}</div>
+        <${CourseMap} sel=${si} zoom=${zoom} onPick=${setSel} onPlace=${place} />
+        <p class="tiny">Tap the map to move <b>${st.name}</b>. Good to about half a block. Standing at the bar, Use my location is more exact.</p>
+        <div class="field"><label class="tiny" for="sn">Name</label><input id="sn" class="small-in" value=${st.name} onChange=${e => rename(e.target.value.trim() || st.name)} /></div>
+        <div><p class="tiny" style="margin-bottom:6px">Check-in radius</p><div class="opts">${[75, 120, 150, 200].map(r => html`<button class="opt" aria-pressed=${st.radius === r ? 'true' : 'false'} onClick=${() => setRadius(r)}>${r} m</button>`)}</div></div>
+        <div class="row2"><button class="btn small" onClick=${setHere}>${I.pin}Use my location</button><a class="btn small" href=${pinUrl(st)} target="_blank" rel="noopener">Check in ${APPLE ? 'Apple' : 'Google'}</a></div>
+        <div class="field"><label class="tiny" for="pc">Or paste coordinates from Google or Apple Maps</label>
+          <div class="row2" style="grid-template-columns:1fr auto"><input id="pc" class="small-in num" inputmode="decimal" placeholder="39.95016, -75.16204" value=${coord} onInput=${e => setCoord(e.target.value)} /><button class="btn small" onClick=${pasteCoord}>Place</button></div>
+          ${cErr ? html`<p class="err" role="alert">${cErr}</p>` : null}</div>
+        <p class="tiny num">${st.lat.toFixed(5)}, ${st.lng.toFixed(5)}${si ? ' · leg ' + si + ' is ' + km(st.km) + ' on the grid' : ''}</p>
+        ${structLocked ? html`<p class="tiny">Adding and removing bars is locked once anyone has checked in. Names, pins and times can still change.</p>`
+          : html`<div class="row2">${si < n ? html`<button class="btn small" onClick=${addAfter}>Add a bar after this</button>` : html`<span></span>`}${si > 0 && n > 1 ? html`<button class="btn small red" onClick=${remove}>Remove this bar</button>` : html`<span></span>`}</div>`}
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <h2 class="h2" style="font-size:22px">Times</h2>
+        <div class="grid2">
+          <div class="field"><label class="tiny" for="rd">Race date</label><input id="rd" class="small-in num" type="date" value=${nyDate(S.event.startMs)} onChange=${e => e.target.value && setStart(e.target.value, nyTime(S.event.startMs))} /></div>
+          <div class="field"><label class="tiny" for="rs">Start opens</label><input id="rs" class="small-in num" type="time" step="300" value=${nyTime(S.event.startMs)} onChange=${e => e.target.value && setStart(nyDate(S.event.startMs), e.target.value)} /></div>
+        </div>
+        <p class="tiny">Changing the start moves every leave-by time with it. Estimates assume runners at 8:00/mi and walkers at 20:00/mi.</p>
+        ${S.stops.map((x, i) => {
+          if (i === 0) return null;
+          const wv = window_(i);
+          const short = wv && wv.walkBar != null && wv.walkBar < 15;
+          return html`<div class="orgstop">
+            <div class="grid2" style="align-items:end">
+              <p><b>${i}. ${x.short}</b><br /><span class="tiny num">${wv ? 'arrive ' + clock(wv.run) + '–' + clock(wv.walk) : ''}</span></p>
+              ${i < n ? html`<div class="field"><label class="tiny" for=${'lv' + i}>Leave by</label><input id=${'lv' + i} class="small-in num" type="time" step="300" value=${x.leaveBy ? nyTime(x.leaveBy) : ''} onChange=${e => setLeave(i, e.target.value)} /></div>` : html`<p class="tiny">Finish · medals</p>`}
+            </div>
+            ${i < n && wv && wv.walkBar != null ? html`<p class=${'tiny num' + (short ? ' err' : '')}>${short ? 'Short: ' : ''}walkers get ${Math.round(wv.walkBar)} min at the bar, runners ${Math.round(wv.runBar)} min</p>` : null}
+          </div>`;
+        })}
+      </div>
+
+      <div class="card"><h2 class="h2" style="font-size:22px">Runners · ${runners.length}</h2>
+        ${runners.map(r => {
+          const ts = Object.values(S.taps).filter(t => t.runnerId === r.id).sort((a, b) => a.at - b.at);
+          return html`<div class="orgstop">
+            <button class="btn full" style="justify-content:space-between" aria-expanded=${open === r.id ? 'true' : 'false'} onClick=${() => setOpen(open === r.id ? null : r.id)}><span class="num">${r.bib} · ${r.name}${r.sample ? ' (sample)' : ''}</span><span class="tiny">${ts.length} taps ›</span></button>
+            ${open === r.id ? html`<div>${ts.map(t => html`<div class="taprow num"><span>${t.kind === 'arrive' ? 'At' : 'Left'} ${S.stops[t.stop] ? S.stops[t.stop].short : 'stop ' + t.stop} · ${clock(t.at)}${t.kind === 'arrive' && !t.verified ? ' · not GPS' : ''}</span><button class="btn small red" onClick=${() => S.api.deleteTap(t.id).then(() => say('Tap removed.'))}>Remove tap</button></div>`)}
+              <button class="btn small full" style="margin-top:10px" onClick=${() => S.api.unlockRunner(r.id).then(() => say('Bib ' + r.bib + ' can move to a new phone. Taps kept.'))}>Let bib ${r.bib} move to a new phone</button>
+              <button class="btn small red full" style="margin-top:10px" onClick=${() => S.api.removeRunner(r.id).then(() => say('Bib ' + r.bib + ' released.'))}>Release bib ${r.bib} and delete its taps</button></div>` : null}
+          </div>`;
+        })}
+      </div>
+
+      <${ClearAll} />
+    </div>`;
+  }
+
+  /* ---------------- Preview controls (demo only) ---------------- */
+  /* After a practice run: wipe check-ins and the GO. Two taps, the second one names what it deletes. */
+  function ClearAll() {
+    const [arm, setArm] = useState(false);
+    const n = Object.keys(S.taps).length;
+    useEffect(() => { if (!arm) return; const t = setTimeout(() => setArm(false), 6000); return () => clearTimeout(t); }, [arm]);
+    async function go() {
+      if (!arm) { setArm(true); return; }
+      setArm(false);
+      try { await S.api.clearTaps(); say('Check-ins cleared. Bibs kept.'); } catch (e) { say("Couldn't clear. Check your signal and try again."); }
+    }
+    return html`<div class="card" style="display:flex;flex-direction:column;gap:10px"><h2 class="h2" style="font-size:22px">After a practice run</h2>
+      <p class="tiny">Clears every check-in and the GO so race day starts clean. Runners keep their bibs.</p>
+      <button class="btn red full" onClick=${go} disabled=${n === 0 && !S.event.goMs}>${arm ? 'Tap again to delete ' + n + ' check-ins' : n ? 'Clear all ' + n + ' check-ins' : 'Nothing to clear'}</button></div>`;
+  }
+  function Preview({ onOrg }) {
+    const ref = useRef(null);
+    const [openS, setOpenS] = useState(false);
+    useEffect(() => { const d = ref.current; if (!d) return; if (openS && !d.open) d.showModal(); if (!openS && d.open) d.close(); }, [openS]);
+    const scene = k => { demoScene(k); setOpenS(false); };
+    const opt = (cur, val, label, fn) => html`<button class="opt" aria-pressed=${cur === val ? 'true' : 'false'} onClick=${fn}>${label}</button>`;
+    return html`<button class="prev-btn" onClick=${() => setOpenS(true)}>Preview</button>
+      <dialog class="sheet" ref=${ref} onClose=${() => setOpenS(false)} aria-labelledby="pvh">
+        <div class="sheet-in">
+          <div class="sheet-h"><h2 id="pvh" class="h2" style="font-size:24px">Preview</h2><button class="btn small" onClick=${() => setOpenS(false)}>Done</button></div>
+          <p class="sub2">Runners marked Sample and your location are simulated here. On race day the app uses real GPS and real runners.</p>
+          <p class="tiny" style="font-weight:700">Jump to</p>
+          <div class="opts">${opt(S.demo.scene, 'join', 'Join screen', () => scene('join'))}${opt(S.demo.scene, 'pre', 'Before the start', () => scene('pre'))}${opt(S.demo.scene, 'ready', 'Start is open', () => scene('ready'))}${opt(S.demo.scene, 'live', 'Running to a bar', () => scene('live'))}${opt(S.demo.scene, 'atbar', 'At a bar', () => scene('atbar'))}${opt(S.demo.scene, 'finished', 'Finished', () => scene('finished'))}</div>
+          <p class="tiny" style="font-weight:700">Your location</p>
+          <div class="opts">${opt(S.demo.loc, 'here', 'At the bar', () => { S.demo.loc = 'here'; emit(); })}${opt(S.demo.loc, 'far', '640 m away', () => { S.demo.loc = 'far'; emit(); })}${opt(S.demo.loc, 'off', 'Location off', () => { S.demo.loc = 'off'; emit(); })}</div>
+          <p class="tiny" style="font-weight:700">Signal</p>
+          <div class="opts">${opt(S.demo.net, 'on', 'Signal', () => { S.demo.net = 'on'; emit(); flush(); })}${opt(S.demo.net, 'off', 'No signal', () => { S.demo.net = 'off'; emit(); })}</div>
+          <button class="btn full" onClick=${() => { setOpenS(false); onOrg(); }}>Open the organizer view</button>
+        </div>
+      </dialog>`;
+  }
+
+  /* ---------------- App ---------------- */
+  function App() {
+    useStore();
+    const [tab, setTab] = useState(location.hash === '#board' ? 'board' : 'race');
+    const [org, setOrg] = useState(location.hash === '#organizer');
+    useEffect(() => { let lock = null; const req = () => { try { if (navigator.wakeLock && document.visibilityState === 'visible') navigator.wakeLock.request('screen').then(l => { lock = l; }).catch(() => {}); } catch (e) {} }; req(); document.addEventListener('visibilitychange', req); return () => { document.removeEventListener('visibilitychange', req); try { lock && lock.release(); } catch (e) {} }; }, []);
+    if (S.mode === 'loading') return html`<p class="boot">Loading the race…</p>`;
+    if (S.mode === 'setup') return html`<div class="page"><h1 class="h2">Setup needed</h1><p>${S.problem}</p></div>`;
+    if (S.mode === 'error') return html`<div class="page"><h1 class="h2">Couldn't load</h1><p>${S.problem}</p><button class="btn" onClick=${() => location.reload()}>Reload</button></div>`;
+    const header = html`<header class="top"><span class="mark">5K<b>5</b>BARS</span>${S.mode === 'demo' ? html`<${Preview} onOrg=${() => setOrg(true)} />` : null}
+      ${S.me ? html`<span class="bibchip" aria-label=${'Bib ' + S.me.bib + ', ' + S.me.name}><span class="num">${S.me.bib}</span><span>${S.me.name}</span></span>` : null}</header>`;
+    const toast = html`${S.toast ? html`<div class="toast" role="status">${S.toast}</div>` : html`<div class="toast" role="status" hidden></div>`}${S.celebrate && S.me ? html`<${Celebrate} />` : null}`;
+    if (org) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Organizer} back=${() => { setOrg(false); if (location.hash === '#organizer') history.replaceState(null, '', location.pathname); }} /></main>${toast}</div>`;
+    if (!S.me) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Join} /></main>${toast}</div>`;
+    if (!S.stops.length) return html`<div class="shell" style="padding-bottom:24px">${header}<main><div class="page"><div class="alert" role="alert"><p><b>Couldn't load the race.</b> Check your signal.</p><button class="btn" onClick=${() => S.api.reload()}>Retry</button></div></div></main>${toast}</div>`;
+    const offline = queue().length > 0 || (S.mode === 'demo' ? S.demo.net === 'off' : !S.online);
+    return html`<div class="shell">${header}
+      ${offline ? html`<p class="banner warn" style="margin:12px 16px 0" role="status">${I.dot}No signal. Taps save on this phone and sync later.</p>` : null}
+      <main>${tab === 'race' ? html`<${Race} />` : html`<${Board} />`}</main>
+      <nav class="tabs" aria-label="Sections">
+        <button aria-current=${tab === 'race' ? 'page' : null} onClick=${() => { setTab('race'); window.scrollTo(0, 0); }}>${I.flag}Race</button>
+        <button aria-current=${tab === 'board' ? 'page' : null} onClick=${() => { setTab('board'); window.scrollTo(0, 0); }}>${I.list}Leaderboard</button>
+      </nav>${toast}</div>`;
+  }
+
+  document.addEventListener('touchstart', () => {}, { passive: true });
+  render(html`<${App} />`, root);
+  S.api = CFG ? CloudApi : DemoApi;
+  S.api.init().catch(e => { console.error(e); S.mode = 'error'; S.problem = "Couldn't load the race. Check your signal and reload."; emit(); });
+  if (CFG && 'serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>
