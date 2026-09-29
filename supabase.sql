@@ -16,10 +16,15 @@ create table if not exists public.event (
   name text not null default 'Beer Club × WRTC 5K 5 Bars' check (char_length(name) <= 60),
   start_at timestamptz not null default ((date_trunc('week', now() at time zone 'America/New_York') + interval '12 days 14 hours') at time zone 'America/New_York'),
   go_at timestamptz,
-  bib_max smallint not null default 300 check (bib_max between 1 and 999),
+  bib_max smallint not null default 9999 check (bib_max between 1 and 9999),
   updated_at timestamptz not null default now()
 );
 insert into public.event (id) values (1) on conflict do nothing;
+-- Bibs go up to 9999 (older copies of this file allowed 300).
+alter table public.event drop constraint if exists event_bib_max_check;
+alter table public.event add constraint event_bib_max_check check (bib_max between 1 and 9999);
+alter table public.event alter column bib_max set default 9999;
+update public.event set bib_max = 9999 where id = 1 and bib_max < 9999;
 
 -- The course, in order. Stop 0 is the start; the last stop is the finish.
 create table if not exists public.stops (
@@ -50,10 +55,13 @@ where e.id = 1 and not exists (select 1 from public.stops);
 create table if not exists public.runners (
   id uuid primary key default gen_random_uuid(),
   auth_uid uuid unique references auth.users (id) on delete set null,
-  bib smallint not null unique check (bib between 1 and 999),
+  bib smallint not null unique check (bib between 1 and 9999),
   name text not null check (char_length(btrim(name)) between 1 and 24),
   created_at timestamptz not null default now()
 );
+
+alter table public.runners drop constraint if exists runners_bib_check;
+alter table public.runners add constraint runners_bib_check check (bib between 1 and 9999);
 
 -- Every tap: "I'm at" (arrive) or "Leaving" (leave) a stop; leaving stop 0 is the runner's own Start.
 -- Location itself is never stored, only the distance.

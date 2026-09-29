@@ -81,9 +81,11 @@ p{margin:0;text-wrap:pretty;overflow-wrap:break-word}
 .mark{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.02em;line-height:1;color:inherit;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;-webkit-tap-highlight-color:transparent;transition:transform 120ms ease-out}
 .mark:active{transform:scale(.94) rotate(-2deg)}
 .mark b{color:#FF6B74}
-.bibchip{margin-left:auto;display:flex;align-items:center;gap:8px;background:#FFFFFF;color:#0F1A2E;border-radius:8px;padding:4px 10px 4px 8px;font-weight:700;font-size:15px;max-width:60%}
+.bibchip{margin-left:auto;display:flex;align-items:center;gap:8px;background:#FFFFFF;color:#0F1A2E;border-radius:8px;padding:4px 10px 4px 8px;font-weight:700;font-size:15px;min-width:0;max-width:60%;overflow:hidden}
+.bibchip span:first-child{flex:none}
+.top .mark,.top .prev-btn{flex:none}
 .bibchip span:first-child{font-family:var(--f-display);font-weight:900;font-size:20px;color:#C41E2A;line-height:1}
-.bibchip span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bibchip span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .prev-btn{border:1.5px solid var(--on-navy-2);background:transparent;color:var(--on-navy);border-radius:var(--r-pill);min-height:36px;padding:0 12px;font-size:14px;font-weight:600}
 .page{padding:16px;display:flex;flex-direction:column;gap:16px;max-width:560px;width:100%;margin:0 auto}
 
@@ -517,7 +519,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     ['Priya', 7, 440, [9, 8, 7, 8]], ['Dev', 12, 455, [10, 9, 9, 6]], ['Maya', 18, 470, [12, 10, 11, 9]], ['Tomás', 31, 500, [8, 12, 8, 10]],
     ['Aisha', 44, 515, [15, 14, 13, 12]], ['Leo', 52, 530, [11, 9, 14, 10]], ['Hannah', 67, 560, [16, 13, 12, 11]], ['Sam', 88, 590, [14, 15, 12, 13]],
     ['Inés', 95, 610, [13, 12, 16, 10]], ['Marcus', 101, 650, [18, 16, 15, 14]], ['Kelly', 135, 700, [17, 15, 14, 12]], ['Chris', 142, 900, [12, 11, 10, 9]],
-    ['Grace', 160, 1150, [9, 9, 8, 7]], ['Ben', 188, 1200, [8, 8, 7, 6]],
+    ['Grace', 160, 1150, [9, 9, 8, 7]], ['Ben', 1188, 1200, [8, 8, 7, 6]],
   ];
   function demoStops(startMs) { return DEFAULT_STOPS.map(s => Object.assign({}, s, { leaveBy: s.leaveMin == null ? null : startMs + s.leaveMin * 60000 })); }
   function demoTimeline(go, paceSec, dwell, opts) {
@@ -1128,7 +1130,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     async function submit(e) {
       e.preventDefault(); setErr('');
       const b = parseInt(bib, 10), nm = name.trim().replace(/\s+/g, ' ');
-      if (!b || b < 1 || b > 300) { setErr('Type the number on your bib. Bibs run from 1 to 300.'); return; }
+      if (!b || b < 1 || b > 9999) { setErr('Type the number on your bib. Bibs run from 1 to 9999.'); return; }
       if (!nm) { setErr('Add your first name so people know who bib ' + b + ' is.'); return; }
       setBusy(true);
       try { await S.api.join(b, nm.slice(0, 24), show); }
@@ -1138,7 +1140,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     return html`<form class="join" onSubmit=${submit} noValidate>
       <div class="hero"><div class="band num">Beer Club × WRTC · ${S.event.startMs ? new Date(S.event.startMs).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: TZ }) + ' · ' + clockAP(S.event.startMs) : 'Philly'}</div>
         <div class="mid"><p class="word">5K</p><p class="sub">5 bars · 1 drink each</p></div></div>
-      <div class="field"><label for="bib">Bib number</label><input id="bib" class="bibin num" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="3" value=${bib} onInput=${e => setBib(e.target.value.replace(/\D/g, ''))} aria-describedby="joinerr" /></div>
+      <div class="field"><label for="bib">Bib number</label><input id="bib" class="bibin num" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="4" value=${bib} onInput=${e => setBib(e.target.value.replace(/\D/g, ''))} aria-describedby="joinerr" /></div>
       <div class="field"><label for="nm">First name</label><input id="nm" autocomplete="given-name" autocapitalize="words" maxlength="24" value=${name} onInput=${e => setName(e.target.value)} enterkeyhint="go" /></div>
       <label class="check"><input type="checkbox" checked=${show} onChange=${e => setShow(e.target.checked)} /><span>Show my results on the leaderboard</span></label>
       <p id="joinerr" class="err" role="alert">${err}</p>

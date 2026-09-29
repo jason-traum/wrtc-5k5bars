@@ -48,6 +48,8 @@
 
 2026-09-28. About page on the site (about.html), a copy of the event overview: the bib, the numbers, the route, the day, drinks options and fine print, with links to the pitch doc and the bars plan. The only way in is tapping the 5K5BARS wordmark at the top (Jason: "hidden is perfect at the top"). The example photos stay off the public site.
 
+2026-09-28. Bibs run 1 to 9999 (Jason). The header chip shortens long names so a 4-digit bib fits a 320 px phone.
+
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
 - WRTC 5K 5 Bars one-pager: this app's own source look.

@@ -5,7 +5,7 @@
 - Saving: button shows a spinner after 500ms and keeps its label.
 - Bib taken by the same first name: moves the bib to this phone (Safari and the Home Screen app are separate).
 - Bib taken by a different name: "Bib 23 is already Sam's. Check the number on your bib, or ask the organizer."
-- Bib out of range: "Bibs run from 1 to 300."
+- Bib out of range: "Bibs run from 1 to 9999."
 - No signal: "Couldn't reach the race. Check your signal and try again." Fields keep their values.
 
 ## Race
