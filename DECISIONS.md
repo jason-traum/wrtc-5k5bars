@@ -54,6 +54,10 @@
 
 2026-09-29. About page made plainer (Jason: "make that site less ai-y. It looks good tho"). Kept the bib, colors, route strip and schedule. Cut the tracked all-caps eyebrows, the four-number stat tiles, the pill links with arrows, the drawn card and ticket icons, the +/- lists, the tiled fine print and the checkbox chips. Headings now say what the section is (Route, Schedule, Drinks), the numbers are one plain sentence under the bib, and nothing is under 14px. The event overview artifact is made from the same template, with the photos; the site version links only back to the app.
 
+2026-09-29. The ?demo link starts from the beginning so Jason can send it to anyone (Jason: "make it seamless for me to send it to someone"). Join is pre-filled (no sign-in beyond one tap), the start opens 15 seconds after joining, and each tap skips ahead in time so the leaderboard shows real-looking paces instead of 10-second legs. The no-config preview still opens mid-race.
+
+2026-09-29. A tap that is still sending no longer shows the "No signal" banner or the saved-on-this-phone line for its first 3 seconds. Found while checking the demo: the banner flashed on every tap while the request was in flight.
+
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
 - WRTC 5K 5 Bars one-pager: this app's own source look.

@@ -353,7 +353,9 @@ dialog.sheet::backdrop{background:var(--scrim)}
   const emit = () => subs.forEach(f => { try { f(); } catch (e) { console.error(e); } });
   function useStore() { const [, set] = useState(0); useEffect(() => { const f = () => set(x => x + 1); subs.add(f); f(); return () => subs.delete(f); }, []); return S; }
   function useTick(ms) { const [, set] = useState(0); useEffect(() => { const id = setInterval(() => set(x => x + 1), ms); return () => clearInterval(id); }, [ms]); }
-  const now = () => Date.now();
+  /* The demo can skip ahead in time (see demoAdvance); the real app never does. */
+  let skew = 0;
+  const now = () => Date.now() + skew;
   const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
   const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
@@ -399,6 +401,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
   /* ---------------- Race math: moving pace only ---------------- */
   const lastOrd = () => S.stops.length - 1;
   const PKEY = 'race-practice-v1';
+  const DEMO = new URLSearchParams(location.search).has('demo');
   S.practice = lsGet(PKEY) === '1';
   const started = () => S.practice || S.event.goMs != null || (S.event.startMs && now() >= S.event.startMs);
   /* Practice runs are for the days before the race: offered only while the start is more than 6 hours away. */
@@ -500,6 +503,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     } finally { flushing = false; emit(); }
   }
   async function tap(stop, kind, v) {
+    if (S.mode === 'demo') demoAdvance(stop, kind);
     const t = { id: uuid(), runnerId: S.me.id, stop, kind, at: now(), created: now(), verified: !!v.verified, distM: v.dist != null ? v.dist : null, accM: v.acc != null ? v.acc : null, source: v.source, pending: true };
     S.taps[t.id] = t; S.lastMine = t.id; emit();
     const q = queue(); q.push(t); saveQueue(q);
@@ -540,7 +544,37 @@ dialog.sheet::backdrop{background:var(--scrim)}
     }
     return out;
   }
+  /* Sample runners' check-ins from the demo's start up to the demo clock. Rebuilt whenever the clock skips ahead. */
+  function demoSamples() {
+    Object.keys(S.taps).forEach(k => { if (k.startsWith('sample-')) delete S.taps[k]; });
+    const go = S.demo.go; if (go == null) return;
+    SAMPLES.forEach(([name, bib, p, dwell], idx) => {
+      const id = 'sample-' + bib;
+      /* people set off over a few minutes, and one walker starts late */
+      const delay = idx === 12 ? 14 : (idx % 4) * 1.5;
+      demoTimeline(go, p, dwell, { delay, forget: idx === 5 ? 2 : null, unverified: idx === 3 ? 3 : null }).forEach((x, j) => {
+        const tid = id + '-' + j; S.taps[tid] = Object.assign({ id: tid, runnerId: id, created: x.at, source: 'gps' }, x);
+      });
+    });
+  }
+  /* So someone can tap through the whole race in a minute: "I'm at" skips ahead to when you'd walk in at about
+     8:50/mi, and "Leaving" skips ahead to the group's leave time. The sample runners move along with the clock. */
+  const DEMO_PACE = 530;
+  function demoAdvance(stop, kind) {
+    if (!S.me) return;
+    const p = progress(S.me.id), s = S.stops[stop];
+    let target = null;
+    if (kind === 'arrive' && stop > 0 && p.lv[stop - 1]) target = p.lv[stop - 1].at + s.km / MI * DEMO_PACE * 1000;
+    if (kind === 'leave' && stop > 0 && s.leaveBy) target = s.leaveBy - 20000;
+    const jump = target == null ? 0 : target - now();
+    if (jump > 60000) {
+      skew += jump;
+      say(kind === 'arrive' ? 'Demo: skipped ahead ' + mins(jump) + ' to when you walk in' : "Demo: skipped ahead to the group's leave time");
+    }
+    demoSamples();
+  }
   function demoScene(scene) {
+    skew = 0;
     const n = now();
     S.demo.scene = scene;
     S.celebrate = scene === 'finished';
@@ -549,16 +583,8 @@ dialog.sheet::backdrop{background:var(--scrim)}
     S.event = { startMs, goMs: go, name: 'Beer Club × WRTC 5K 5 Bars' };
     S.stops = demoStops(startMs);
     S.runners = {}; S.taps = {};
-    SAMPLES.forEach(([name, bib, p, dwell], idx) => {
-      const id = 'sample-' + bib;
-      S.runners[id] = { id, bib, name, sample: true };
-      if (go == null) return;
-      /* people set off over a few minutes, and one walker starts late */
-      const delay = idx === 12 ? 14 : (idx % 4) * 1.5;
-      demoTimeline(go, p, dwell, { delay, forget: idx === 5 ? 2 : null, unverified: idx === 3 ? 3 : null }).forEach((x, j) => {
-        const tid = id + '-' + j; S.taps[tid] = Object.assign({ id: tid, runnerId: id, created: x.at, source: 'gps' }, x);
-      });
-    });
+    SAMPLES.forEach(([name, bib]) => { const id = 'sample-' + bib; S.runners[id] = { id, bib, name, sample: true }; });
+    S.demo.go = go; demoSamples();
     if (scene === 'join') { S.me = null; emit(); return; }
     S.me = { id: 'me', bib: 23, name: 'Jason' };
     S.runners.me = { id: 'me', bib: 23, name: 'Jason' };
@@ -577,13 +603,20 @@ dialog.sheet::backdrop{background:var(--scrim)}
     emit();
   }
   const DemoApi = {
-    async init() { S.mode = 'demo'; demoScene('live'); },
+    async init() { S.mode = 'demo'; demoScene(DEMO ? 'join' : 'live'); },
     async reload() {},
     async join(bib, name, show) {
       await new Promise(r => setTimeout(r, 400));
       const taken = Object.values(S.runners).find(r => r.bib === bib && r.id !== 'me');
       if (taken && taken.name.toLowerCase() !== name.toLowerCase()) { const e = new Error('Bib ' + bib + ' is already ' + taken.name + "'s. Check the number on your bib, or ask the organizer."); e.code = 'taken'; throw e; }
-      S.me = { id: 'me', bib, name, hidden: show === false }; S.runners.me = Object.assign({}, S.me); emit();
+      S.me = { id: 'me', bib, name, hidden: show === false }; S.runners.me = Object.assign({}, S.me);
+      if (S.demo.scene === 'join') {
+        /* the demo starts from the beginning: a short countdown, then the start opens by itself */
+        const start = now() + 15000;
+        S.event = Object.assign({}, S.event, { startMs: start, goMs: null }); S.stops = demoStops(start);
+        S.demo.go = start; S.demo.scene = 'pre'; demoSamples();
+      }
+      emit();
     },
     async setShow(v) { S.me.hidden = !v; S.runners.me.hidden = !v; emit(); },
     async addTap(t) {
@@ -777,8 +810,12 @@ dialog.sheet::backdrop{background:var(--scrim)}
       ${S.stops.map((s, i) => html`<div class=${p && p.target === i ? 'cur' : ''}><span>${i === 0 ? 'Start · ' : i + '. '}${s.name}</span><span class="num">${i === 0 ? (S.event.goMs ? 'opened ' + clock(S.event.goMs) : 'opens ' + clock(S.event.startMs)) : s.leaveBy ? 'leave by ' + clock(s.leaveBy) : 'finish'}</span></div>`)}
     </div></div>`;
   }
+  /* A tap on its way to the database for under 3 seconds is just sending, not offline. Without this the
+     "No signal" banner flashed on every tap while the request was in flight. */
+  const inFlight = t => t.pending && now() - t.created < 3000 && (S.mode === 'demo' ? S.demo.net !== 'off' : S.online);
   function Status({ t }) {
     if (!t) return null;
+    if (t.pending && inFlight(t)) return null;
     if (t.pending) return html`<p class="status warn" role="status">${I.dot}<span>Saved on this phone at ${clock(t.at)}. Syncs when you have signal.</span></p>`;
     if (t.kind === 'leave') return html`<p class="status ok" role="status">${I.check}<span>${t.stop === 0 ? 'Started' : 'Left'} at ${clock(t.at)}. Saved.</span></p>`;
     if (t.verified) return html`<p class="status ok" role="status">${I.check}<span>Checked in at ${clock(t.at)}.</span></p>`;
@@ -1126,7 +1163,8 @@ dialog.sheet::backdrop{background:var(--scrim)}
     return html`<label class="check"><input type="checkbox" checked=${!S.me.hidden} disabled=${busy} onChange=${change} /><span>Show my results on the leaderboard</span></label>`;
   }
   function Join() {
-    const [bib, setBib] = useState(''), [name, setName] = useState(''), [err, setErr] = useState(''), [busy, setBusy] = useState(false), [show, setShow] = useState(true);
+    const demo = S.mode === 'demo';
+    const [bib, setBib] = useState(demo ? '23' : ''), [name, setName] = useState(demo ? 'Alex' : ''), [err, setErr] = useState(''), [busy, setBusy] = useState(false), [show, setShow] = useState(true);
     async function submit(e) {
       e.preventDefault(); setErr('');
       const b = parseInt(bib, 10), nm = name.trim().replace(/\s+/g, ' ');
@@ -1144,6 +1182,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
       <div class="field"><label for="nm">First name</label><input id="nm" autocomplete="given-name" autocapitalize="words" maxlength="24" value=${name} onInput=${e => setName(e.target.value)} enterkeyhint="go" /></div>
       <label class="check"><input type="checkbox" checked=${show} onChange=${e => setShow(e.target.checked)} /><span>Show my results on the leaderboard</span></label>
       <p id="joinerr" class="err" role="alert">${err}</p>
+      ${demo ? html`<p class="tiny">This is a demo. The other runners and your location are pretend, nothing is saved, and each tap skips ahead in time so you can run the whole race in a minute.</p>` : null}
       <button class="big" type="submit" aria-disabled=${busy ? 'true' : 'false'}>${busy ? html`<span class="spin" aria-hidden="true"></span><span class="l2">Joining…</span>` : html`<span class="l1">Join the race</span><span class="l2">Only your bib and first name show</span>`}</button>
       <${HowTo} />
     </form>`;
@@ -1554,7 +1593,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     if (org) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Organizer} back=${() => { setOrg(false); if (location.hash === '#organizer' || location.search) history.replaceState(null, '', location.pathname); }} /></main>${toast}</div>`;
     if (!S.me) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Join} /></main>${toast}</div>`;
     if (!S.stops.length) return html`<div class="shell" style="padding-bottom:24px">${header}<main><div class="page"><div class="alert" role="alert"><p><b>Couldn't load the race.</b> Check your signal.</p><button class="btn" onClick=${() => S.api.reload()}>Retry</button></div></div></main>${toast}</div>`;
-    const offline = queue().length > 0 || (S.mode === 'demo' ? S.demo.net === 'off' : !S.online);
+    const offline = queue().some(t => !inFlight(t)) || (S.mode === 'demo' ? S.demo.net === 'off' : !S.online);
     const practicing = S.practice && S.event.goMs == null;
     return html`<div class="shell">${header}
       ${offline ? html`<p class="banner warn" style="margin:12px 16px 0" role="status">${I.dot}No signal. Taps save on this phone and sync later.</p>` : null}
@@ -1569,7 +1608,6 @@ dialog.sheet::backdrop{background:var(--scrim)}
 
   document.addEventListener('touchstart', () => {}, { passive: true });
   render(html`<${App} />`, root);
-  const DEMO = new URLSearchParams(location.search).has('demo');
   S.api = CFG && !DEMO ? CloudApi : DemoApi;
   S.api.init().catch(e => { console.error(e); S.mode = 'error'; S.problem = "Couldn't load the race. Check your signal and reload."; emit(); });
   if (CFG && 'serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
