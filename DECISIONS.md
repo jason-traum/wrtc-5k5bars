@@ -50,7 +50,10 @@
 
 2026-09-28. Bibs run 1 to 9999 (Jason). The header chip shortens long names so a 4-digit bib fits a 320 px phone.
 
+2026-09-29. Removed the Event overview, Pitch doc and Bars and outreach plan links (organizer screen and about page). They pointed to private Claude artifacts that visitors can't open (Jason: there shouldn't be any Claude artifacts).
+
+2026-09-29. About page made plainer (Jason: "make that site less ai-y. It looks good tho"). Kept the bib, colors, route strip and schedule. Cut the tracked all-caps eyebrows, the four-number stat tiles, the pill links with arrows, the drawn card and ticket icons, the +/- lists, the tiled fine print and the checkbox chips. Headings now say what the section is (Route, Schedule, Drinks), the numbers are one plain sentence under the bib, and nothing is under 14px. The event overview artifact is made from the same template, with the photos; the site version links only back to the app.
+
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
 - WRTC 5K 5 Bars one-pager: this app's own source look.
-2026-09-29. Removed the Event overview, Pitch doc and Bars and outreach plan links (organizer screen and about page). They pointed to private Claude artifacts that visitors can't open (Jason: there shouldn't be any Claude artifacts).

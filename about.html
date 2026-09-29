@@ -17,10 +17,8 @@
   --bg:#E9EDF3; --surface:#FFFFFF; --ink:#0F1A2E; --ink-2:#4A5570; --line:#D3DAE5;
   --red:#D7202C; --red-soft:#FBE3E4; --amber:#EFA02A; --amber-soft:#FDEFD6; --amber-ink:#6B4308;
   --walk:#6F80A6; --walk-soft:#E3E8F2; --navy:#14244A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD;
-  --t1:#2E9D6A; --t2:#D7202C; --t3:#2F6FD8; --t4:#8A4FD1; --t5:#EFA02A;
   --f-display:"Big Shoulders Display","Oswald","Arial Narrow",sans-serif;
   --f-body:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --ppm:3.4px;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
@@ -37,147 +35,115 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;margin:0;padding-inline:16px;padding-block:24px 56px;-webkit-text-size-adjust:100%}
-.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
-h2{font-family:var(--f-display);font-weight:800;font-size:30px;letter-spacing:.01em;line-height:1;margin:0;text-transform:uppercase}
-.kicker{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);margin:0 0 8px}
-section{display:flex;flex-direction:column;gap:16px}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;margin:0;padding-inline:16px;padding-block:24px 56px;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h2{font-family:var(--f-display);font-weight:800;font-size:32px;line-height:1;margin:0;text-transform:uppercase;border-top:3px solid var(--ink);padding-top:12px}
+h3{font-family:var(--f-display);font-weight:800;font-size:24px;line-height:1;margin:0 0 6px;text-transform:uppercase}
+p{margin:0}
+section{display:flex;flex-direction:column;gap:14px}
 .num{font-variant-numeric:tabular-nums}
+.note{color:var(--ink-2)}
 
-/* ---------- Bib hero ---------- */
+/* The bib */
 .bib{position:relative;background:#FFFFFF;color:#0F1A2E;border-radius:10px;overflow:hidden;box-shadow:0 1px 0 rgba(15,26,46,.06),0 12px 32px -18px rgba(15,26,46,.45);transform:rotate(-1.2deg);margin:8px 6px 0}
 .bib::before,.bib::after{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:var(--bg);box-shadow:inset 0 1px 2px rgba(0,0,0,.25);top:12px}
 .bib::before{left:12px}.bib::after{right:12px}
-.bib-top{background:#14244A;color:#fff;padding:14px 36px 12px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.bib-top{background:#14244A;color:#fff;padding:14px 36px 12px;display:flex;justify-content:space-between;align-items:baseline;gap:4px 12px;flex-wrap:wrap}
 .bib-top b{font-family:var(--f-display);font-weight:800;font-size:20px;letter-spacing:.06em}
-.bib-top span{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#B9C4DD}
+.bib-top span{font-size:14px;font-weight:600;color:#B9C4DD}
+.bib-top i{font-style:normal;white-space:nowrap}
 .bib-mid{padding:10px 20px 6px;text-align:center}
 .bib-num{font-family:var(--f-display);font-weight:900;color:#D7202C;font-size:clamp(96px,30vw,176px);line-height:.9;letter-spacing:-.01em;margin:6px 0 0}
 .bib-sub{font-family:var(--f-display);font-weight:800;font-size:clamp(22px,6.4vw,34px);letter-spacing:.08em;text-transform:uppercase;margin:4px 0 2px}
-.bib-name{font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#6B7590;border-top:1.5px dashed #C9D0DC;margin:12px auto 0;padding-top:10px;max-width:260px}
+.bib-name{font-size:14px;color:#6B7590;border-top:1.5px dashed #C9D0DC;margin:12px auto 0;padding-top:10px;max-width:260px}
 .bib-strip{background:#0F1A2E;color:#fff;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;padding:10px 16px 12px;margin-top:14px;position:relative}
-.bib-strip span{font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.bib-strip span{font-family:var(--f-display);font-weight:700;font-size:16px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
 .bib-strip span+span::before{content:"";display:inline-block;width:4px;height:4px;border-radius:50%;background:#EFA02A;vertical-align:middle;margin:0 12px 2px -8px}
 .bib-foot::before,.bib-foot::after{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:var(--bg);bottom:12px;box-shadow:inset 0 1px 2px rgba(0,0,0,.25)}
 .bib-foot::before{left:12px}.bib-foot::after{right:12px}
+.lede{font-size:18px;margin-top:22px}
 
-/* ---------- Stats ---------- */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.stat{background:var(--surface);border-radius:10px;padding:14px 10px 12px;text-align:center}
-.stat b{display:block;font-family:var(--f-display);font-weight:800;font-size:40px;line-height:1}
-.stat span{display:block;font-size:12px;font-weight:600;color:var(--ink-2);margin-top:4px;letter-spacing:.02em}
-@media (max-width:420px){.stats{grid-template-columns:repeat(2,1fr)}}
+/* Links under the bib */
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.links a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:10px;border:1.5px solid var(--ink-2);color:var(--ink);background:var(--surface);font-weight:600;font-size:15px;text-decoration:none}
+.links a.home{background:var(--red);border-color:var(--red);color:#FFFFFF}
+.links a:focus-visible,.applink:focus-visible{outline:3px solid var(--red);outline-offset:2px}
 
-/* ---------- Route strip ---------- */
-.route{background:var(--surface);border-radius:12px;padding:20px 16px 18px;overflow-x:auto}
-.route-row{display:flex;align-items:center;min-width:540px;padding:0 44px}
-.stop{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;width:0;position:relative}
-.dot{width:22px;height:22px;border-radius:50%;background:var(--surface);border:3px solid var(--ink);display:grid;place-items:center;font-size:11px;font-weight:700;position:relative;z-index:1}
-.stop.bar .dot{background:var(--amber);border-color:var(--amber);color:#3A2403}
-.stop.start .dot{background:var(--ink);color:var(--surface)}
-.stop.finish .dot{background:var(--red);border-color:var(--red);color:#fff}
-.stop-l{position:absolute;top:30px;font-size:12px;font-weight:600;text-align:center;width:84px;line-height:1.2}
-.stop-l small{display:block;font-weight:500;color:var(--ink-2);font-size:11px}
-.leg{height:4px;background:repeating-linear-gradient(90deg,var(--ink) 0 8px,transparent 8px 13px);position:relative}
-.leg span{position:absolute;left:50%;top:-24px;transform:translateX(-50%);font-size:12px;font-weight:700;white-space:nowrap}
-.route-pad{height:40px}
-
-/* ---------- Timeline ---------- */
-.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;font-weight:600}
-.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
-.tl{background:var(--surface);border-radius:14px;padding:14px 12px 18px}
-.tl-head{display:grid;grid-template-columns:52px 1fr 1fr;gap:8px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--surface);z-index:5;padding:6px 0 10px;border-bottom:1px solid var(--line)}
-.tl-head div{font-family:var(--f-display);font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;line-height:1}
-.tl-head small{display:block;font-family:var(--f-body);font-size:12px;font-weight:600;color:var(--ink-2);letter-spacing:0;text-transform:none;margin-top:3px}
-.tl-body{display:grid;grid-template-columns:52px 1fr 1fr;gap:8px;position:relative;margin-top:10px}
-.axis,.lane{position:relative}
-.tick{position:absolute;left:0;right:0;font-size:11px;font-weight:600;color:var(--ink-2);transform:translateY(-50%)}
-.tick.lv{color:var(--red);font-weight:700}
-.tick.go{font-family:var(--f-display);font-weight:800;font-size:15px;line-height:.95;color:var(--ink);letter-spacing:.04em}
-.tick.lv::after{content:"leave";display:block;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;line-height:1}
-.gridline{position:absolute;left:0;right:0;border-top:1px solid var(--line);pointer-events:none}
-.leaveline{position:absolute;left:60px;right:0;border-top:2px dashed var(--red);z-index:3;pointer-events:none}
-.block{position:absolute;left:0;right:0;border-radius:8px;padding:6px 8px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:1px;z-index:2}
-.block b{font-size:13px;line-height:1.15;font-weight:700}
-.block span{font-size:11.5px;font-weight:600;opacity:.9}
-.block.bar{background:var(--amber-soft);color:var(--amber-ink);border-left:4px solid var(--amber)}
-.block.bar .dur{font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1;opacity:1}
-.block.run{background:var(--red);color:#fff;padding:0 8px;flex-direction:row;align-items:center;justify-content:flex-start}
-.block.walk{background:var(--walk);color:#fff;padding:0 8px;flex-direction:row;align-items:center}
-.block.run span,.block.walk span{font-size:11px;font-weight:700;opacity:1;white-space:nowrap}
-.block.pre{background:var(--navy);color:var(--on-navy);z-index:2}
-.block.pre span{color:var(--on-navy-2)}
-.block.fin{background:repeating-linear-gradient(135deg,var(--red-soft) 0 10px,transparent 10px 20px);border:2px solid var(--red);color:var(--ink)}
-.span2{grid-column:2 / 4}
-.startline{position:absolute;left:60px;right:0;border-top:3px solid var(--ink);z-index:4}
-.startline span{position:absolute;right:0;top:-10px;background:var(--ink);color:var(--surface);font-family:var(--f-display);font-weight:800;font-size:13px;letter-spacing:.08em;padding:2px 8px;border-radius:4px}
-
-/* ---------- Drinks ---------- */
-.drinks{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:560px){.drinks{grid-template-columns:1fr}}
-.opt{background:var(--surface);border-radius:12px;padding:18px 16px;display:flex;flex-direction:column;gap:14px}
-.opt h3{font-family:var(--f-display);font-weight:800;font-size:24px;text-transform:uppercase;margin:0;line-height:1}
-.tickets{display:flex;gap:6px;flex-wrap:wrap}
-.ticket{width:50px;height:30px;border-radius:4px;position:relative;display:grid;place-items:center;color:#fff;font-family:var(--f-display);font-weight:800;font-size:15px}
-.ticket::before,.ticket::after{content:"";position:absolute;top:50%;width:8px;height:8px;border-radius:50%;background:var(--surface);transform:translateY(-50%)}
-.ticket::before{left:-4px}.ticket::after{right:-4px}
-.card-ico{width:78px;height:50px;border-radius:7px;background:linear-gradient(135deg,var(--navy),#2F4E92);position:relative}
-.card-ico::before{content:"";position:absolute;left:10px;top:14px;width:16px;height:12px;border-radius:2px;background:#E7C66B}
-.card-ico::after{content:"";position:absolute;left:10px;bottom:10px;width:46px;height:4px;border-radius:2px;background:rgba(255,255,255,.55)}
-.pc{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none;font-size:14px}
-.pc li{display:flex;gap:8px;align-items:baseline}
-.pc li::before{flex:0 0 auto;font-weight:800;width:14px}
-.pc .pro::before{content:"+";color:var(--t1)}
-.pc .con::before{content:"–";color:var(--red)}
-
-/* ---------- Photos ---------- */
-.photos{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.photos img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;display:block;background:var(--line)}
-.photos figure{margin:0}
-.photos figure:nth-child(odd){transform:rotate(-1deg)}
-.photos figure:nth-child(even){transform:rotate(1deg) translateY(10px)}
-@media (min-width:640px){.photos{grid-template-columns:repeat(4,1fr)}}
-
-/* ---------- Fine print + decisions ---------- */
-.fine{background:var(--surface);border-radius:12px;padding:18px 18px 16px;border-top:6px solid var(--red)}
-.fine p{margin:0 0 10px;font-weight:700;font-size:16px}
-.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0;padding:0;list-style:none}
-.rules li{background:var(--bg);border-radius:8px;padding:10px 12px;font-size:13.5px;font-weight:600;line-height:1.3}
-.rules li:last-child:nth-child(odd){grid-column:1/-1}
-.rules li b{display:block;font-family:var(--f-display);font-weight:800;font-size:18px;text-transform:uppercase;line-height:1.05;margin-bottom:2px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px}
-.chip::before{content:"";width:14px;height:14px;border-radius:4px;border:2px solid var(--ink-2)}
-.foot{font-size:12px;color:var(--ink-2);text-align:center}
-
-/* ---------- Planning links under the bib ---------- */
-.sidelinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-.sidelinks a{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 16px;border-radius:999px;border:1.5px solid var(--ink-2);color:var(--ink);background:var(--surface);font-weight:700;font-size:14px;text-decoration:none}
-.sidelinks a::after{content:"\2197";font-weight:700;color:var(--ink-2)}
-.sidelinks a.home{background:var(--red);border-color:var(--red);color:#FFFFFF}
-.sidelinks a.home::after{content:none}
-.sidelinks a:focus-visible{outline:3px solid var(--red);outline-offset:2px}
-
-/* ---------- The app ---------- */
+/* The app */
 .app{background:var(--surface);border-radius:12px;padding:18px 16px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
 .qr{background:#FFFFFF;padding:10px;border-radius:10px;width:164px;height:164px;display:grid;place-items:center}
 .qr img,.qr canvas{display:block;width:144px!important;height:144px!important}
 .app-txt{display:flex;flex-direction:column;gap:12px;min-width:0}
-.steps{margin:0;padding:0 0 0 20px;display:flex;flex-direction:column;gap:8px;font-size:14px}
-.steps b{font-weight:700}
+.steps{margin:0;padding:0 0 0 20px;display:flex;flex-direction:column;gap:8px;font-size:15px}
 .applink{align-self:flex-start;display:inline-flex;align-items:center;min-height:48px;padding:0 18px;border-radius:12px;background:var(--red);color:#FFFFFF;font-weight:700;font-size:15px;text-decoration:none}
-.applink:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
-.applink-url{margin:0;font-size:12px;color:var(--ink-2);user-select:all;overflow-wrap:anywhere}
+.applink-url{font-size:14px;color:var(--ink-2);user-select:all;overflow-wrap:anywhere}
 @media (max-width:480px){.app{grid-template-columns:1fr}.qr{justify-self:center}}
-@media (prefers-reduced-motion:reduce){.bib,.photos figure{transform:none!important}}
+
+/* Route strip */
+.route{background:var(--surface);border-radius:12px;padding:22px 16px 18px;overflow-x:auto}
+.route-row{display:flex;align-items:center;min-width:640px;padding:0 52px}
+.stop{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;width:0;position:relative}
+.dot{width:24px;height:24px;border-radius:50%;background:var(--surface);border:3px solid var(--ink);display:grid;place-items:center;font-size:14px;font-weight:700;position:relative;z-index:1}
+.stop.bar .dot{background:var(--amber);border-color:var(--amber);color:#3A2403}
+.stop.start .dot{background:var(--ink);color:var(--surface)}
+.stop.finish .dot{background:var(--red);border-color:var(--red);color:#fff}
+.stop-l{position:absolute;top:32px;font-size:14px;font-weight:600;text-align:center;width:100px;line-height:1.2}
+.stop-l small{display:block;font-weight:500;color:var(--ink-2);font-size:14px}
+.leg{height:4px;background:repeating-linear-gradient(90deg,var(--ink) 0 8px,transparent 8px 13px);position:relative}
+.leg span{position:absolute;left:50%;top:-26px;transform:translateX(-50%);font-size:14px;font-weight:700;white-space:nowrap}
+.route-pad{height:64px}
+
+/* Schedule */
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:14px;font-weight:600}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
+.tl{background:var(--surface);border-radius:12px;padding:14px 12px 18px}
+.tl-head{display:grid;grid-template-columns:56px 1fr 1fr;gap:8px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--surface);z-index:5;padding:6px 0 10px;border-bottom:1px solid var(--line)}
+.tl-head div{font-family:var(--f-display);font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;line-height:1}
+.tl-head small{display:block;font-family:var(--f-body);font-size:14px;font-weight:600;color:var(--ink-2);letter-spacing:0;text-transform:none;margin-top:3px}
+.tl-body{display:grid;grid-template-columns:56px 1fr 1fr;gap:8px;position:relative;margin-top:10px}
+.axis,.lane{position:relative}
+.tick{position:absolute;left:0;right:0;font-size:14px;font-weight:600;color:var(--ink-2);transform:translateY(-50%)}
+.tick.lv{color:var(--red);font-weight:700}
+.tick.go{font-family:var(--f-display);font-weight:800;font-size:16px;line-height:.95;color:var(--ink);letter-spacing:.04em}
+.gridline{position:absolute;left:0;right:0;border-top:1px solid var(--line);pointer-events:none}
+.leaveline{position:absolute;left:64px;right:0;border-top:2px dashed var(--red);z-index:3;pointer-events:none}
+.block{position:absolute;left:0;right:0;border-radius:8px;padding:6px 8px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:1px;z-index:2}
+.block b{font-size:14px;line-height:1.15;font-weight:700}
+.block span{font-size:14px;font-weight:600;line-height:1.2}
+.block.bar{background:var(--amber-soft);color:var(--amber-ink);border-left:4px solid var(--amber)}
+.block.bar .dur{font-family:var(--f-display);font-weight:800;font-size:22px;line-height:1}
+.block.run{background:var(--red);color:#fff;padding:0 8px;flex-direction:row;align-items:center;justify-content:flex-start}
+.block.walk{background:var(--walk);color:#fff;padding:0 8px;flex-direction:row;align-items:center}
+.block.run span,.block.walk span{font-weight:700;white-space:nowrap}
+.block.pre{background:var(--navy);color:var(--on-navy);z-index:2}
+.block.pre span{color:var(--on-navy-2)}
+.block.fin{background:repeating-linear-gradient(135deg,var(--red-soft) 0 10px,transparent 10px 20px);border:2px solid var(--red);color:var(--ink)}
+.span2{grid-column:2 / 4}
+.startline{position:absolute;left:64px;right:0;border-top:3px solid var(--ink);z-index:4}
+.startline span{position:absolute;right:0;top:-10px;background:var(--ink);color:var(--surface);font-family:var(--f-display);font-weight:800;font-size:14px;letter-spacing:.08em;padding:2px 8px;border-radius:4px}
+
+/* Drinks */
+.pay{display:grid;grid-template-columns:1fr 1fr;gap:12px 28px}
+@media (max-width:560px){.pay{grid-template-columns:1fr}}
+
+/* Photos */
+.photos{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.photos img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;display:block;background:var(--line)}
+.photos figure{margin:0}
+@media (min-width:640px){.photos{grid-template-columns:repeat(4,1fr)}}
+
+/* Lists */
+.list{margin:0;padding:0 0 0 20px;display:flex;flex-direction:column;gap:6px}
+.foot{font-size:14px;color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){.bib{transform:none!important}}
 </style>
 
 <main class="wrap">
 
-  <!-- Hero: the bib is the page's title -->
   <header>
     <div class="bib" role="img" aria-label="Race bib: Beer Club and WRTC 5K, 5 bars">
-      <div class="bib-top"><b>BEER CLUB × WRTC</b><span>Philly · Date TBD · 2:00 PM start</span></div>
+      <div class="bib-top"><b>BEER CLUB × WRTC</b><span><i>Philly · Date TBD ·</i> <i>2:00 PM start</i></span></div>
       <div class="bib-mid">
         <p class="bib-num">5K</p>
         <p class="bib-sub">5 bars · 1 drink each</p>
@@ -187,29 +153,21 @@ section{display:flex;flex-direction:column;gap:16px}
         <span>PHS Garden</span><span>McGillin's</span><span>Indy Beer Garden</span><span>Bar 4</span><span>Morgan's Pier</span>
       </div>
     </div>
-    <nav class="sidelinks" aria-label="Links">
+    <p class="lede">A 5K bar crawl from Rittenhouse Square to Morgan's Pier: five bars about 1 km apart, one drink at each, about 3 hours start to finish. Run or walk any leg. Everyone leaves each bar at the same time, so the group stays together.</p>
+    <nav class="links" aria-label="Links">
       <a class="home" href="./">Back to the race app</a>
     </nav>
   </header>
 
-  <section aria-label="At a glance">
-    <div class="stats">
-      <div class="stat"><b class="num">4.9</b><span>km total</span></div>
-      <div class="stat"><b class="num">5</b><span>bars</span></div>
-      <div class="stat"><b class="num">~1</b><span>km between</span></div>
-      <div class="stat"><b class="num">3</b><span>hours</span></div>
-    </div>
-  </section>
-
   <section>
-    <div><p class="kicker">Before race day</p><h2>Get the app</h2></div>
+    <h2>Get the app</h2>
     <div class="app">
       <div class="qr" id="qr" role="img" aria-label="QR code for the race app"></div>
       <div class="app-txt">
         <ol class="steps">
-          <li><b>Scan or tap the link.</b> It opens in your browser, nothing to download from a store.</li>
-          <li><b>Add it to your Home Screen.</b> iPhone: Share, Add to Home Screen. Android: menu, Add to Home screen.</li>
-          <li><b>On race day, join with your bib.</b> Tap in at each bar and watch the leaderboard.</li>
+          <li>Scan the code or tap the link. It opens in your browser, so there's nothing to download from an app store.</li>
+          <li>Add it to your Home Screen. On iPhone, tap Share, then Add to Home Screen. On Android, open the menu and tap Add to Home screen.</li>
+          <li>On race day, join with your bib number and first name, then check in when you get to each bar.</li>
         </ol>
         <a class="applink" href="./">Open the race app</a>
         <p class="applink-url">jason-traum.github.io/wrtc-5k5bars</p>
@@ -218,16 +176,18 @@ section{display:flex;flex-direction:column;gap:16px}
   </section>
 
   <section>
-    <div><p class="kicker">The route</p><h2>Rittenhouse to the river</h2></div>
+    <h2>Route</h2>
     <div class="route" id="route"></div>
+    <p class="note">The last leg crosses Columbus Blvd, so the group uses the signaled crosswalk.</p>
   </section>
 
   <section>
-    <div><p class="kicker">The day</p><h2>Run it or walk it</h2></div>
+    <h2>Schedule</h2>
+    <p>Times assume a 2:00 PM start, with runners at 8:00/mi and walkers at 20:00/mi.</p>
     <div class="legend">
-      <span><i style="background:var(--navy)"></i>Bibs + announcements</span>
-      <span><i style="background:var(--red)"></i>Run at 8:00/mi</span>
-      <span><i style="background:var(--walk)"></i>Walk at 20:00/mi</span>
+      <span><i style="background:var(--navy)"></i>Bibs and announcements</span>
+      <span><i style="background:var(--red)"></i>Running</span>
+      <span><i style="background:var(--walk)"></i>Walking</span>
       <span><i style="background:var(--amber)"></i>At the bar</span>
       <span><i style="background:transparent;border-top:2px dashed var(--red);border-radius:0;height:0;width:18px;vertical-align:4px"></i>Everyone leaves</span>
     </div>
@@ -238,59 +198,44 @@ section{display:flex;flex-direction:column;gap:16px}
   </section>
 
   <section>
-    <div><p class="kicker">Drinks · decide Wednesday</p><h2>Two ways to pay</h2></div>
-    <div class="drinks">
-      <div class="opt">
-        <div class="card-ico" aria-hidden="true"></div>
+    <h2>Drinks</h2>
+    <p>Not decided yet. The two options:</p>
+    <div class="pay">
+      <div>
         <h3>Pay as you go</h3>
-        <ul class="pc">
-          <li class="pro">Your card, any bar</li>
-          <li class="pro">Approved drafts + cans</li>
-          <li class="pro">Skip or add a drink</li>
-          <li class="con">Slower at the bar</li>
-        </ul>
+        <p>Everyone buys their own drink at each bar from a short list of drafts and cans. The club has nothing to collect or settle, but the lines move slower.</p>
       </div>
-      <div class="opt">
-        <div class="tickets" aria-hidden="true">
-          <div class="ticket" style="background:var(--t1)">1</div>
-          <div class="ticket" style="background:var(--t2)">2</div>
-          <div class="ticket" style="background:var(--t3)">3</div>
-          <div class="ticket" style="background:var(--t4)">4</div>
-          <div class="ticket" style="background:var(--t5);color:#3A2403">5</div>
-        </div>
-        <h3>Colored tickets</h3>
-        <ul class="pc">
-          <li class="pro">One color per bar</li>
-          <li class="pro">Hand it over, get a drink</li>
-          <li class="con">Pay upfront, club settles 5 tabs</li>
-          <li class="con">Fixed at 5 drinks</li>
-        </ul>
+      <div>
+        <h3>Tickets</h3>
+        <p>An upfront fee buys five tickets, one color per bar, and each bar bills the club. It's the fastest at the bar, but the club handles the money and covers no-shows.</p>
       </div>
     </div>
   </section>
 
-
   <section>
-    <div class="fine">
-      <p>Not a race. No road closures, no marshals, no timing.</p>
-      <ul class="rules">
-        <li><b>Your risk</b>You're responsible for yourself</li>
-        <li><b>Traffic laws</b>Sidewalks and crosswalks only</li>
-        <li><b>21+</b>Bring ID. Bars will card</li>
-        <li><b>Optional</b>Every drink. Water and N/A at each stop</li>
-        <li><b>Walk anytime</b>Done early? Tell the sweep</li>
-      </ul>
-    </div>
+    <h2>The fine print</h2>
+    <ul class="list">
+      <li>It's a social run, not a race. The streets stay open and there are no course marshals.</li>
+      <li>You take part at your own risk.</li>
+      <li>Stay on sidewalks and cross at crosswalks.</li>
+      <li>21+ only. Bring ID; bars will card.</li>
+      <li>Every drink is optional. Each bar has water and a non-alcoholic option.</li>
+      <li>Walk any leg you want. If you drop out, tell the sweep.</li>
+    </ul>
   </section>
 
   <section>
-    <div><p class="kicker">Wednesday</p><h2>To decide</h2></div>
-    <div class="chips">
-      <span class="chip">Date + start time</span><span class="chip">Headcount</span><span class="chip">Pay or tickets</span><span class="chip">Bar 4</span><span class="chip">One group or waves</span>
-    </div>
+    <h2>Still to decide</h2>
+    <ul class="list">
+      <li>Date and start time</li>
+      <li>Headcount</li>
+      <li>Pay as you go or tickets</li>
+      <li>Bar 4</li>
+      <li>One group, or waves a few minutes apart</li>
+    </ul>
   </section>
 
-  <p class="foot">Distances are street-grid estimates. Bar 4 sits halfway between Independence Beer Garden and Morgan's Pier until it's picked.</p>
+  <p class="foot">Distances are street-grid estimates. Bar 4 is drawn halfway between Independence Beer Garden and Morgan's Pier until it's picked.</p>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -309,7 +254,7 @@ section{display:flex;flex-direction:column;gap:16px}
     {name:"McGillin's", short:"McGillin's", sub:"1310 Drury St", kind:"bar"},
     {name:"Independence Beer Garden", short:"Indy Beer Garden", sub:"6th & Chestnut", kind:"bar"},
     {name:"Bar 4", short:"Bar 4", sub:"TBD", kind:"bar"},
-    {name:"Morgan's Pier", short:"Morgan's Pier", sub:"Finish · medals", kind:"finish"}
+    {name:"Morgan's Pier", short:"Morgan's Pier", sub:"Finish, medals", kind:"finish"}
   ];
   var KM = [1.14, 1.00, 1.01, 0.85, 0.85];
   var mins = function(km, pace){ return Math.round(km / 1.609 * pace); };
@@ -325,7 +270,7 @@ section{display:flex;flex-direction:column;gap:16px}
     st.appendChild(el("div","stop-l", s.short + "<small>" + s.sub + "</small>"));
     row.appendChild(st);
     if (i < KM.length){
-      var lg = el("div","leg", "<span>" + (KM[i] < 1 ? KM[i].toFixed(2) : KM[i].toFixed(1)) + " km</span>");
+      var lg = el("div","leg", "<span class='num'>" + (KM[i] < 1 ? KM[i].toFixed(2) : KM[i].toFixed(1)) + " km</span>");
       lg.style.flex = KM[i] + " 1 0";
       row.appendChild(lg);
     }
@@ -333,9 +278,9 @@ section{display:flex;flex-direction:column;gap:16px}
   route.appendChild(row);
   route.appendChild(el("div","route-pad"));
 
-  /* Timeline */
+  /* Schedule */
   var tl = document.getElementById("tl");
-  var ppm = 3.4, H = (AXIS1 - AXIS0) * ppm;
+  var ppm = 4.2, H = (AXIS1 - AXIS0) * ppm;
   var y = function(m){ return (m - AXIS0) * ppm; };
   var axis = el("div","axis"); axis.style.height = H + "px";
   var laneR = el("div","lane"); laneR.style.height = H + "px";
@@ -345,7 +290,7 @@ section{display:flex;flex-direction:column;gap:16px}
   for (var m = AXIS0; m <= AXIS1; m += 15){
     var g = el("div","gridline"); g.style.top = y(m) + "px"; tl.appendChild(g);
     if (m % 30 === 0){
-      var crowded = LEAVE.some(function(l){ return Math.abs(l - m) < 12; });
+      var crowded = LEAVE.some(function(l){ return Math.abs(l - m) < 10; });
       if (m === START){ var go = el("div","tick go num", "GO<br>" + clock(m)); go.style.top = y(m) + "px"; axis.appendChild(go); }
       else if (!crowded){ var t = el("div","tick num", clock(m)); t.style.top = y(m) + "px"; axis.appendChild(t); }
     }
@@ -365,24 +310,24 @@ section{display:flex;flex-direction:column;gap:16px}
   }
 
   // Before the start: spans both lanes
-  var pre = el("div","lane span2"); pre.style.position = "absolute"; pre.style.left = "60px"; pre.style.right = "0"; pre.style.top = "0"; pre.style.height = H + "px";
-  block(pre, 13*60+40, 13*60+55, "pre", "<b>Bib pickup</b><span>Rittenhouse Square · 1:40–1:55</span>");
-  block(pre, 13*60+55, 14*60, "pre", "<span><b style='color:var(--on-navy)'>Announcements</b> · 1:55</span>");
+  var pre = el("div","lane span2"); pre.style.position = "absolute"; pre.style.left = "64px"; pre.style.right = "0"; pre.style.top = "0"; pre.style.height = H + "px";
+  block(pre, 13*60+40, 13*60+55, "pre", "<b>Bib pickup</b><span class='num'>Rittenhouse Square, 1:40 to 1:55</span>");
+  block(pre, 13*60+55, 14*60, "pre", "<span class='num'><b style='color:var(--on-navy)'>Announcements</b> at 1:55</span>");
 
   function lane(target, pace, kind){
     var t = START;
     KM.forEach(function(km, i){
       var mv = mins(km, pace), arrive = t + mv, s = STOPS[i+1];
       var label = (kind === "run" ? "Run " : "Walk ") + mv + " min";
-      var mb = block(target, t, arrive, kind, "<span>" + (mv * ppm >= 16 ? label : "") + "</span>");
-      mb.title = label + " · " + km + " km";
+      var mb = block(target, t, arrive, kind, "<span class='num'>" + (mv * ppm >= 18 ? label : "") + "</span>");
+      mb.title = label + ", " + km + " km";
       if (i < LEAVE.length){
         var lv = LEAVE[i];
         block(target, arrive, lv, "bar",
-          "<span class='dur num'>" + (lv - arrive) + " min</span><b>" + s.name + "</b><span class='num'>" + clock(arrive) + "–" + clock(lv) + "</span>");
+          "<span class='dur num'>" + (lv - arrive) + " min</span><b>" + s.name + "</b><span class='num'>" + clock(arrive) + " to " + clock(lv) + "</span>");
         t = lv;
       } else {
-        block(target, arrive, AXIS1 - 2, "fin", "<b>Morgan's Pier</b><span class='num'>" + clock(arrive) + " · medals</span>");
+        block(target, arrive, AXIS1 - 2, "fin", "<b>Morgan's Pier</b><span class='num'>" + clock(arrive) + ", medals</span>");
       }
     });
   }
