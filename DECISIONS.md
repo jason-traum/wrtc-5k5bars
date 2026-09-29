@@ -53,3 +53,4 @@
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
 - WRTC 5K 5 Bars one-pager: this app's own source look.
+2026-09-29. Removed the Event overview, Pitch doc and Bars and outreach plan links (organizer screen and about page). They pointed to private Claude artifacts that visitors can't open (Jason: there shouldn't be any Claude artifacts).
