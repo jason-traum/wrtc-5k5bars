@@ -261,6 +261,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
 .grid2>*,.row2>*{min-width:0}
 .small-in{min-width:0;max-width:100%;min-height:48px;border-radius:10px;border:2px solid var(--ink-2);background:var(--canvas);padding:0 10px;width:100%}
 .tiny{font-size:14px;color:var(--ink-2)}
+.loccheck{display:flex;flex-direction:column;gap:8px}
 .check{display:flex;align-items:center;gap:12px;min-height:48px;font-size:16px;cursor:pointer}
 .check input{width:24px;height:24px;margin:0;accent-color:var(--action);flex:none}
 .check span{min-width:0}
@@ -851,6 +852,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
           <p class="meta"><span>Start any time after it opens. Your clock starts when you tap Start.</span></p></div>
         <${Countdown} at=${S.event.startMs} plain=${true} label="Start opens in" done="Any minute" doneSub="Waiting for the organizer's GO" />
         <a class="btn full" href=${dirUrl(s0)} target="_blank" rel="noopener">${I.pin}Directions to the start</a>
+        <${LocationCheck} />
         <${Schedule} p=${p} />
       </div>`;
     }
@@ -865,6 +867,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
         <${Status} t=${last && last.runnerId === S.me.id ? last : null} />
         <${AlreadyNext} p=${p} />
         <${UndoLast} />
+        <${LocationCheck} />
       </div>`;
     }
 
@@ -902,6 +905,38 @@ dialog.sheet::backdrop{background:var(--scrim)}
     return html`<div class=${'atpanel' + (!plain && left <= 300 ? ' soon' : '')} style=${style} role="timer" aria-label=${label + ' ' + mins(at - now())}>
       <span class="lbl">${label}</span><span class="count num" aria-hidden="true">${dur(left)}</span>
       <span class="sub num">at ${clockAP(at)}${!plain && left <= 300 ? ' · finish up' : ''}</span></div>`;
+  }
+  /* "Test my location": a website can't keep location on in the background (and this one doesn't need to: it reads
+     location only on a check-in tap). This proves, before race day, that the phone will give a good reading when asked.
+     With `stop`, it answers the organizer's question: would a check-in count from right here? */
+  const HOW_ON = () => APPLE
+    ? 'iPhone: Settings, Privacy & Security, Location Services: on. Then Safari Websites: While Using the App, with Precise Location on. When Safari asks this site, tap Allow.'
+    : 'Android: Chrome, the lock icon next to the address, Permissions, Location: Allow. In phone Settings, Location: on, and Use precise location: on.';
+  function LocationCheck({ stop }) {
+    const [fix, setFix] = useState(null), [busy, setBusy] = useState(false), [perm, setPerm] = useState('');
+    useEffect(() => {
+      try { if (navigator.permissions) navigator.permissions.query({ name: 'geolocation' }).then(q => { setPerm(q.state); q.onchange = () => setPerm(q.state); }).catch(() => {}); } catch (e) {}
+    }, []);
+    async function test() { setBusy(true); setFix(null); setFix(await locate()); setBusy(false); }
+    let msg = null;
+    if (fix && fix.error) msg = html`<div class="alert" role="alert"><p><b>${fix.error === 'denied' ? 'Location is blocked for this site.' : "Couldn't get a reading."}</b> ${fix.error === 'denied' ? HOW_ON() : 'Step outside or near a window and try again.'}</p></div>`;
+    else if (fix) {
+      const ll = fix.sim ? { lat: S.stops[1].lat + 0.0002, lng: S.stops[1].lng } : fix, acc = Math.round(fix.acc || 0);
+      const d = S.stops.map((x, i) => ({ i, m: haversine(ll, x) })).sort((a, b) => a.m - b.m);
+      const t = stop != null ? { i: stop, m: haversine(ll, S.stops[stop]) } : d[0], ts = S.stops[t.i];
+      const inside = t.m - Math.min(acc, 150) <= ts.radius;
+      msg = acc > 1000
+        ? html`<div class="alert" role="alert"><p><b>Location is on but blurry (about ${meters(acc)}).</b> Turn on Precise Location. ${HOW_ON()}</p></div>`
+        : html`<p class="status ok" role="status">${I.check}<span>Location works, accurate to about ${meters(acc)}. ${stop != null
+          ? html`You're ${meters(t.m)} from ${ts.short}: a check-in here ${inside ? html`<b>counts</b>` : html`would be <b>marked not GPS-checked</b>`} (circle ${ts.radius} m).`
+          : html`Nearest stop: ${ts.short}, ${meters(t.m)} away${inside ? ', close enough to check in.' : '.'}`}</span></p>`;
+    }
+    return html`<div class="loccheck">
+      <button class="btn full" onClick=${test} aria-disabled=${busy ? 'true' : 'false'}>${I.pin}${busy ? 'Checking…' : stop != null ? 'Test a check-in at ' + S.stops[stop].short : 'Test my location'}</button>
+      ${!fix && perm === 'denied' ? html`<p class="tiny">Location is blocked for this site. ${HOW_ON()}</p>` : null}
+      ${!fix && perm === 'prompt' && stop == null ? html`<p class="tiny">Your phone will ask to use your location. Tap Allow.</p>` : null}
+      ${msg}
+    </div>`;
   }
   function AlreadyNext({ p }) {
     const next = S.stops[p.target + 1];
@@ -1396,6 +1431,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
           ${hits && !hits.length ? html`<p class="tiny">Nothing found in Philadelphia. Try the street address.</p>` : null}</form>
         <div><p class="tiny" style="margin-bottom:6px">Check-in radius</p><div class="opts">${[75, 120, 150, 200].map(r => html`<button class="opt" aria-pressed=${st.radius === r ? 'true' : 'false'} onClick=${() => setRadius(r)}>${r} m</button>`)}</div></div>
         <div class="row2"><button class="btn small" onClick=${setHere}>${I.pin}Use my location</button><a class="btn small" href=${pinUrl(st)} target="_blank" rel="noopener">Check in ${APPLE ? 'Apple' : 'Google'}</a></div>
+        <${LocationCheck} stop=${si} />
         <div class="field"><label class="tiny" for="pc">Or paste coordinates from Google or Apple Maps</label>
           <div class="row2" style="grid-template-columns:1fr auto"><input id="pc" class="small-in num" inputmode="decimal" placeholder="39.95016, -75.16204" value=${coord} onInput=${e => setCoord(e.target.value)} /><button class="btn small" onClick=${pasteCoord}>Place</button></div>
           ${cErr ? html`<p class="err" role="alert">${cErr}</p>` : null}</div>

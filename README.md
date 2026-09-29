@@ -48,6 +48,12 @@ GitHub:
 
 10. Create a new repository, push this folder, and turn on **Settings > Pages** from the `main` branch root. `config.js` is committed; it holds only the publishable key, which is meant to be public, and the database rules are what protect the data.
 
+Testing location (do this on your own phone):
+
+- Open the app, join with a spare bib, and tap **Test my location** on the start screen. It should say "Location works" with an accuracy under about 50 m. If it says blocked or blurry, follow the steps it shows.
+- To test the real check-in: sign in at `?organizer`, pick a bar, walk there, and tap **Test a check-in at <bar>**. It says whether a check-in would count and how far off the circle is. Adjust the radius if needed.
+- For a full dry run: press GO, tap Start, check in and out, then **After a practice run > Clear all check-ins** and release the spare bib.
+
 Before race day:
 
 11. Open the site on your phone, join with your bib, sign in at `#organizer`, set the date, start time, Bar 4 and the leave-by times, and walk to a bar to check "Use my location" and the check-in radius.

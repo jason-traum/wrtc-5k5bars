@@ -14,7 +14,7 @@ BIB, NAME = "299", "Smoketest"
 async def main():
     problems = []
     async with async_playwright() as p:
-        b = await p.chromium.launch()
+        b = await p.chromium.launch(args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"])
         ctx = await b.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True,
                                   timezone_id="America/New_York", geolocation={"latitude": 39.9437, "longitude": -75.1662},
                                   permissions=["geolocation"])
@@ -52,6 +52,12 @@ async def main():
           out.tap = t.error ? t.error.message : 'ok';
           out.undo = (await sb.rpc('undo_tap', { p_id: id })).error?.message || 'ok';
           out.left = (await sb.from('taps').select('id').eq('id', id)).data?.length;
+          out.hide = (await sb.rpc('set_show', { p_show: false })).error?.message || 'ok';
+          out.hiddenNow = (await sb.rpc('my_runner')).data?.[0]?.hidden;
+          out.show = (await sb.rpc('set_show', { p_show: true })).error?.message || 'ok';
+          const anon = window.supabase.createClient(window.RACE_CONFIG.supabaseUrl, window.RACE_CONFIG.supabaseKey, { auth: { persistSession: false, storageKey: 'probe-anon' } });
+          out.anonStops = (await anon.from('stops').select('ord')).data?.length;
+          out.anonRunners = (await anon.from('runners').select('id')).error?.message;
           return out;
         }""")
         print("database:", res)
@@ -62,6 +68,11 @@ async def main():
         for k in ["readDist", "readUid", "directInsert"]:
             if not res.get(k) or "permission denied" not in res[k].lower(): problems.append(f"{k} not refused: {res.get(k)}")
         if res.get("tap") != "ok" or res.get("undo") != "ok" or res.get("left") != 0: problems.append("tap/undo failed")
+        if res.get("hide") != "ok" or res.get("hiddenNow") is not True or res.get("show") != "ok": problems.append("hide/show failed")
+        if not res.get("anonStops"): problems.append("course isn't public before joining")
+        if not res.get("anonRunners") or "permission denied" not in res["anonRunners"].lower(): problems.append(f"anon read runners: {res.get('anonRunners')}")
+        await pg.click(".tabs >> text=Map"); await pg.wait_for_selector(".pin", timeout=20000); await pg.wait_for_timeout(4000)
+        await pg.screenshot(path="tests/out/live-map.png")
 
         await pg.click(".tabs >> text=Leaderboard"); await pg.wait_for_timeout(800)
         board = await pg.inner_text("main")

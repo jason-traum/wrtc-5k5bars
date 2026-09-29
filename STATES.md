@@ -21,6 +21,7 @@
 - Undo: the last tap can be undone for 2 minutes.
 - Finish check-in: the finish moment (medal pops, one burst of shoes and pints, "Finished · 6th of 15"), about 2.4 s, tap to skip. The medal on the finish card replays it.
 - Finished (the data screen): place, pace, running time; "Your night" bar (red running, amber at bars, grey for a missed tap) with running and bar totals; fastest leg and longest stop; every run and bar split.
+- Before the start and at an open start: "Test my location" reads GPS once and says "Location works, accurate to about 12 m. Nearest stop: ..."; blocked shows exactly where to turn it on; a reading worse than 1 km says to turn on Precise Location.
 - Failed load: "Couldn't load the race. Pull down or tap Retry." Never shown as an empty race.
 
 ## Leaderboard
@@ -30,6 +31,11 @@
 - Row tapped: opens that runner's night bar and splits under the row. Tap again to close.
 - Stale: "Last updated 3 min ago" when realtime has dropped.
 - Failed: "Couldn't load the leaderboard. Retry." Never an empty list.
+
+## Map tab
+- Street map of the course in the app's colors. Pins: shoe (start), numbers (bars), medal (finish), colored by your progress like the strip.
+- Tap a pin: card with name, address, leave-by time, Apple Maps and Google Maps (your phone's first).
+- "Whole course", "Where am I" (one reading, not stored), zoom buttons. No signal: tiles you've seen still draw; otherwise a note says the pins still work.
 
 ## Organizer
 - Not signed in: email code sign-in (organizers only).

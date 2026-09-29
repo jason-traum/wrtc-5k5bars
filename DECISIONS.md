@@ -38,6 +38,14 @@
 
 2026-09-28. It's a Beer Club × WRTC event (Jason). Shown on the join screen band, the finish card, the Home Screen app name and the event name.
 
+2026-09-28. Real street map (Jason: "the map is kinda shit"). MapLibre with OpenFreeMap vector tiles (free, no key) in a custom quiet style built from the app's tokens, light and dark: canvas blocks, white streets, river, street names only. Rejected: raster OSM/CARTO tiles (can't match the palette), the hand-drawn grid (not a real map). Map tab for runners; tap a bar for address, leave time, Apple and Google Maps. Limited to a few km around the course; the service worker caches tiles you've seen.
+
+2026-09-28. Organizers never drag pins (Jason: "I would only ever import the locations"). Bars are placed by OpenStreetMap search (name or address), pasted coordinates, or standing there.
+
+2026-09-28. "Show my results on the leaderboard", pre-checked on the join screen and at the bottom of the leaderboard (Jason). Opting out hides the runner and their taps from everyone but themselves and organizers, enforced by the database rules, not just the screen.
+
+2026-09-28. Location can't be "always on" for a website, and doesn't need to be: it's read only on a check-in tap. Instead: "Test my location" before the start (says whether the reading is good and flags Precise Location being off), and "Test a check-in at <bar>" for organizers walking the course.
+
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
 - WRTC 5K 5 Bars one-pager: this app's own source look.
