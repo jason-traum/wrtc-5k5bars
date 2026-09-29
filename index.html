@@ -262,6 +262,8 @@ dialog.sheet::backdrop{background:var(--scrim)}
 .small-in{min-width:0;max-width:100%;min-height:48px;border-radius:10px;border:2px solid var(--ink-2);background:var(--canvas);padding:0 10px;width:100%}
 .tiny{font-size:14px;color:var(--ink-2)}
 .loccheck{display:flex;flex-direction:column;gap:8px}
+.practice{margin:12px 16px 0;padding:8px 8px 8px 14px;border-radius:12px;background:var(--bar-soft);color:var(--bar-ink);display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px}
+.practice .btn{border-color:var(--bar-ink);color:var(--bar-ink)}
 .check{display:flex;align-items:center;gap:12px;min-height:48px;font-size:16px;cursor:pointer}
 .check input{width:24px;height:24px;margin:0;accent-color:var(--action);flex:none}
 .check span{min-width:0}
@@ -393,7 +395,12 @@ dialog.sheet::backdrop{background:var(--scrim)}
 
   /* ---------------- Race math: moving pace only ---------------- */
   const lastOrd = () => S.stops.length - 1;
-  const started = () => S.event.goMs != null || (S.event.startMs && now() >= S.event.startMs);
+  const PKEY = 'race-practice-v1';
+  S.practice = lsGet(PKEY) === '1';
+  const started = () => S.practice || S.event.goMs != null || (S.event.startMs && now() >= S.event.startMs);
+  /* Practice runs are for the days before the race: offered only while the start is more than 6 hours away. */
+  const practiceAllowed = () => S.event.goMs == null && S.event.startMs && S.event.startMs - now() > 6 * 3600000;
+  function setPractice(on) { S.practice = !!on; lsSet(PKEY, on ? '1' : ''); emit(); }
   function tapsOf(rid) { const t = now(); return Object.values(S.taps).filter(x => x.runnerId === rid && x.at <= t); }
   function progress(rid) {
     const arr = {}, lv = {};
@@ -590,6 +597,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     async saveEvent(f) { if (f.startMs) S.event.startMs = f.startMs; emit(); },
     async deleteTap(id) { delete S.taps[id]; emit(); },
     async clearTaps() { S.taps = {}; S.event.goMs = null; S.lastMine = null; emit(); },
+    async clearMine() { Object.keys(S.taps).forEach(k => { if (S.taps[k].runnerId === S.me.id) delete S.taps[k]; }); S.lastMine = null; emit(); },
     async unlockRunner(id) {},
     async removeRunner(id) { Object.keys(S.taps).forEach(k => { if (S.taps[k].runnerId === id) delete S.taps[k]; }); delete S.runners[id]; if (S.me && S.me.id === id) S.me = null; emit(); },
     async adminSignIn() { S.admin = true; emit(); },
@@ -704,6 +712,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     async saveEvent(f) { const { error } = await this.sb.rpc('admin_save_event', { p_start: new Date(f.startMs).toISOString() }); if (error) throw cloudErr(error); },
     async deleteTap(id) { const { error } = await this.sb.rpc('admin_delete_tap', { p_id: id }); if (error) throw cloudErr(error); await this.reload(); },
     async clearTaps() { const { error } = await this.sb.rpc('admin_clear_taps'); if (error) throw cloudErr(error); await this.reload(); },
+    async clearMine() { saveQueue(queue().filter(t => t.runnerId !== S.me.id)); const { error } = await this.sb.rpc('clear_my_practice'); if (error) throw cloudErr(error); S.lastMine = null; await this.reload(); },
     async removeRunner(id) { const { error } = await this.sb.rpc('admin_remove_runner', { p_id: id }); if (error) throw cloudErr(error); await this.reload(); },
     /* the email carries a sign-in link (Supabase's built-in email) and, once custom SMTP is set up, a code too */
     async sendCode(email) { const { error } = await this.sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: location.origin + location.pathname + '?organizer' } }); if (error) throw cloudErr(error); },
@@ -853,6 +862,9 @@ dialog.sheet::backdrop{background:var(--scrim)}
         <${Countdown} at=${S.event.startMs} plain=${true} label="Start opens in" done="Any minute" doneSub="Waiting for the organizer's GO" />
         <a class="btn full" href=${dirUrl(s0)} target="_blank" rel="noopener">${I.pin}Directions to the start</a>
         <${LocationCheck} />
+        ${practiceAllowed() ? html`<div class="card" style="display:flex;flex-direction:column;gap:10px"><h2 class="h2" style="font-size:22px">Try it before race day</h2>
+          <p class="tiny">Opens the start on this phone only, so you can tap Start, check in at a real bar and see how it works. Practice check-ins are cleared before the race.</p>
+          <button class="btn full" onClick=${() => { setPractice(true); say('Practice run: the start is open on this phone.'); }}>Start a practice run</button></div>` : null}
         <${Schedule} p=${p} />
       </div>`;
     }
@@ -1412,6 +1424,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     }
     return html`<div class="page">
       <div class="lbhead"><h1 class="h2">Organizer</h1><button class="btn small" onClick=${back}>Back to the race</button></div>
+      <div class="row2"><a class="btn small" href="https://claude.ai/artifact/BkXcGEf468etMCGV59bFc2" target="_blank" rel="noopener">Event overview ↗</a><a class="btn small" href="https://claude.ai/code/artifact/53502ab4-5088-40cd-83ce-229f805be5c5" target="_blank" rel="noopener">Pitch doc ↗</a></div>
 
       <div class="card" style="display:flex;flex-direction:column;gap:12px">
         ${S.event.goMs == null
@@ -1492,17 +1505,27 @@ dialog.sheet::backdrop{background:var(--scrim)}
       <p class="tiny">Clears every check-in and the GO so race day starts clean. Runners keep their bibs.</p>
       <button class="btn red full" onClick=${go} disabled=${n === 0 && !S.event.goMs}>${arm ? 'Tap again to delete ' + n + ' check-ins' : n ? 'Clear all ' + n + ' check-ins' : 'Nothing to clear'}</button></div>`;
   }
+  function PracticeBar() {
+    const [busy, setBusy] = useState(false);
+    async function end() {
+      setBusy(true);
+      try { await S.api.clearMine(); setPractice(false); say('Practice over. Your practice check-ins are gone.'); }
+      catch (e) { say("Couldn't clear your practice check-ins. Check your signal and try again."); }
+      setBusy(false);
+    }
+    return html`<div class="practice" role="status"><span><b>Practice run</b> · only on this phone</span><button class="btn small" onClick=${end} aria-disabled=${busy ? 'true' : 'false'}>${busy ? 'Clearing…' : 'End practice'}</button></div>`;
+  }
   function Preview({ onOrg }) {
     const ref = useRef(null);
     const [openS, setOpenS] = useState(false);
     useEffect(() => { const d = ref.current; if (!d) return; if (openS && !d.open) d.showModal(); if (!openS && d.open) d.close(); }, [openS]);
     const scene = k => { demoScene(k); setOpenS(false); };
     const opt = (cur, val, label, fn) => html`<button class="opt" aria-pressed=${cur === val ? 'true' : 'false'} onClick=${fn}>${label}</button>`;
-    return html`<button class="prev-btn" onClick=${() => setOpenS(true)}>Preview</button>
+    return html`<button class="prev-btn" onClick=${() => setOpenS(true)}>${CFG ? 'Demo' : 'Preview'}</button>
       <dialog class="sheet" ref=${ref} onClose=${() => setOpenS(false)} aria-labelledby="pvh">
         <div class="sheet-in">
           <div class="sheet-h"><h2 id="pvh" class="h2" style="font-size:24px">Preview</h2><button class="btn small" onClick=${() => setOpenS(false)}>Done</button></div>
-          <p class="sub2">Runners marked Sample and your location are simulated here. On race day the app uses real GPS and real runners.</p>
+          <p class="sub2">Runners marked Sample and your location are simulated here, and nothing is saved. On race day the app uses real GPS and real runners.</p>
           <p class="tiny" style="font-weight:700">Jump to</p>
           <div class="opts">${opt(S.demo.scene, 'join', 'Join screen', () => scene('join'))}${opt(S.demo.scene, 'pre', 'Before the start', () => scene('pre'))}${opt(S.demo.scene, 'ready', 'Start is open', () => scene('ready'))}${opt(S.demo.scene, 'live', 'Running to a bar', () => scene('live'))}${opt(S.demo.scene, 'atbar', 'At a bar', () => scene('atbar'))}${opt(S.demo.scene, 'finished', 'Finished', () => scene('finished'))}</div>
           <p class="tiny" style="font-weight:700">Your location</p>
@@ -1530,8 +1553,10 @@ dialog.sheet::backdrop{background:var(--scrim)}
     if (!S.me) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Join} /></main>${toast}</div>`;
     if (!S.stops.length) return html`<div class="shell" style="padding-bottom:24px">${header}<main><div class="page"><div class="alert" role="alert"><p><b>Couldn't load the race.</b> Check your signal.</p><button class="btn" onClick=${() => S.api.reload()}>Retry</button></div></div></main>${toast}</div>`;
     const offline = queue().length > 0 || (S.mode === 'demo' ? S.demo.net === 'off' : !S.online);
+    const practicing = S.practice && S.event.goMs == null;
     return html`<div class="shell">${header}
       ${offline ? html`<p class="banner warn" style="margin:12px 16px 0" role="status">${I.dot}No signal. Taps save on this phone and sync later.</p>` : null}
+      ${practicing ? html`<${PracticeBar} />` : null}
       <main>${tab === 'race' ? html`<${Race} />` : tab === 'map' ? html`<${MapScreen} />` : html`<${Board} />`}</main>
       <nav class="tabs" aria-label="Sections">
         <button aria-current=${tab === 'race' ? 'page' : null} onClick=${() => { setTab('race'); window.scrollTo(0, 0); }}>${I.flag}Race</button>
@@ -1542,7 +1567,8 @@ dialog.sheet::backdrop{background:var(--scrim)}
 
   document.addEventListener('touchstart', () => {}, { passive: true });
   render(html`<${App} />`, root);
-  S.api = CFG ? CloudApi : DemoApi;
+  const DEMO = new URLSearchParams(location.search).has('demo');
+  S.api = CFG && !DEMO ? CloudApi : DemoApi;
   S.api.init().catch(e => { console.error(e); S.mode = 'error'; S.problem = "Couldn't load the race. Check your signal and reload."; emit(); });
   if (CFG && 'serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

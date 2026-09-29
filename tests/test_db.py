@@ -283,6 +283,17 @@ check("C's own toggle didn't touch B", run("b", "select hidden from my_runner()"
 expect_ok("B shows again", "b", "select set_show(true)")
 check("visible again to others", run("c", "select count(*) from runners where id = %s", (dev,))[0] == [(1,)])
 
+# --- Practice runs ---------------------------------------------------------------------------------
+cur.execute("update event set go_at = null, start_at = now() + interval '5 days'")
+tap("b", 0, "leave"); tap("b", 1, "arrive"); tap("c", 0, "leave")
+expect_ok("runner clears own practice check-ins before race day", "b", "select clear_my_practice()")
+check("only B's taps went", run("admin", "select count(*) from taps where runner_id = %s", (dev,))[0] == [(0,)] and run("admin", "select count(*) from taps")[0] != [(0,)])
+expect_err("anon cannot clear practice", "anon", "select clear_my_practice()", contains="permission denied")
+cur.execute("update event set go_at = now()")
+expect_err("no clearing once the race has opened", "c", "select clear_my_practice()", contains="race is on")
+cur.execute("update event set go_at = null, start_at = now() + interval '1 hour'")
+expect_err("no clearing within 2 hours of the start", "c", "select clear_my_practice()", contains="race is on")
+
 # --- Setup -----------------------------------------------------------------------------------
 cur.execute("select array_agg(tablename::text order by tablename) from pg_publication_tables where pubname = 'supabase_realtime'")
 check("realtime on event, runners, stops, taps", cur.fetchone()[0] == ["event", "runners", "stops", "taps"])

@@ -58,11 +58,20 @@ async def main():
         await pg.click("button[type=submit]")
         await pg.wait_for_timeout(2500)
         screen = (await pg.inner_text("main")).replace("\n", " | ")
+        practice = []
+        if await pg.is_visible("text=Start a practice run"):
+            await pg.click("text=Start a practice run"); await pg.wait_for_timeout(400)
+            if not await pg.is_visible(".practice"): practice.append("no practice bar")
+            if "START" not in (await pg.inner_text("main")).upper(): practice.append("start not open in practice")
+            await pg.click("text=End practice"); await pg.wait_for_timeout(800)
+            if await pg.is_visible(".practice"): practice.append("practice didn't end")
+        else: practice.append("no practice offer before race day")
         before = [r for r in reqs if "/rest/v1/" in r[1] and r[2] == "no session" and "/rest/v1/event" not in r[1] and "/rest/v1/stops" not in r[1]]
         problems = []
         if errs: problems.append(f"page errors: {errs}")
         if "I'M AT" not in screen.upper() and "RITTENHOUSE" not in screen.upper() and "BAR 0" not in screen.upper(): problems.append(f"race screen not shown: {screen[:160]}")
         if before: problems.append(f"read runners or taps before signing in: {before}")
+        problems += practice
         print("FIRST LOAD PROBLEMS:", problems or "none")
         await b.close()
     srv.shutdown()

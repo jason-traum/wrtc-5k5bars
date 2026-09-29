@@ -262,6 +262,19 @@ begin
   delete from taps where id = p_id;
 end $$;
 
+-- A runner's practice run before race day: they can clear their own check-ins, but only while the race
+-- hasn't opened and the start is more than 2 hours away.
+create or replace function public.clear_my_practice() returns void
+language plpgsql security definer set search_path = public as $$
+declare rid uuid := me_id();
+begin
+  if rid is null then raise exception 'Not allowed: no runner on this phone.'; end if;
+  if exists (select 1 from event e where e.id = 1 and (e.go_at is not null or e.start_at < now() + interval '2 hours')) then
+    raise exception 'Not allowed: the race is on. Ask an organizer to remove a check-in.';
+  end if;
+  delete from taps where runner_id = rid;
+end $$;
+
 -- Let a bib move to a new phone (lost phone, a different browser mid-race).
 create or replace function public.admin_unlock_runner(p_id uuid) returns void
 language plpgsql security definer set search_path = public as $$
@@ -296,11 +309,11 @@ create policy stops_read on public.stops for select to anon, authenticated using
 create policy runners_read on public.runners for select to authenticated using (not hidden or id = public.me_id() or public.is_admin());
 create policy taps_read on public.taps for select to authenticated using (public.runner_visible(runner_id) or runner_id = public.me_id() or public.is_admin());
 
-revoke execute on function public.is_admin(), public.my_runner(), public.me_id(), public.runner_visible(uuid), public.set_show(boolean), public.claim_bib(integer, text),
+revoke execute on function public.is_admin(), public.my_runner(), public.me_id(), public.runner_visible(uuid), public.set_show(boolean), public.clear_my_practice(), public.claim_bib(integer, text),
   public.add_tap(uuid, integer, text, timestamptz, boolean, integer, integer, text), public.undo_tap(uuid),
   public.set_go(timestamptz), public.admin_save_event(timestamptz), public.admin_save_route(jsonb),
   public.admin_delete_tap(uuid), public.admin_clear_taps(), public.admin_remove_runner(uuid), public.admin_unlock_runner(uuid) from public, anon;
-grant execute on function public.is_admin(), public.my_runner(), public.me_id(), public.runner_visible(uuid), public.set_show(boolean), public.claim_bib(integer, text),
+grant execute on function public.is_admin(), public.my_runner(), public.me_id(), public.runner_visible(uuid), public.set_show(boolean), public.clear_my_practice(), public.claim_bib(integer, text),
   public.add_tap(uuid, integer, text, timestamptz, boolean, integer, integer, text), public.undo_tap(uuid),
   public.set_go(timestamptz), public.admin_save_event(timestamptz), public.admin_save_route(jsonb),
   public.admin_delete_tap(uuid), public.admin_clear_taps(), public.admin_remove_runner(uuid), public.admin_unlock_runner(uuid) to authenticated;
