@@ -52,7 +52,9 @@ Testing location (do this on your own phone):
 
 - Open the app, join with a spare bib, and tap **Test my location** on the start screen. It should say "Location works" with an accuracy under about 50 m. If it says blocked or blurry, follow the steps it shows.
 - To test the real check-in: sign in at `?organizer`, pick a bar, walk there, and tap **Test a check-in at <bar>**. It says whether a check-in would count and how far off the circle is. Adjust the radius if needed.
-- For a full dry run: press GO, tap Start, check in and out, then **After a practice run > Clear all check-ins** and release the spare bib.
+- For a dry run on your own, tap **Start a practice run** on the start screen (shown until 6 hours before the start). It opens the start on that phone only; **End practice** clears that phone's check-ins.
+- For a full group dry run: press GO, tap Start, check in and out, then **After a practice run > Clear all check-ins** and release the spare bibs.
+- To show someone the app without touching real data, send `?demo`: https://jason-traum.github.io/wrtc-5k5bars/?demo (sample runners, simulated location, nothing saved).
 
 Before race day:
 
