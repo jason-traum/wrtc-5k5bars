@@ -135,6 +135,12 @@ section{display:flex;flex-direction:column;gap:14px}
 
 /* Lists */
 .list{margin:0;padding:0 0 0 20px;display:flex;flex-direction:column;gap:6px}
+.todo{margin:0;display:flex;flex-direction:column}
+.todo div{display:grid;grid-template-columns:132px minmax(0,1fr);gap:4px 12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.todo div:first-child{padding-top:2px}
+.todo dt{font-weight:700}
+.todo dd{margin:0}
+@media (max-width:360px){.todo div{grid-template-columns:1fr}}
 .foot{font-size:14px;color:var(--ink-2)}
 @media (prefers-reduced-motion:reduce){.bib{transform:none!important}}
 </style>
@@ -226,13 +232,18 @@ section{display:flex;flex-direction:column;gap:14px}
 
   <section>
     <h2>Still to decide</h2>
-    <ul class="list">
-      <li>Date and start time</li>
-      <li>Headcount</li>
-      <li>Pay as you go or tickets</li>
-      <li>Bar 4</li>
-      <li>One group, or waves a few minutes apart</li>
-    </ul>
+    <dl class="todo">
+      <div><dt>Date</dt><dd>Oct 24, with Oct 31 as the backup</dd></div>
+      <div><dt>Start time</dt><dd>The schedule above assumes 2:00 PM</dd></div>
+      <div><dt>Bar 4</dt><dd>Buffalo Billiards, the Plough &amp; the Stars, or Khyber Pass</dd></div>
+      <div><dt>Drinks</dt><dd>Pay as you go, tickets, or a small fee for the bib and medal with drinks paid at each bar</dd></div>
+      <div><dt>Medals and bibs</dt><dd>What to order. Medals take 2 to 3 weeks, so order right after the date is set</dd></div>
+      <div><dt>Sign-ups</dt><dd>The cap (about 100) and whether there's a fee</dd></div>
+      <div><dt>Rain plan</dt><dd>Rain or shine with indoor backups, or a rain date. Three of the five bars are outdoors</dd></div>
+      <div><dt>Crew</dt><dd>Bib pickup, a lead who texts each bar, a sweep, and someone at the Columbus Blvd crossing</dd></div>
+      <div><dt>Money</dt><dd>Who pays upfront, and how Beer Club and WRTC split it</dd></div>
+      <div><dt>Waves</dt><dd>One group, or waves a few minutes apart</dd></div>
+    </dl>
   </section>
 
   <p class="foot">Distances are street-grid estimates. Bar 4 is drawn halfway between Independence Beer Garden and Morgan's Pier until it's picked.</p>
