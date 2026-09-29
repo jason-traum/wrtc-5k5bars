@@ -58,6 +58,8 @@
 
 2026-09-29. A tap that is still sending no longer shows the "No signal" banner or the saved-on-this-phone line for its first 3 seconds. Found while checking the demo: the banner flashed on every tap while the request was in flight.
 
+2026-09-29. Demo countdown cut from 15 to 8 seconds (Jason).
+
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
 - WRTC 5K 5 Bars one-pager: this app's own source look.

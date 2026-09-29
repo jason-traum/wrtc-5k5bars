@@ -612,7 +612,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
       S.me = { id: 'me', bib, name, hidden: show === false }; S.runners.me = Object.assign({}, S.me);
       if (S.demo.scene === 'join') {
         /* the demo starts from the beginning: a short countdown, then the start opens by itself */
-        const start = now() + 15000;
+        const start = now() + 8000;
         S.event = Object.assign({}, S.event, { startMs: start, goMs: null }); S.stops = demoStops(start);
         S.demo.go = start; S.demo.scene = 'pre'; demoSamples();
       }

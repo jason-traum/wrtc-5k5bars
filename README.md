@@ -55,7 +55,7 @@ Testing location (do this on your own phone):
 - To test the real check-in: sign in at `?organizer`, pick a bar, walk there, and tap **Test a check-in at <bar>**. It says whether a check-in would count and how far off the circle is. Adjust the radius if needed.
 - For a dry run on your own, tap **Start a practice run** on the start screen (shown until 6 hours before the start). It opens the start on that phone only; **End practice** clears that phone's check-ins.
 - For a full group dry run: press GO, tap Start, check in and out, then **After a practice run > Clear all check-ins** and release the spare bibs.
-- To show someone the app without touching real data, send `?demo`: https://jason-traum.github.io/wrtc-5k5bars/?demo. It opens on the join screen with bib 23 filled in, the start opens 15 seconds after joining, and each check-in skips ahead in time, so the whole race takes about a minute to tap through. Sample runners, simulated location, nothing saved. The Demo button at the top jumps to any screen.
+- To show someone the app without touching real data, send `?demo`: https://jason-traum.github.io/wrtc-5k5bars/?demo. It opens on the join screen with bib 23 filled in, the start opens 8 seconds after joining, and each check-in skips ahead in time, so the whole race takes about a minute to tap through. Sample runners, simulated location, nothing saved. The Demo button at the top jumps to any screen.
 
 Before race day:
 

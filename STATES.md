@@ -18,7 +18,7 @@
 - Location off or denied: "Location is off for this site. You can still check in." Actions: "Try again", "Check in anyway". One small line says where to turn it on.
 - At bar N: amber panel with a live countdown "Group leaves in 29:42 / at 7:04 PM", "finish up" added in the last 5 minutes, "Time to go" at zero. Button "Leaving <bar N>", secondary "Already at <bar N+1>?" for a forgotten leave tap. One line under the bar name: "Last leg 8:54/mi" (hidden if that leg is untimed).
 - Offline: taps save on the phone with their real time and sync later. Line under the button: "Saved on this phone. Syncs when you have signal." A tap that is still sending shows nothing extra for its first 3 seconds, so the no-signal line and banner only appear when the phone really is offline.
-- Demo (?demo): join screen pre-filled with bib 23, a 15-second countdown after joining, then "I'm at" skips ahead to the arrival at 8:50/mi and "Leaving" skips ahead to the leave time, with a toast saying so. Sample runners move with the clock.
+- Demo (?demo): join screen pre-filled with bib 23, an 8-second countdown after joining, then "I'm at" skips ahead to the arrival at 8:50/mi and "Leaving" skips ahead to the leave time, with a toast saying so. Sample runners move with the clock.
 - Undo: the last tap can be undone for 2 minutes.
 - Finish check-in: the finish moment (medal pops, one burst of shoes and pints, "Finished · 6th of 15"), about 2.4 s, tap to skip. The medal on the finish card replays it.
 - Finished (the data screen): place, pace, running time; "Your night" bar (red running, amber at bars, grey for a missed tap) with running and bar totals; fastest leg and longest stop; every run and bar split.
