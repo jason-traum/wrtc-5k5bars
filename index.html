@@ -78,7 +78,8 @@ p{margin:0;text-wrap:pretty;overflow-wrap:break-word}
 
 .shell{min-height:100svh;display:flex;flex-direction:column;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
 .top{background:var(--navy);color:var(--on-navy);padding:max(10px,env(safe-area-inset-top,0px)) 16px 10px;display:flex;align-items:center;gap:10px}
-.mark{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.02em;line-height:1}
+.mark{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.02em;line-height:1;color:inherit;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;-webkit-tap-highlight-color:transparent;transition:transform 120ms ease-out}
+.mark:active{transform:scale(.94) rotate(-2deg)}
 .mark b{color:#FF6B74}
 .bibchip{margin-left:auto;display:flex;align-items:center;gap:8px;background:#FFFFFF;color:#0F1A2E;border-radius:8px;padding:4px 10px 4px 8px;font-weight:700;font-size:15px;max-width:60%}
 .bibchip span:first-child{font-family:var(--f-display);font-weight:900;font-size:20px;color:#C41E2A;line-height:1}
@@ -1161,6 +1162,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
         <p>${android ? html`In Chrome, tap the ⋮ menu, then <b>Add to Home screen</b>.` : APPLE ? html`In Safari, tap <b>Share</b>, then <b>Add to Home Screen</b>.` : html`On iPhone: Safari, Share, Add to Home Screen. On Android: Chrome, ⋮ menu, Add to Home screen.`}</p>
         <p class="tiny">Do it before race day. It opens full screen, works on bad signal, and keeps you signed in.</p></div>`}
       ${S.stops.length ? html`<div class="card howto"><h2 class="h2" style="font-size:22px">The route</h2><${RouteMap} mode="join" /></div>` : null}
+      <a class="btn full" href="about.html">About the race: schedule, route and fine print</a>
     </section>`;
   }
 
@@ -1546,7 +1548,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     if (S.mode === 'loading') return html`<p class="boot">Loading the race…</p>`;
     if (S.mode === 'setup') return html`<div class="page"><h1 class="h2">Setup needed</h1><p>${S.problem}</p></div>`;
     if (S.mode === 'error') return html`<div class="page"><h1 class="h2">Couldn't load</h1><p>${S.problem}</p><button class="btn" onClick=${() => location.reload()}>Reload</button></div>`;
-    const header = html`<header class="top"><span class="mark">5K<b>5</b>BARS</span>${S.mode === 'demo' ? html`<${Preview} onOrg=${() => setOrg(true)} />` : null}
+    const header = html`<header class="top"><a class="mark" href="about.html" aria-label="About the race">5K<b>5</b>BARS</a>${S.mode === 'demo' ? html`<${Preview} onOrg=${() => setOrg(true)} />` : null}
       ${S.me ? html`<span class="bibchip" aria-label=${'Bib ' + S.me.bib + ', ' + S.me.name}><span class="num">${S.me.bib}</span><span>${S.me.name}</span></span>` : null}</header>`;
     const toast = html`${S.toast ? html`<div class="toast" role="status">${S.toast}</div>` : html`<div class="toast" role="status" hidden></div>`}${S.celebrate && S.me ? html`<${Celebrate} />` : null}`;
     if (org) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Organizer} back=${() => { setOrg(false); if (location.hash === '#organizer' || location.search) history.replaceState(null, '', location.pathname); }} /></main>${toast}</div>`;

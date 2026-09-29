@@ -46,6 +46,8 @@
 
 2026-09-28. Location can't be "always on" for a website, and doesn't need to be: it's read only on a check-in tap. Instead: "Test my location" before the start (says whether the reading is good and flags Precise Location being off), and "Test a check-in at <bar>" for organizers walking the course.
 
+2026-09-28. About page on the site (about.html), a copy of the event overview: the bib, the numbers, the route, the day, drinks options and fine print, with links to the pitch doc and the bars plan. The way in is tapping the 5K5BARS wordmark (Jason: "hidden sort of"), plus a plain "About the race" button at the bottom of the join screen. The example photos stay off the public site.
+
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
 - WRTC 5K 5 Bars one-pager: this app's own source look.

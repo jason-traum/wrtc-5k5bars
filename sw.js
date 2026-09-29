@@ -4,9 +4,9 @@
    Map tiles, map fonts and the tile index: cache first in their own cache, capped, so streets you've looked at
    still draw with no signal.
    Supabase (the race data): never cached here. Taps made offline wait in the page's own queue. */
-const VERSION = 'race-2026-09-28c';
+const VERSION = 'race-2026-09-28d';
 const TILES = 'map-tiles-v1', TILE_CAP = 600;
-const SHELL = ['./', './index.html', './config.js', './manifest.json', './apple-touch-icon.png', './icon-192.png'];
+const SHELL = ['./', './index.html', './about.html', './config.js', './manifest.json', './apple-touch-icon.png', './icon-192.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
