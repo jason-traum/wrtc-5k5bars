@@ -76,6 +76,8 @@
 
 2026-10-25, mid-race. Group started at 2:11, so leave times moved 15 minutes later (2:45, 3:15, 3:45, 4:15). Finish moved from Morgan's Pier to Craftsman Row Saloon, 112 S 8th St, 0.98 km from the Plough (Jason: people wanted to end closer to Rittenhouse). Then moved again, further west on Walnut, to Moriarty's Irish Pub, 1116 Walnut St, 1.55 km from the Plough (Jason: "It can be a bit further too? Direct towards rittenhouse"). Getting home: walk west on Walnut to Rittenhouse, or the El from 11th St.
 
+2026-10-25, 3:14 PM. Last three stops swapped to loop back west instead of Old City (Jason: "Perfect. Lets do that."): McGillin's, Con Murphy's Irish Pub (17th & Parkway, leave 3:45), Bonner's Irish Pub (23rd & Sansom, leave 4:15), finish at Walnut Garden (1708 Walnut, one block from Rittenhouse). Legs 1.08, 1.36, 0.90 km; about 5.5 km in all.
+
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
 - WRTC 5K 5 Bars one-pager: this app's own source look.
