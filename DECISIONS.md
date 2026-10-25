@@ -72,6 +72,8 @@
 
 2026-10-25. Race day, finish back at Morgan's Pier (Jason: "I feel like ending at morgan pier will be fun"). About 11 runners, sunny and about 67°F with no rain, and Morgan's has DJs 2 to 6 PM, so the river finish beats Yards today. Route: PHS Pop Up Garden, McGillin's, Independence Beer Garden, The Plough & the Stars, Morgan's Pier; legs 1.14, 1.00, 1.12, 0.70 and 1.07 km. Morgan's pin moved to Google's location. Getting home is the El from 2nd St again.
 
+2026-10-25. Backup route page at /route (Jason: a separate page with just the bars in case the app goes wrong). Static HTML, no database or scripts: each stop with address, leave time, Google and Apple Maps links, a whole-route walking link, getting home, and a link back to the app.
+
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
 - WRTC 5K 5 Bars one-pager: this app's own source look.
