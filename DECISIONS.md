@@ -36,7 +36,7 @@
 
 2026-09-28. Two small numbers back on the race screen (Jason): the leg distance while running, and your last leg's pace at the bar. One quiet line each, pace only (no time or place) so it stays one glance.
 
-2026-09-28. It's a Beer Club × WRTC event (Jason). Shown on the join screen band, the finish card, the Home Screen app name and the event name.
+2026-09-28. Event name shown on the join screen band, the finish card, the Home Screen app name and the event name (Jason). Superseded 2026-10-19.
 
 2026-09-28. Real street map (Jason: "the map is kinda shit"). MapLibre with OpenFreeMap vector tiles (free, no key) in a custom quiet style built from the app's tokens, light and dark: canvas blocks, white streets, river, street names only. Rejected: raster OSM/CARTO tiles (can't match the palette), the hand-drawn grid (not a real map). Map tab for runners; tap a bar for address, leave time, Apple and Google Maps. Limited to a few km around the course; the service worker caches tiles you've seen.
 
@@ -60,7 +60,7 @@
 
 2026-09-29. Demo countdown cut from 15 to 8 seconds (Jason).
 
-2026-10-19. WRTC only, renamed 5 Bar 5K (Jason). Beer Club is out: the name is "5 Bar 5K" on the title, Home Screen name, join band ("WRTC · date"), finish card ("WRTC 5 Bar 5K") and the wordmark (5BAR5K, 5K in red, like the flyer).
+2026-10-19. WRTC only, renamed 5 Bar 5K (Jason). The name is "5 Bar 5K" on the title, Home Screen name, join band ("WRTC · date"), finish card ("WRTC 5 Bar 5K") and the wordmark (5BAR5K, 5K in red, like the flyer).
 
 2026-10-19. Route set for Sun Oct 25 (Jason): Rittenhouse, PHS Pop Up Garden, McGillin's, Independence Beer Garden, The Plough & the Stars (Bar 4), Morgan's Pier. About 5.0 km on the grid, no leg under 0.7 km. 30 minutes per stop instead of 40, so the group leaves at 2:00, 2:30, 3:00, 3:30 and 4:00 and reaches the finish about 4:05. Independence Beer Garden's pin moved about 120 m north to the garden itself (it was south of Chestnut). Mac's Tavern was ruled out: it closed in 2025 and its reopening isn't confirmed.
 

@@ -28,6 +28,6 @@ Ranking rule: moving pace only, meaning the time from "Leaving" one bar (or the 
 
 Success signal: every runner who reaches the finish has 5 check-ins, most have 5 timed legs, and nobody asks the organizer "did it get me?".
 
-Event: WRTC only (no longer co-hosted with Beer Club), Sunday Oct 25, 2026, 2:00 PM start at Rittenhouse Square, about 30 runners, $5 members and $12 others, one beer included. Route: PHS Pop Up Garden, McGillin's, Independence Beer Garden, The Plough & the Stars, finish at Morgan's Pier, leaving each stop every 30 minutes.
+Event: WRTC, Sunday Oct 25, 2026, 2:00 PM start at Rittenhouse Square, about 30 runners, $5 members and $12 others, one beer included. Route: PHS Pop Up Garden, McGillin's, Independence Beer Garden, The Plough & the Stars, finish at Morgan's Pier, leaving each stop every 30 minutes.
 
 Open questions: whether Independence Beer Garden is still open on Oct 25 (seasonal, not confirmed); each bar's yes to about 30 runners at its arrival time; rain call on Friday (indoor backups: Misconduct Tavern for PHS Garden, Red Owl Tavern for Independence Beer Garden). None of these block the app: bars, times and GO are organizer-editable.
