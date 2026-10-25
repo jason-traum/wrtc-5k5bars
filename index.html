@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>5K 5 Bars</title>
+<title>5 Bar 5K</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Check in at every bar, see your leg paces, and follow the Beer Club × WRTC 5K 5 Bars leaderboard.">
+<meta name="description" content="Check in at every bar, see your leg paces, and follow the WRTC 5 Bar 5K leaderboard.">
 <meta name="theme-color" content="#E9EDF3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0E1628" media="(prefers-color-scheme: dark)">
-<meta name="apple-mobile-web-app-title" content="5K 5 Bars">
+<meta name="apple-mobile-web-app-title" content="5 Bar 5K">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Instrument+Sans:wght@400;600;700&display=swap">
 <style>
 /* ============================================================================================
-   5K 5 BARS DESIGN RULES (Sep 28, 2026). Read PRODUCT.md, DESIGN.md and STATES.md before any UI change.
+   5 BAR 5K DESIGN RULES (Sep 28, 2026). Read PRODUCT.md, DESIGN.md and STATES.md before any UI change.
    1. Source: a race bib. Navy band, one bib red, amber only for "at the bar". Not In.'s green.
    2. One job per screen. The race screen is the next bar and one big button. Nothing else competes.
       During the race, no stats on the Race tab. Numbers live on the finish screen and behind a tap on the leaderboard.
@@ -336,12 +336,20 @@ dialog.sheet::backdrop{background:var(--scrim)}
   /* ---------------- The route. Organizer can edit names, times and locations. ---------------- */
   const DEFAULT_STOPS = [
     { ord: 0, name: 'Rittenhouse Square', short: 'Rittenhouse', addr: 'Start, 18th & Walnut', lat: 39.9495, lng: -75.1719, radius: 150, km: 0, leaveMin: 0 },
-    { ord: 1, name: 'PHS Pop Up Garden', short: 'PHS Garden', addr: '1438 South St', lat: 39.94368, lng: -75.16623, radius: 120, km: 1.14, leaveMin: 45 },
-    { ord: 2, name: "McGillin's Olde Ale House", short: "McGillin's", addr: '1310 Drury St', lat: 39.95016, lng: -75.16204, radius: 120, km: 1.0, leaveMin: 85 },
-    { ord: 3, name: 'Independence Beer Garden', short: 'Indy Beer Garden', addr: '100 S Independence Mall W', lat: 39.94918, lng: -75.15085, radius: 150, km: 1.01, leaveMin: 125 },
-    { ord: 4, name: 'Bar 4', short: 'Bar 4', addr: 'Still being picked', lat: 39.95224, lng: -75.14508, radius: 150, km: 0.85, leaveMin: 165 },
-    { ord: 5, name: "Morgan's Pier", short: "Morgan's Pier", addr: '221 N Columbus Blvd', lat: 39.9553, lng: -75.1393, radius: 150, km: 0.85, leaveMin: null },
+    { ord: 1, name: 'PHS Pop Up Garden', short: 'PHS Garden', addr: '1438 South St', lat: 39.94368, lng: -75.16623, radius: 120, km: 1.14, leaveMin: 30 },
+    { ord: 2, name: "McGillin's Olde Ale House", short: "McGillin's", addr: '1310 Drury St', lat: 39.95016, lng: -75.16204, radius: 120, km: 1.0, leaveMin: 60 },
+    { ord: 3, name: 'Independence Beer Garden', short: 'Indy Beer Garden', addr: '100 S Independence Mall W', lat: 39.95028, lng: -75.15076, radius: 150, km: 1.12, leaveMin: 90 },
+    { ord: 4, name: 'The Plough & the Stars', short: 'Plough & Stars', addr: '123 Chestnut St (enter on 2nd St)', lat: 39.94862, lng: -75.1439, radius: 120, km: 0.7, leaveMin: 120 },
+    { ord: 5, name: "Morgan's Pier", short: "Morgan's Pier", addr: '221 N Columbus Blvd', lat: 39.9549, lng: -75.13891, radius: 150, km: 1.07, leaveMin: null },
   ];
+  /* Rain plan: two stops are outdoors. The organizer can swap in the indoor backup (leave times stay, leg distances update). */
+  const RAIN = [
+    { dry: 'PHS Pop Up Garden', wet: { name: 'Misconduct Tavern', short: 'Misconduct', addr: '1511 Locust St', lat: 39.94859, lng: -75.16664, radius: 120 } },
+    { dry: 'Independence Beer Garden', wet: { name: 'Red Owl Tavern', short: 'Red Owl', addr: '433 Chestnut St', lat: 39.94919, lng: -75.14887, radius: 120 } },
+  ];
+  /* Race-day notes shown before the race and on the finish screen. */
+  const LAYER_NOTE = 'The finish is on the river around 4 PM and it cools off once the sun drops. Tie a light layer around your waist.';
+  const HOME_NOTE = "Walk about 12 minutes to 2nd St station and take the El west: 15th St for Center City, 34th St for campus. Or get a rideshare on Columbus Blvd.";
 
   /* ---------------- Store ---------------- */
   const S = {
@@ -578,9 +586,9 @@ dialog.sheet::backdrop{background:var(--scrim)}
     const n = now();
     S.demo.scene = scene;
     S.celebrate = scene === 'finished';
-    const go = scene === 'pre' || scene === 'join' ? null : n - (scene === 'finished' ? 170 : scene === 'atbar' ? 55 : scene === 'ready' ? 3 : 48) * 60000;
+    const go = scene === 'pre' || scene === 'join' ? null : n - (scene === 'finished' ? 130 : scene === 'atbar' ? 42 : scene === 'ready' ? 3 : 34) * 60000;
     const startMs = go != null ? go : n + 12 * 60000;
-    S.event = { startMs, goMs: go, name: 'Beer Club × WRTC 5K 5 Bars' };
+    S.event = { startMs, goMs: go, name: '5 Bar 5K' };
     S.stops = demoStops(startMs);
     S.runners = {}; S.taps = {};
     SAMPLES.forEach(([name, bib]) => { const id = 'sample-' + bib; S.runners[id] = { id, bib, name, sample: true }; });
@@ -590,14 +598,14 @@ dialog.sheet::backdrop{background:var(--scrim)}
     S.runners.me = { id: 'me', bib: 23, name: 'Jason' };
     const mine = [];
     if (scene === 'live' || scene === 'atbar' || scene === 'finished') {
-      mine.push({ stop: 0, kind: 'leave', at: go + 0.4 * 60000 }, { stop: 1, kind: 'arrive', at: go + 6.7 * 60000 }, { stop: 1, kind: 'leave', at: go + 41 * 60000 });
+      mine.push({ stop: 0, kind: 'leave', at: go + 0.4 * 60000 }, { stop: 1, kind: 'arrive', at: go + 6.7 * 60000 }, { stop: 1, kind: 'leave', at: go + 29.5 * 60000 });
     }
-    if (scene === 'atbar') mine.push({ stop: 2, kind: 'arrive', at: go + 47.2 * 60000 });
+    if (scene === 'atbar') mine.push({ stop: 2, kind: 'arrive', at: go + 35.6 * 60000 });
     if (scene === 'finished') {
-      mine.push({ stop: 2, kind: 'arrive', at: go + 46.6 * 60000 }, { stop: 2, kind: 'leave', at: go + 82 * 60000 },
-        { stop: 3, kind: 'arrive', at: go + 87.4 * 60000 }, { stop: 3, kind: 'leave', at: go + 121 * 60000 },
-        { stop: 4, kind: 'arrive', at: go + 125.6 * 60000 }, { stop: 4, kind: 'leave', at: go + 160 * 60000 },
-        { stop: 5, kind: 'arrive', at: go + 164.4 * 60000 });
+      mine.push({ stop: 2, kind: 'arrive', at: go + 35.1 * 60000 }, { stop: 2, kind: 'leave', at: go + 59.5 * 60000 },
+        { stop: 3, kind: 'arrive', at: go + 65.6 * 60000 }, { stop: 3, kind: 'leave', at: go + 89.5 * 60000 },
+        { stop: 4, kind: 'arrive', at: go + 93.4 * 60000 }, { stop: 4, kind: 'leave', at: go + 119.5 * 60000 },
+        { stop: 5, kind: 'arrive', at: go + 125.2 * 60000 });
     }
     mine.forEach((x, j) => { const tid = 'me-' + j; S.taps[tid] = Object.assign({ id: tid, runnerId: 'me', created: x.at - 1, verified: true, source: 'gps' }, x); });
     emit();
@@ -685,7 +693,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
           this.sb.from('taps').select('id,runner_id,stop,kind,at,verified,source,created_at'),
         ]);
         if (ev.error || st.error || ru.error || ta.error) throw (ev.error || st.error || ru.error || ta.error);
-        S.event = { startMs: ev.data && ev.data.start_at ? Date.parse(ev.data.start_at) : 0, goMs: ev.data && ev.data.go_at ? Date.parse(ev.data.go_at) : null, name: (ev.data && ev.data.name) || '5K 5 Bars' };
+        S.event = { startMs: ev.data && ev.data.start_at ? Date.parse(ev.data.start_at) : 0, goMs: ev.data && ev.data.go_at ? Date.parse(ev.data.go_at) : null, name: (ev.data && ev.data.name) || '5 Bar 5K' };
         S.stops = (st.data || []).map(fromStop);
         S.runners = {}; (ru.data || []).forEach(r => { S.runners[r.id] = r; });
         const pend = Object.values(S.taps).filter(t => t.pending);
@@ -1095,7 +1103,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     const fast = p.legs.filter(l => l.pace).sort((a, b) => a.pace - b.pace)[0];
     const long = [...nt.bars].sort((a, b) => b.sec - a.sec)[0];
     return html`<div class="page">
-      <div class="finbib"><div class="band num"><span>Beer Club × WRTC</span><span>Bib ${S.me.bib}</span></div>
+      <div class="finbib"><div class="band num"><span>WRTC 5 Bar 5K</span><span>Bib ${S.me.bib}</span></div>
         <div class="mid"><button class="medalbtn" onClick=${() => { S.celebrate = true; emit(); }} aria-label="Replay the finish">${BIG_MEDAL}</button><p class="word">Finished</p><p class="who">${S.me.name} · ${S.stops[n].name}</p>
           <div class="stats">
             <div><b class="num">${rank ? ordinal(rank) : '–'}</b><span>of ${count}</span></div>
@@ -1103,6 +1111,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
             <div><b class="num">${p.timed ? dur(p.moving) : '–'}</b><span>running</span></div>
           </div></div></div>
       <p class="sub2">Medals are at ${S.stops[n].name}. Get some water.</p>
+      <p class="sub2"><b>Getting home.</b> ${HOME_NOTE}</p>
       <div class="card">
         <h2 class="h2" style="font-size:22px;margin-bottom:10px">Your night</h2>
         <${NightBar} nt=${nt} p=${p} />
@@ -1168,7 +1177,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     async function submit(e) {
       e.preventDefault(); setErr('');
       const b = parseInt(bib, 10), nm = name.trim().replace(/\s+/g, ' ');
-      if (!b || b < 1 || b > 9999) { setErr('Type the number on your bib. Bibs run from 1 to 9999.'); return; }
+      if (!/^\d{1,5}$/.test(bib) || b > 99999) { setErr('Type the number on your bib. Bibs run from 0 to 99999.'); return; }
       if (!nm) { setErr('Add your first name so people know who bib ' + b + ' is.'); return; }
       setBusy(true);
       try { await S.api.join(b, nm.slice(0, 24), show); }
@@ -1176,9 +1185,9 @@ dialog.sheet::backdrop{background:var(--scrim)}
       setBusy(false);
     }
     return html`<form class="join" onSubmit=${submit} noValidate>
-      <div class="hero"><div class="band num">Beer Club × WRTC · ${S.event.startMs ? new Date(S.event.startMs).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: TZ }) + ' · ' + clockAP(S.event.startMs) : 'Philly'}</div>
+      <div class="hero"><div class="band num">WRTC · ${S.event.startMs ? new Date(S.event.startMs).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: TZ }) + ' · ' + clockAP(S.event.startMs) : 'Philly'}</div>
         <div class="mid"><p class="word">5K</p><p class="sub">5 bars · 1 drink each</p></div></div>
-      <div class="field"><label for="bib">Bib number</label><input id="bib" class="bibin num" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="4" value=${bib} onInput=${e => setBib(e.target.value.replace(/\D/g, ''))} aria-describedby="joinerr" /></div>
+      <div class="field"><label for="bib">Bib number</label><input id="bib" class="bibin num" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="5" value=${bib} onInput=${e => setBib(e.target.value.replace(/\D/g, ''))} aria-describedby="joinerr" /></div>
       <div class="field"><label for="nm">First name</label><input id="nm" autocomplete="given-name" autocapitalize="words" maxlength="24" value=${name} onInput=${e => setName(e.target.value)} enterkeyhint="go" /></div>
       <label class="check"><input type="checkbox" checked=${show} onChange=${e => setShow(e.target.checked)} /><span>Show my results on the leaderboard</span></label>
       <p id="joinerr" class="err" role="alert">${err}</p>
@@ -1197,8 +1206,11 @@ dialog.sheet::backdrop{background:var(--scrim)}
           <li><span class="node" aria-hidden="true">${I.shoe}</span><div><b>Tap Start when you set off.</b><span>Go whenever you're ready once the start opens. Run or walk.</span></div></li>
           <li><span class="node" aria-hidden="true">${I.beer}</span><div><b>Tap "I'm at" as you walk into each bar.</b><span>Allow location when asked, so the app can confirm you made it.</span></div></li>
           <li><span class="node" aria-hidden="true">${I.beer}</span><div><b>Tap "Leaving" on your way out.</b><span>A countdown shows when the group leaves. Bar time never counts.</span></div></li>
-          <li><span class="node" aria-hidden="true">${I.medal}</span><div><b>Finish at Morgan's Pier.</b><span>Grab your medal and see your whole night.</span></div></li>
+          <li><span class="node" aria-hidden="true">${I.medal}</span><div><b>Finish at ${S.stops.length ? S.stops[S.stops.length - 1].name : "Morgan's Pier"}.</b><span>Grab your medal and see your whole night.</span></div></li>
         </ol></div>
+      <div class="card howto"><h2 class="h2" style="font-size:22px">Race day</h2>
+        <p><b>Bring a light layer.</b> ${LAYER_NOTE}</p>
+        <p><b>Getting home.</b> ${HOME_NOTE}</p></div>
       ${standalone ? null : html`<div class="card howto"><h2 class="h2" style="font-size:22px">Put it on your Home Screen</h2>
         <p>${android ? html`In Chrome, tap the ⋮ menu, then <b>Add to Home screen</b>.` : APPLE ? html`In Safari, tap <b>Share</b>, then <b>Add to Home Screen</b>.` : html`On iPhone: Safari, Share, Add to Home Screen. On Android: Chrome, ⋮ menu, Add to Home screen.`}</p>
         <p class="tiny">Do it before race day. It opens full screen, works on bad signal, and keeps you signed in.</p></div>`}
@@ -1464,6 +1476,27 @@ dialog.sheet::backdrop{background:var(--scrim)}
       const mi = s.km / MI, run = prev + mi * 8 * 60000, walk = prev + mi * 20 * 60000;
       return { run, walk, walkBar: s.leaveBy ? (s.leaveBy - walk) / 60000 : null, runBar: s.leaveBy ? (s.leaveBy - run) / 60000 : null };
     }
+    /* Rain plan: swap an outdoor stop for its indoor backup, or back. Leave times stay; withKm redoes the legs. */
+    const rainTo = (r, wet) => wet ? r.wet : DEFAULT_STOPS.find(x => x.name === r.dry);
+    function rainStops(r, wet) {
+      const stops = copyStops(), i = stops.findIndex(x => x.name === (wet ? r.dry : r.wet.name)), to = rainTo(r, wet);
+      if (i < 0 || !to) return null;
+      Object.assign(stops[i], { name: to.name, short: to.short, addr: to.addr, lat: to.lat, lng: to.lng, radius: to.radius });
+      return { stops, i };
+    }
+    async function swapRain(r, wet) {
+      const x = rainStops(r, wet); if (!x) return;
+      await save(x.stops, (wet ? r.wet.name + ' replaces ' + r.dry : 'Back to ' + r.dry) + '. Leave times stay the same.');
+    }
+    /* Calling the bars: the time to give each bar is when the first runners walk in, to the nearest 5 minutes. */
+    const around = ms => clockAP(Math.round(ms / 300000) * 300000);
+    const raceDay = () => new Date(S.event.startMs).toLocaleDateString('en-US', { weekday: 'long', timeZone: TZ }) + ' the ' + ordinal(+new Date(S.event.startMs).toLocaleDateString('en-US', { day: 'numeric', timeZone: TZ }));
+    const callScript = when => "Hi, I'm organizing a Wharton run club 5K on " + raceDay() + '. About 30 runners will come in around ' + when + ' for one beer each and be gone in 20 minutes. Are you open then, can you have a fast-pour option, and can we do one tab?';
+    async function copyScript(i) {
+      const wv = window_(i); if (!wv) return;
+      try { await navigator.clipboard.writeText(callScript(around(wv.run))); say('Copied the call script for ' + S.stops[i].short + '.'); }
+      catch (e) { say("Couldn't copy. The script is on this screen."); }
+    }
     return html`<div class="page">
       <div class="lbhead"><h1 class="h2">Organizer</h1><button class="btn small" onClick=${back}>Back to the race</button></div>
 
@@ -1512,6 +1545,35 @@ dialog.sheet::backdrop{background:var(--scrim)}
             </div>
             ${i < n && wv && wv.walkBar != null ? html`<p class=${'tiny num' + (short ? ' err' : '')}>${short ? 'Short: ' : ''}walkers get ${Math.round(wv.walkBar)} min at the bar, runners ${Math.round(wv.runBar)} min</p>` : null}
           </div>`;
+        })}
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <h2 class="h2" style="font-size:22px">Rain plan</h2>
+        <p class="tiny">Two stops are outdoors. If Friday's forecast looks wet, swap in the indoor backup. Leave times stay the same and the legs update.</p>
+        ${RAIN.map(r => {
+          const wetOn = S.stops.some(x => x.name === r.wet.name), dryOn = S.stops.some(x => x.name === r.dry);
+          if (!wetOn && !dryOn) return null;
+          const x = rainStops(r, !wetOn), legs = x ? [legKm(x.stops[x.i - 1], x.stops[x.i]), x.stops[x.i + 1] ? legKm(x.stops[x.i], x.stops[x.i + 1]) : null] : null;
+          return html`<div class="orgstop" style="display:flex;flex-direction:column;gap:8px">
+            <p><b>${wetOn ? r.wet.name : r.dry}</b><br /><span class="tiny">${wetOn ? 'Indoor backup, in use now' : 'Outdoors'}</span></p>
+            <button class="btn small full" onClick=${() => swapRain(r, !wetOn)}>${wetOn ? 'Back to ' + r.dry : 'Swap in ' + r.wet.name}</button>
+            ${legs ? html`<p class="tiny num">${wetOn ? '' : r.wet.addr + '. '}After the swap the legs in and out are ${km(legs[0])}${legs[1] != null ? ' and ' + km(legs[1]) : ''}.</p>` : null}
+          </div>`;
+        })}
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+        <h2 class="h2" style="font-size:22px">Calling the bars</h2>
+        <p class="tiny">${callScript('[time]')}</p>
+        <p class="tiny">The time is when the first runners walk in, at 8:00/mi. Walkers come in about 10 minutes later.</p>
+        ${S.stops.map((x, i) => {
+          const wv = i ? window_(i) : null;
+          if (!wv) return null;
+          return html`<div class="orgstop"><div class="grid2" style="align-items:center">
+            <p><b>${i}. ${x.short}</b><br /><span class="tiny num">around ${around(wv.run)}</span></p>
+            <button class="btn small" onClick=${() => copyScript(i)}>Copy script</button>
+          </div></div>`;
         })}
       </div>
 
@@ -1587,7 +1649,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     if (S.mode === 'loading') return html`<p class="boot">Loading the race…</p>`;
     if (S.mode === 'setup') return html`<div class="page"><h1 class="h2">Setup needed</h1><p>${S.problem}</p></div>`;
     if (S.mode === 'error') return html`<div class="page"><h1 class="h2">Couldn't load</h1><p>${S.problem}</p><button class="btn" onClick=${() => location.reload()}>Reload</button></div>`;
-    const header = html`<header class="top"><a class="mark" href="about.html" aria-label="About the race">5K<b>5</b>BARS</a>${S.mode === 'demo' ? html`<${Preview} onOrg=${() => setOrg(true)} />` : null}
+    const header = html`<header class="top"><a class="mark" href="about.html" aria-label="About the race">5BAR<b>5K</b></a>${S.mode === 'demo' ? html`<${Preview} onOrg=${() => setOrg(true)} />` : null}
       ${S.me ? html`<span class="bibchip" aria-label=${'Bib ' + S.me.bib + ', ' + S.me.name}><span class="num">${S.me.bib}</span><span>${S.me.name}</span></span>` : null}</header>`;
     const toast = html`${S.toast ? html`<div class="toast" role="status">${S.toast}</div>` : html`<div class="toast" role="status" hidden></div>`}${S.celebrate && S.me ? html`<${Celebrate} />` : null}`;
     if (org) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Organizer} back=${() => { setOrg(false); if (location.hash === '#organizer' || location.search) history.replaceState(null, '', location.pathname); }} /></main>${toast}</div>`;

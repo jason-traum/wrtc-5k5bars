@@ -1,4 +1,4 @@
--- 5K 5 Bars database for a NEW Supabase project (not In.'s).
+-- 5 Bar 5K database for a NEW Supabase project (not In.'s).
 -- Paste this whole file into Supabase > SQL Editor > New query, then click Run. Safe to run again.
 -- BEFORE RUNNING: put the organizer email on the line below. Add more organizers with the same insert.
 -- Also turn on Authentication > Sign In / Providers > "Allow anonymous sign-ins" (runners join with a bib).
@@ -13,18 +13,19 @@ insert into public.admins (email) values (lower('YOUR_EMAIL_HERE')) on conflict 
 -- The race itself: one row. start_at is a placeholder (Saturday after next, 2 PM) until the organizer sets it.
 create table if not exists public.event (
   id smallint primary key default 1 check (id = 1),
-  name text not null default 'Beer Club × WRTC 5K 5 Bars' check (char_length(name) <= 60),
+  name text not null default '5 Bar 5K' check (char_length(name) <= 60),
   start_at timestamptz not null default ((date_trunc('week', now() at time zone 'America/New_York') + interval '12 days 14 hours') at time zone 'America/New_York'),
   go_at timestamptz,
-  bib_max smallint not null default 9999 check (bib_max between 1 and 9999),
+  bib_max integer not null default 99999 check (bib_max between 1 and 99999),
   updated_at timestamptz not null default now()
 );
 insert into public.event (id) values (1) on conflict do nothing;
--- Bibs go up to 9999 (older copies of this file allowed 300).
+-- Bibs run from 0 to 99999 so the fun bibs (0, 42069) work (older copies of this file allowed 1 to 9999).
 alter table public.event drop constraint if exists event_bib_max_check;
-alter table public.event add constraint event_bib_max_check check (bib_max between 1 and 9999);
-alter table public.event alter column bib_max set default 9999;
-update public.event set bib_max = 9999 where id = 1 and bib_max < 9999;
+alter table public.event alter column bib_max type integer;
+alter table public.event add constraint event_bib_max_check check (bib_max between 1 and 99999);
+alter table public.event alter column bib_max set default 99999;
+update public.event set bib_max = 99999 where id = 1 and bib_max < 99999;
 
 -- The course, in order. Stop 0 is the start; the last stop is the finish.
 create table if not exists public.stops (
@@ -43,11 +44,11 @@ select v.ord, v.name, v.short, v.addr, v.lat, v.lng, v.radius_m, v.km,
        case when v.mins is null then null else e.start_at + make_interval(mins => v.mins) end
 from public.event e, (values
   (0, 'Rittenhouse Square', 'Rittenhouse', 'Start, 18th & Walnut', 39.9495, -75.1719, 150, 0.00, 0),
-  (1, 'PHS Pop Up Garden', 'PHS Garden', '1438 South St', 39.94368, -75.16623, 120, 1.14, 45),
-  (2, 'McGillin''s Olde Ale House', 'McGillin''s', '1310 Drury St', 39.95016, -75.16204, 120, 1.00, 85),
-  (3, 'Independence Beer Garden', 'Indy Beer Garden', '100 S Independence Mall W', 39.94918, -75.15085, 150, 1.01, 125),
-  (4, 'Bar 4', 'Bar 4', 'Still being picked', 39.95224, -75.14508, 150, 0.85, 165),
-  (5, 'Morgan''s Pier', 'Morgan''s Pier', '221 N Columbus Blvd', 39.9553, -75.1393, 150, 0.85, null)
+  (1, 'PHS Pop Up Garden', 'PHS Garden', '1438 South St', 39.94368, -75.16623, 120, 1.14, 30),
+  (2, 'McGillin''s Olde Ale House', 'McGillin''s', '1310 Drury St', 39.95016, -75.16204, 120, 1.00, 60),
+  (3, 'Independence Beer Garden', 'Indy Beer Garden', '100 S Independence Mall W', 39.95028, -75.15076, 150, 1.12, 90),
+  (4, 'The Plough & the Stars', 'Plough & Stars', '123 Chestnut St (enter on 2nd St)', 39.94862, -75.1439, 120, 0.70, 120),
+  (5, 'Morgan''s Pier', 'Morgan''s Pier', '221 N Columbus Blvd', 39.9549, -75.13891, 150, 1.07, null)
 ) as v(ord, name, short, addr, lat, lng, radius_m, km, mins)
 where e.id = 1 and not exists (select 1 from public.stops);
 
@@ -55,13 +56,14 @@ where e.id = 1 and not exists (select 1 from public.stops);
 create table if not exists public.runners (
   id uuid primary key default gen_random_uuid(),
   auth_uid uuid unique references auth.users (id) on delete set null,
-  bib smallint not null unique check (bib between 1 and 9999),
+  bib integer not null unique check (bib between 0 and 99999),
   name text not null check (char_length(btrim(name)) between 1 and 24),
   created_at timestamptz not null default now()
 );
 
 alter table public.runners drop constraint if exists runners_bib_check;
-alter table public.runners add constraint runners_bib_check check (bib between 1 and 9999);
+alter table public.runners alter column bib type integer;
+alter table public.runners add constraint runners_bib_check check (bib between 0 and 99999);
 
 -- Every tap: "I'm at" (arrive) or "Leaving" (leave) a stop; leaving stop 0 is the runner's own Start.
 -- Location itself is never stored, only the distance.
@@ -116,7 +118,7 @@ language sql stable security definer set search_path = public as $$
 $$;
 
 drop function if exists public.my_runner();
-create or replace function public.my_runner() returns table (id uuid, bib smallint, name text, hidden boolean)
+create or replace function public.my_runner() returns table (id uuid, bib integer, name text, hidden boolean)
 language sql stable security definer set search_path = public as $$
   select r.id, r.bib, r.name, r.hidden from runners r where auth.uid() is not null and r.auth_uid = auth.uid();
 $$;
@@ -140,7 +142,8 @@ begin
 end $$;
 
 -- Claim a bib. The same first name on a new phone moves the bib (Safari and the Home Screen app are separate).
-create or replace function public.claim_bib(p_bib integer, p_name text) returns table (id uuid, bib smallint, name text)
+drop function if exists public.claim_bib(integer, text);
+create or replace function public.claim_bib(p_bib integer, p_name text) returns table (id uuid, bib integer, name text)
 language plpgsql security definer set search_path = public as $$
 declare
   me uuid := auth.uid();
@@ -156,7 +159,7 @@ begin
     raise exception 'Use plain letters for your first name.';
   end if;
   select e.bib_max into mx from event e where e.id = 1;
-  if p_bib is null or p_bib < 1 or p_bib > mx then raise exception 'Bibs run from 1 to %.', mx; end if;
+  if p_bib is null or p_bib < 0 or p_bib > mx then raise exception 'Bibs run from 0 to %.', mx; end if;
   if nm = '' then raise exception 'Add your first name so people know who bib % is.', p_bib; end if;
   nm := left(nm, 24);
   select * into r from runners x where x.bib = p_bib for update;

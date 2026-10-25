@@ -1,6 +1,6 @@
 {
-  "name": "Beer Club × WRTC 5K 5 Bars",
-  "short_name": "5K 5 Bars",
+  "name": "WRTC 5 Bar 5K",
+  "short_name": "5 Bar 5K",
   "description": "Check in at every bar and follow the leaderboard.",
   "start_url": "./",
   "scope": "./",

@@ -60,6 +60,18 @@
 
 2026-09-29. Demo countdown cut from 15 to 8 seconds (Jason).
 
+2026-10-19. WRTC only, renamed 5 Bar 5K (Jason). Beer Club is out: the name is "5 Bar 5K" on the title, Home Screen name, join band ("WRTC · date"), finish card ("WRTC 5 Bar 5K") and the wordmark (5BAR5K, 5K in red, like the flyer).
+
+2026-10-19. Route set for Sun Oct 25 (Jason): Rittenhouse, PHS Pop Up Garden, McGillin's, Independence Beer Garden, The Plough & the Stars (Bar 4), Morgan's Pier. About 5.0 km on the grid, no leg under 0.7 km. 30 minutes per stop instead of 40, so the group leaves at 2:00, 2:30, 3:00, 3:30 and 4:00 and reaches the finish about 4:05. Independence Beer Garden's pin moved about 120 m north to the garden itself (it was south of Chestnut). Mac's Tavern was ruled out: it closed in 2025 and its reopening isn't confirmed.
+
+2026-10-19. Rain plan and call script on the organizer screen (Jason). One button per outdoor stop swaps in an indoor backup (Misconduct Tavern for PHS Garden, Red Owl Tavern for Independence Beer Garden) and back; leave times stay. "Calling the bars" shows each bar's first-runner arrival time and copies Jason's script with it. Race-day card on the join screen: bring a light layer (the river at 4 PM is cooler than the forecast) and getting home (the El from 2nd St, or a rideshare); getting home is on the finish screen too.
+
+2026-10-19. Finish moved indoors (Jason: "I don't need river view. Agree it will get cold if outside"). Paddy's (228 Race St) replaces The Plough & the Stars as Bar 4 and Yards Brewing (500 Spring Garden St) replaces Morgan's Pier as the finish. Morgan's was outdoors on the river at about 4 PM with no rain backup; Yards is a big indoor taproom with room for the group and the medals. Legs 1.14, 1.00, 1.12, 0.99 and 1.13 km, 5.38 km in all, about 0.4 km longer. Getting home is now Spring Garden station on the El, about 6 minutes' walk. The last leg crosses Vine St instead of Columbus Blvd. Only PHS Garden and Independence Beer Garden are outdoors now, and both have backups.
+
+2026-10-21. Bibs run from 0 to 99999 (Jason added bib 0, and bib 42069 couldn't join under the old 1 to 9999 limit). Bib columns are integer now. The printed set is 40 bibs: 0, 1, 8, 13, 67, 69, 212, 420, 42069 and 31 mixed numbers instead of 101 up.
+
+2026-10-25. Race day, finish back at Morgan's Pier (Jason: "I feel like ending at morgan pier will be fun"). About 11 runners, sunny and about 67°F with no rain, and Morgan's has DJs 2 to 6 PM, so the river finish beats Yards today. Route: PHS Pop Up Garden, McGillin's, Independence Beer Garden, The Plough & the Stars, Morgan's Pier; legs 1.14, 1.00, 1.12, 0.70 and 1.07 km. Morgan's pin moved to Google's location. Getting home is the El from 2nd St again.
+
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
 - WRTC 5K 5 Bars one-pager: this app's own source look.

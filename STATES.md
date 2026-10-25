@@ -5,7 +5,7 @@
 - Saving: button shows a spinner after 500ms and keeps its label.
 - Bib taken by the same first name: moves the bib to this phone (Safari and the Home Screen app are separate).
 - Bib taken by a different name: "Bib 23 is already Sam's. Check the number on your bib, or ask the organizer."
-- Bib out of range: "Bibs run from 1 to 9999."
+- Bib out of range: "Bibs run from 0 to 99999."
 - No signal: "Couldn't reach the race. Check your signal and try again." Fields keep their values.
 
 ## Race
@@ -44,4 +44,6 @@
 - Stops: name, leave-by time, "Set to where I'm standing", radius.
 - Runners: per runner, remove a tap or release a bib. Removing asks once with the consequence in the button label.
 - After a practice run: "Clear all 23 check-ins", then "Tap again to delete 23 check-ins" (resets after 6 s). Clears taps and the GO, keeps bibs. Disabled with "Nothing to clear".
+- Rain plan: one row per outdoor stop (PHS Garden, Independence Beer Garden) with "Swap in <indoor backup>, <address>" and the two legs it would make; once swapped, the row says "Indoor backup, in use now" and the button is "Back to <stop>". Leave times stay; leg distances update.
+- Calling the bars: the call script once, with [time]; then one row per bar with "around 2:05 PM" (first runners in at 8:00/mi, to the nearest 5 minutes) and "Copy script", which copies the script with that bar's time. If copying fails: "Couldn't copy. The script is on this screen."
 - Directions and "Check in Apple/Google": Apple Maps on iPhone, iPad and Mac; Google Maps everywhere else. Walking directions to the pin.

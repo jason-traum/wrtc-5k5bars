@@ -1,10 +1,10 @@
-/* 5K 5 Bars service worker.
+/* 5 Bar 5K service worker.
    The page itself: network first, so a new version shows up on the next open; the saved copy only when there's no signal.
    Pinned libraries and fonts: cache first (their URLs carry exact versions).
    Map tiles, map fonts and the tile index: cache first in their own cache, capped, so streets you've looked at
    still draw with no signal.
    Supabase (the race data): never cached here. Taps made offline wait in the page's own queue. */
-const VERSION = 'race-2026-10-01a';
+const VERSION = 'race-2026-10-25a';
 const TILES = 'map-tiles-v1', TILE_CAP = 600;
 const SHELL = ['./', './index.html', './about.html', './config.js', './manifest.json', './apple-touch-icon.png', './icon-192.png'];
 

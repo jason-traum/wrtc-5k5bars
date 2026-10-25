@@ -81,7 +81,7 @@ async def main():
                 await pg.click("text=Preview"); await pg.click("dialog >> text=Open the organizer view"); await pg.wait_for_selector(".pin", timeout=15000); await pg.wait_for_timeout(3000); await shot("organizer")
                 await pg.click("text=Test a check-in at"); await pg.wait_for_timeout(1200)
                 if not await pg.locator(".loccheck .status, .loccheck .alert").count(): problems.append(f"organizer check-in test showed nothing {tag}")
-                await pg.click(".opts >> text=Bar 4"); await pg.fill("#gq", "Khyber Pass Pub"); await pg.click("form >> text=Search"); await pg.wait_for_timeout(3500)
+                await pg.click(".opts >> text=Plough & Stars"); await pg.fill("#gq", "Khyber Pass Pub"); await pg.click("form >> text=Search"); await pg.wait_for_timeout(3500)
                 await shot("org-search")
                 if await pg.locator(".geo-results button").count():
                     await pg.click(".geo-results button >> nth=0"); await pg.wait_for_timeout(600)

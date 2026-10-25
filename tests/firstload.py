@@ -1,4 +1,5 @@
 """First visit in cloud mode with a mocked Supabase: does the Race screen render right after joining?"""
+import datetime
 import asyncio, base64, http.server, threading, functools, json, time
 from playwright.async_api import async_playwright
 
@@ -30,7 +31,7 @@ async def api(route):
             return await route.fulfill(status=401, content_type="application/json", body=json.dumps({"code": "42501", "message": "permission denied for table event"}))
         if "rpc/claim_bib" in url:
             return await route.fulfill(status=200, content_type="application/json", body=json.dumps([{"id": "r1", "bib": 23, "name": "Jason"}]))
-        body = {"event": [{"id": 1, "name": "x", "start_at": "2026-10-10T18:00:00Z", "go_at": None}], "stops": STOPS, "runners": [], "taps": []}
+        body = {"event": [{"id": 1, "name": "x", "start_at": (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)).strftime("%Y-%m-%dT18:00:00Z"), "go_at": None}], "stops": STOPS, "runners": [], "taps": []}
         for k, v in body.items():
             if f"/rest/v1/{k}" in url:
                 if k == "event":

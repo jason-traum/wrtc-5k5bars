@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>About · 5K 5 Bars</title>
+<title>About · 5 Bar 5K</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#E9EDF3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0A1120" media="(prefers-color-scheme: dark)">
@@ -148,18 +148,18 @@ section{display:flex;flex-direction:column;gap:14px}
 <main class="wrap">
 
   <header>
-    <div class="bib" role="img" aria-label="Race bib: Beer Club and WRTC 5K, 5 bars">
-      <div class="bib-top"><b>BEER CLUB × WRTC</b><span><i>Philly · Sun, Oct 25 ·</i> <i>2:00 PM start</i></span></div>
+    <div class="bib" role="img" aria-label="Race bib: WRTC 5 Bar 5K">
+      <div class="bib-top"><b>WRTC</b><span><i>Philly · Sun, Oct 25 ·</i> <i>2:00 PM start</i></span></div>
       <div class="bib-mid">
         <p class="bib-num">5K</p>
         <p class="bib-sub">5 bars · 1 drink each</p>
         <p class="bib-name">Your name here</p>
       </div>
       <div class="bib-strip bib-foot">
-        <span>PHS Garden</span><span>McGillin's</span><span>Indy Beer Garden</span><span>Bar 4</span><span>Morgan's Pier</span>
+        <span>PHS Garden</span><span>McGillin's</span><span>Indy Beer Garden</span><span>Plough &amp; Stars</span><span>Morgan's Pier</span>
       </div>
     </div>
-    <p class="lede">A proposal for a joint Beer Club and WRTC event: a 5K bar crawl from Rittenhouse Square to Morgan's Pier, with five bars about 1 km apart, one drink at each, and about 3 hours start to finish. Run or walk any leg. Everyone leaves each bar at the same time, so the group stays together.</p>
+    <p class="lede">The WRTC 5 Bar 5K: a bar crawl from Rittenhouse Square to Morgan's Pier, with five bars about 1 km apart, one drink at each, and about 2 hours to the finish. Run or walk any leg. Everyone leaves each bar at the same time, so the group stays together.</p>
     <p class="note" style="margin-top:10px">The date is set for Sunday, Oct 25. The bars, the price and how drinks work are still open.</p>
     <nav class="links" aria-label="Links">
       <a class="home" href="./">Back to the race app</a>
@@ -185,7 +185,7 @@ section{display:flex;flex-direction:column;gap:14px}
 
   <section>
     <h2>Route</h2>
-    <p>These bars are a first pick, not final. We still need to confirm each one and choose Bar 4.</p>
+    <p>Each bar still needs a yes for about 30 runners at its arrival time. If it rains, Misconduct Tavern replaces PHS Garden and Red Owl Tavern replaces Independence Beer Garden.</p>
     <div class="route" id="route"></div>
     <p class="note">The last leg crosses Columbus Blvd, so the group uses the signaled crosswalk.</p>
   </section>
@@ -236,20 +236,19 @@ section{display:flex;flex-direction:column;gap:14px}
   <section>
     <h2>Still to decide</h2>
     <dl class="todo">
-            <div><dt>Start time</dt><dd>The schedule above assumes 2:00 PM</dd></div>
       <div><dt>Price</dt><dd>One ticket price that covers the bib, the medal and the tracking app</dd></div>
-      <div><dt>Bars</dt><dd>The five above are a first pick. Each still needs a yes from the bar, and Bar 4 is open: Buffalo Billiards, the Plough &amp; the Stars, or Khyber Pass</dd></div>
+      <div><dt>Bars</dt><dd>Each of the five still needs a yes. Independence Beer Garden is seasonal and not yet confirmed for Oct 25</dd></div>
       <div><dt>Drinks</dt><dd>Pay as you go, tickets, or a small fee for the bib and medal with drinks paid at each bar</dd></div>
       <div><dt>Medals and bibs</dt><dd>How many to order. Custom ones take 2 to 3 weeks, so the order goes in by about Oct 5</dd></div>
       <div><dt>Sign-ups</dt><dd>Start with 30 tickets and a waitlist, and when to open more</dd></div>
-      <div><dt>Rain plan</dt><dd>Rain or shine with indoor backups, or a rain date. Three of the five bars are outdoors</dd></div>
+      <div><dt>Rain plan</dt><dd>Rain or shine. Decide Friday from the forecast whether to swap in the indoor backups</dd></div>
       <div><dt>Crew</dt><dd>Bib pickup, a lead who texts each bar, a sweep, and someone at the Columbus Blvd crossing</dd></div>
-      <div><dt>Funding</dt><dd>Who pays for medals and bibs before tickets come in, and how Beer Club and WRTC split it</dd></div>
+      <div><dt>Funding</dt><dd>Who pays for medals and bibs before tickets come in</dd></div>
       <div><dt>Waves</dt><dd>One group, or waves a few minutes apart</dd></div>
     </dl>
   </section>
 
-  <p class="foot">Distances are street-grid estimates. Bar 4 is drawn halfway between Independence Beer Garden and Morgan's Pier until it's picked.</p>
+  <p class="foot">Distances are street-grid estimates.</p>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -260,17 +259,17 @@ section{display:flex;flex-direction:column;gap:14px}
 })();
 (function(){
   var START = 14*60;                 // 2:00 PM
-  var LEAVE = [14*60+45, 15*60+25, 16*60+5, 16*60+45];
-  var AXIS0 = 13*60+30, AXIS1 = 17*60+20;
+  var LEAVE = [14*60+30, 15*60, 15*60+30, 16*60];
+  var AXIS0 = 13*60+30, AXIS1 = 17*60;
   var STOPS = [
     {name:"Rittenhouse Sq", short:"Rittenhouse", sub:"Start", kind:"start"},
     {name:"PHS Pop Up Garden", short:"PHS Garden", sub:"1438 South St", kind:"bar"},
     {name:"McGillin's", short:"McGillin's", sub:"1310 Drury St", kind:"bar"},
     {name:"Independence Beer Garden", short:"Indy Beer Garden", sub:"6th & Chestnut", kind:"bar"},
-    {name:"Bar 4", short:"Bar 4", sub:"TBD", kind:"bar"},
+    {name:"The Plough & the Stars", short:"Plough & Stars", sub:"123 Chestnut St", kind:"bar"},
     {name:"Morgan's Pier", short:"Morgan's Pier", sub:"Finish, medals", kind:"finish"}
   ];
-  var KM = [1.14, 1.00, 1.01, 0.85, 0.85];
+  var KM = [1.14, 1.00, 1.12, 0.70, 1.07];
   var mins = function(km, pace){ return Math.round(km / 1.609 * pace); };
   var clock = function(m){ var h = Math.floor(m/60) % 12 || 12; return h + ":" + String(m%60).padStart(2,"0"); };
   var el = function(tag, cls, html){ var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
