@@ -74,7 +74,7 @@
 
 2026-10-25. Backup route page at /route (Jason: a separate page with just the bars in case the app goes wrong). Static HTML, no database or scripts: each stop with address, leave time, Google and Apple Maps links, a whole-route walking link, getting home, and a link back to the app.
 
-2026-10-25, mid-race. Group started at 2:11, so leave times moved 15 minutes later (2:45, 3:15, 3:45, 4:15). Finish moved from Morgan's Pier to Craftsman Row Saloon, 112 S 8th St, 0.98 km from the Plough (Jason: people wanted to end closer to Rittenhouse). Getting home is 8th St station on the El.
+2026-10-25, mid-race. Group started at 2:11, so leave times moved 15 minutes later (2:45, 3:15, 3:45, 4:15). Finish moved from Morgan's Pier to Craftsman Row Saloon, 112 S 8th St, 0.98 km from the Plough (Jason: people wanted to end closer to Rittenhouse). Then moved again, further west on Walnut, to Moriarty's Irish Pub, 1116 Walnut St, 1.55 km from the Plough (Jason: "It can be a bit further too? Direct towards rittenhouse"). Getting home: walk west on Walnut to Rittenhouse, or the El from 11th St.
 
 Prior apps (to avoid repeating):
 - In.: pale green #EAF2EE, deep green #1E5F55, Saira Condensed + Hanken Grotesk, green dot wordmark.
