@@ -31,8 +31,10 @@
    ============================================================================================ */
 :root{
   --canvas:#E9EDF3; --surface:#FFFFFF; --surface-2:#F3F5F9; --ink:#0F1A2E; --ink-2:#45506A; --line:#C9D1DE;
-  --action:#C41E2A; --action-press:#A5151F; --on-action:#FFFFFF; --focus:#C41E2A;
-  --navy:#14244A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD; --medal:#F0A53A; --medal-ink:#6B4308;
+  --action:#C41E2A; --action-press:#A5151F; --on-action:#FFFFFF; --focus:#C41E2A; --action-text:#C41E2A;
+  --navy:#14244A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD; --on-navy-red:#FF6B74; --medal:#F0A53A; --medal-ink:#6B4308;
+  /* the printed bib stays white in both themes, so these are never redefined for dark */
+  --bib:#FFFFFF; --bib-ink:#0F1A2E; --bib-ink-2:#45506A; --bib-line:#C9D1DE; --bib-band:#14244A; --bib-red:#C41E2A;
   --map-park:#DCE7E0; --map-bldg:#DDE2EA; --map-road:#FFFFFF; --map-road-major:#FFFFFF; --map-rail:#C9D1DE; --map-label:#5A6580;
   --bar:#A8680E; --bar-soft:#FDEFD6; --bar-ink:#6B4308;
   --ok:#1F7A4D; --warn:#8A5A00; --scrim:rgba(10,18,34,.5); --river:#CFDDEE;
@@ -45,7 +47,7 @@
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --canvas:#0E1628; --surface:#172238; --surface-2:#1F2C46; --ink:#E6ECF5; --ink-2:#A9B5CB; --line:#34425F;
-    --action:#C81E2A; --action-press:#A8161F; --on-action:#FFFFFF; --focus:#FF6B74;
+    --action:#C81E2A; --action-press:#A8161F; --on-action:#FFFFFF; --focus:#FF6B74; --action-text:#FF6B74;
     --navy:#1B2D5A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD;
     --map-park:#14261F; --map-bldg:#141E34; --map-road:#243250; --map-road-major:#31436A; --map-rail:#26334F; --map-label:#8F9CB6;
     --bar:#F0A53A; --bar-soft:#3A2C12; --bar-ink:#FFD99A;
@@ -55,7 +57,7 @@
 }
 :root[data-theme="dark"]{
   --canvas:#0E1628; --surface:#172238; --surface-2:#1F2C46; --ink:#E6ECF5; --ink-2:#A9B5CB; --line:#34425F;
-  --action:#C81E2A; --action-press:#A8161F; --on-action:#FFFFFF; --focus:#FF6B74;
+  --action:#C81E2A; --action-press:#A8161F; --on-action:#FFFFFF; --focus:#FF6B74; --action-text:#FF6B74;
   --navy:#1B2D5A; --on-navy:#FFFFFF; --on-navy-2:#B9C4DD;
   --map-park:#14261F; --map-bldg:#141E34; --map-road:#243250; --map-road-major:#31436A; --map-rail:#26334F; --map-label:#8F9CB6;
   --bar:#F0A53A; --bar-soft:#3A2C12; --bar-ink:#FFD99A;
@@ -77,49 +79,56 @@ p{margin:0;text-wrap:pretty;overflow-wrap:break-word}
 [hidden]{display:none!important}
 
 .shell{min-height:100svh;display:flex;flex-direction:column;padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
-.top{background:var(--navy);color:var(--on-navy);padding:max(10px,env(safe-area-inset-top,0px)) 16px 10px;display:flex;align-items:center;gap:10px}
-.mark{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.02em;line-height:1;color:inherit;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;-webkit-tap-highlight-color:transparent;transition:transform 120ms ease-out}
-.mark:active{transform:scale(.94) rotate(-2deg)}
-.mark b{color:#FF6B74}
-.bibchip{margin-left:auto;display:flex;align-items:center;gap:8px;background:#FFFFFF;color:#0F1A2E;border-radius:8px;padding:4px 10px 4px 8px;font-weight:700;font-size:15px;min-width:0;max-width:60%;overflow:hidden}
+.shell.notabs{padding-bottom:24px}
+.shell>.banner{margin:12px 16px 0}
+/* the band spans the window; its contents line up with the 560px column below */
+.top{background:var(--navy);color:var(--on-navy);padding:max(10px,env(safe-area-inset-top,0px)) max(16px,calc(50% - 264px)) 10px;display:flex;align-items:center;gap:12px}
+.mark{font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.02em;line-height:1;color:inherit;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;-webkit-tap-highlight-color:transparent;transition:transform 120ms var(--ease-out)}
+.mark:active{transform:scale(.97)}
+.mark b{color:var(--on-navy-red)}
+.bibchip{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--bib);color:var(--bib-ink);border-radius:8px;padding:4px 10px 4px 8px;font-weight:700;font-size:15px;min-width:0;max-width:60%;overflow:hidden}
 .bibchip span:first-child{flex:none}
 .top .mark,.top .prev-btn{flex:none}
-.bibchip span:first-child{font-family:var(--f-display);font-weight:900;font-size:20px;color:#C41E2A;line-height:1}
+.bibchip span:first-child{font-family:var(--f-display);font-weight:900;font-size:20px;color:var(--bib-red);line-height:1}
 .bibchip span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .prev-btn{border:1.5px solid var(--on-navy-2);background:transparent;color:var(--on-navy);border-radius:var(--r-pill);min-height:36px;padding:0 12px;font-size:14px;font-weight:600}
 .page{padding:16px;display:flex;flex-direction:column;gap:16px;max-width:560px;width:100%;margin:0 auto}
+.page.mappage{padding-bottom:0}
+.stack{display:flex;flex-direction:column;gap:12px}
+.stack.tight{gap:8px}
 
 /* route strip */
 /* start shoe, a pint per bar, finish medal; the runs are the lines. Outline = ahead, filled = done (inverted), red = running there now */
 .strip{display:flex;align-items:center;gap:0;padding:6px 2px 0}
 .node{flex:0 0 auto;width:36px;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;border:2px solid var(--ink-2);color:var(--ink-2);background:var(--canvas)}
-.node svg{width:64%;height:64%;display:block}
+.node svg{width:22px;height:22px;display:block}
 .node.done{background:var(--ink);border-color:var(--ink);color:var(--canvas)}
 .node.now{border:3px solid var(--action);color:var(--action);background:var(--surface);transform:scale(1.14)}
 .node.here{background:var(--bar);border-color:var(--bar);color:#1A1204;transform:scale(1.14)}
 .seg{flex:1 1 auto;height:3px;background:var(--line);min-width:8px}
 .seg.done{background:var(--ink)}
 .seg.run{background:var(--action)}
-@media (prefers-reduced-motion:no-preference){.node{transition:background-color 120ms ease-out,transform 120ms ease-out}}
+@media (prefers-reduced-motion:no-preference){.node{transition:background-color 120ms var(--ease-out),transform 120ms var(--ease-out)}}
 .strip-cap{display:flex;justify-content:space-between;font-size:14px;color:var(--ink-2);margin-top:6px}
 .stripbtn{display:block;width:100%;background:none;border:0;padding:6px 0 4px;margin:-6px 0 -4px;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:14px;-webkit-tap-highlight-color:transparent}
 .stripbtn:active{transform:scale(.99)}
 .strip-more{color:var(--ink);font-weight:700}
 
 /* next bar */
-.where{display:flex;flex-direction:column;gap:6px}
+.where{display:flex;flex-direction:column;gap:8px}
 .where .step{font-size:15px;font-weight:600;color:var(--ink-2)}
 .barname{font-family:var(--f-display);font-weight:900;font-size:clamp(38px,11vw,52px);line-height:.95;text-transform:uppercase;letter-spacing:.005em}
 .meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:16px;color:var(--ink-2)}
 .meta b{color:var(--ink);font-weight:700}
-.atpanel{background:var(--bar-soft);color:var(--bar-ink);border-radius:var(--r-card);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.atpanel{background:var(--bar-soft);color:var(--bar-ink);border-radius:var(--r-card);padding:16px;display:flex;flex-direction:column;gap:4px}
+.atpanel.plain{background:var(--surface);color:var(--ink)}
 .atpanel .lbl{font-weight:700;font-size:15px}
 .atpanel .bigt{font-family:var(--f-display);font-weight:900;font-size:34px;line-height:1}
 .atpanel .sub{font-size:15px}
 .atpanel .count{font-family:var(--f-display);font-weight:900;font-size:64px;line-height:.95;letter-spacing:.01em}
 
 /* buttons */
-.big{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-height:112px;border:0;border-radius:var(--r-big);background:var(--action);color:var(--on-action);padding:14px 16px;text-align:center;transition:transform 120ms var(--ease-out),background-color 120ms var(--ease-out)}
+.big{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:100%;min-height:112px;border:0;border-radius:var(--r-big);background:var(--action);color:var(--on-action);padding:16px;text-align:center;transition:transform 120ms var(--ease-out),background-color 120ms var(--ease-out)}
 .big:active{transform:scale(.97);background:var(--action-press)}
 .big[disabled]{cursor:default}
 .btn[disabled]{opacity:.55;cursor:default}
@@ -132,45 +141,49 @@ p{margin:0;text-wrap:pretty;overflow-wrap:break-word}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 16px;border-radius:12px;border:2px solid var(--ink-2);background:transparent;color:var(--ink);font-weight:700;font-size:16px;text-decoration:none;transition:transform 120ms var(--ease-out)}
 .btn:active{transform:scale(.97)}
 .btn.full{width:100%}
-.btn.red{border-color:var(--action);color:var(--action)}
+.btn.red{border-color:var(--action-text);color:var(--action-text)}
 .btn.small{min-height:44px;font-size:15px;padding:0 14px;white-space:nowrap}
 .btn.solid{background:var(--ink);border-color:var(--ink);color:var(--canvas)}
-.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.row2.inputrow{grid-template-columns:minmax(0,1fr) auto}
 
 /* status + splits */
 .status{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600}
 .status.ok{color:var(--ok)}.status.warn{color:var(--warn)}
 .ico{width:18px;height:18px;flex:0 0 auto}
-.card{background:var(--surface);border-radius:var(--r-card);padding:14px 16px}
-.alert{background:var(--surface);border:2px solid var(--ink-2);border-radius:var(--r-card);padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border-radius:var(--r-card);padding:16px}
+.alert{background:var(--surface);border:2px solid var(--ink-2);border-radius:var(--r-card);padding:16px;display:flex;flex-direction:column;gap:12px}
 .alert p b{font-weight:700}
 .split{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .split .k{font-size:15px;color:var(--ink-2);font-weight:600}
 .split .v{font-family:var(--f-display);font-weight:900;font-size:30px;line-height:1}
 .split .u{font-size:15px;color:var(--ink-2)}
 .timer{font-family:var(--f-display);font-weight:900;font-size:30px;line-height:1}
-.legs{width:100%;border-collapse:collapse;font-size:16px}
+.legs{width:100%;border-collapse:collapse;font-size:15px}
 .legs th{font-size:14px;color:var(--ink-2);font-weight:600;text-align:left;padding:0 0 6px}
 .legs td{padding:8px 0;border-top:1px solid var(--line)}
 .legs td.r,.legs th.r{text-align:right;white-space:nowrap;padding-left:12px}
 .sched{display:flex;flex-direction:column}
 .sched div{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:16px}
-.sched div:first-child{border-top:0}
+.sched div:first-child{border-top:0;padding-top:0}
 .sched span:last-child{color:var(--ink-2);white-space:nowrap}
 .sched .cur{font-weight:700}
 .h2{font-family:var(--f-display);font-weight:900;font-size:28px;line-height:1;text-transform:uppercase}
+.h3{font-family:var(--f-display);font-weight:900;font-size:22px;line-height:1;text-transform:uppercase}
 .sub2{font-size:15px;color:var(--ink-2)}
 
 /* finish */
-.finbib{background:#FFFFFF;color:#0F1A2E;border-radius:var(--r-card);overflow:hidden}
-.finbib .band{background:#14244A;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;font-weight:700;font-size:15px}
-.finbib .mid{padding:14px 16px 16px;text-align:center}
-.finbib .word{font-family:var(--f-display);font-weight:900;font-size:64px;line-height:.9;color:#C41E2A}
+.finbib{background:var(--bib);color:var(--bib-ink);border-radius:var(--r-card);overflow:hidden}
+.finbib .band{background:var(--bib-band);color:var(--on-navy);padding:10px 16px;display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+.finbib .mid{padding:16px;text-align:center}
+.finbib .word{font-family:var(--f-display);font-weight:900;font-size:64px;line-height:.9;color:var(--bib-red)}
 .finbib .who{font-weight:700;margin-top:4px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
-.stats div{background:#F3F5F9;border-radius:10px;padding:10px 6px}
+/* place, pace and running time read as one result line on the bib, not three tiles */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:16px}
+.stats div{padding:4px 8px}
+.stats div+div{border-left:1px solid var(--bib-line)}
 .stats b{display:block;font-family:var(--f-display);font-weight:900;font-size:26px;line-height:1}
-.stats span{font-size:13.5px;color:#45506A;font-weight:600}
+.stats span{font-size:14px;color:var(--bib-ink-2);font-weight:600}
 
 /* leaderboard */
 .lbhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
@@ -178,7 +191,7 @@ p{margin:0;text-wrap:pretty;overflow-wrap:break-word}
 .lbitem{border-top:1px solid var(--line)}
 .lbitem:first-child{border-top:0}
 .lbitem.me{background:var(--surface-2)}
-.lbrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;width:100%;min-height:64px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color 120ms ease-out}
+.lbrow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;width:100%;min-height:64px;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color 120ms var(--ease-out)}
 .lbrow:active{background:var(--surface-2)}
 .lbrow .who,.lbrow .n,.lbrow .pos{display:flex}
 .lbrow .who{flex-direction:column;min-width:0}
@@ -193,37 +206,36 @@ p{margin:0;text-wrap:pretty;overflow-wrap:break-word}
 .nkey span{display:inline-flex;align-items:center;gap:6px}
 .nkey b{color:var(--ink)}
 .nkey i{display:inline-block;width:12px;height:12px;border-radius:3px}
-.hi{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:12px 0 4px}
+.hi{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
 .hi div{background:var(--surface-2);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;font-size:14px;color:var(--ink-2);font-weight:600}
 .hi b{font-family:var(--f-display);font-weight:900;font-size:24px;line-height:1;color:var(--ink)}
 .legs tr.atrow td{color:var(--ink-2)}
 .rank{font-family:var(--f-display);font-weight:900;font-size:24px;line-height:1;text-align:center}
 .who .n{font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.who .bibn{font-family:var(--f-display);font-weight:900;color:var(--action);font-size:19px}
-.who .pos{font-size:14.5px;color:var(--ink-2)}
+.who .bibn{font-family:var(--f-display);font-weight:900;color:var(--ink);font-size:19px}
+.lbitem.me .bibn{color:var(--action-text)}
+.who .pos{font-size:14px;color:var(--ink-2)}
 .pace{text-align:right}
 .pace b{display:block;font-family:var(--f-display);font-weight:900;font-size:24px;line-height:1}
 .pace span{font-size:14px;color:var(--ink-2)}
-.chip{display:inline-flex;align-items:center;border-radius:var(--r-pill);padding:1px 8px;font-size:13px;font-weight:700;border:1.5px solid var(--ink-2);color:var(--ink-2)}
+.chip{display:inline-flex;align-items:center;border-radius:var(--r-pill);padding:1px 8px;font-size:14px;font-weight:700;border:1.5px solid var(--ink-2);color:var(--ink-2)}
 .chip.you{border-color:var(--ink);color:var(--ink)}
 
 /* join */
-.join{padding:24px 16px;display:flex;flex-direction:column;gap:18px;max-width:480px;margin:0 auto;width:100%}
-.hero{background:#FFFFFF;color:#0F1A2E;border-radius:var(--r-card);overflow:hidden}
-.hero .band{background:#14244A;color:#fff;padding:10px 16px;font-weight:700;font-size:15px}
+.join{padding:24px 16px;display:flex;flex-direction:column;gap:16px;max-width:480px;margin:0 auto;width:100%}
+.hero{background:var(--bib);color:var(--bib-ink);border-radius:var(--r-card);overflow:hidden}
+.hero .band{background:var(--bib-band);color:var(--on-navy);padding:10px 16px;font-weight:700;font-size:15px}
 .hero .mid{padding:10px 16px 16px;text-align:center}
-.hero .word{font-family:var(--f-display);font-weight:900;font-size:clamp(64px,22vw,110px);line-height:.9;color:#C41E2A}
+.hero .word{font-family:var(--f-display);font-weight:900;font-size:clamp(64px,22vw,110px);line-height:.9;color:var(--bib-red)}
 .hero .sub{font-family:var(--f-display);font-weight:900;font-size:24px;text-transform:uppercase}
 .field{display:flex;flex-direction:column;gap:6px}
 .field label{font-weight:700;font-size:16px}
 .field input{min-height:56px;border-radius:12px;border:2px solid var(--ink-2);background:var(--surface);padding:0 14px}
 .field input.bibin{font-family:var(--f-display);font-weight:900;font-size:36px;letter-spacing:.04em}
-.err{color:var(--action);font-weight:600;font-size:15px}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .err{color:#FF8A91}}
-:root[data-theme="dark"] .err{color:#FF8A91}
+.err{color:var(--action-text);font-weight:600;font-size:15px}
 
-/* tabs */
-.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr 1fr;padding:6px 8px max(8px,env(safe-area-inset-bottom,0px));z-index:10}
+/* tabs: the bar spans the window; the three tabs sit over the 560px column */
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr 1fr;padding:6px max(8px,calc(50% - 280px)) max(8px,env(safe-area-inset-bottom,0px));z-index:10}
 .tabs button{min-height:52px;border:0;background:transparent;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-weight:700;font-size:14px;color:var(--ink-2)}
 .tabs button[aria-current="page"]{color:var(--ink);background:var(--surface-2)}
 .tabs svg{width:22px;height:22px}
@@ -231,41 +243,47 @@ p{margin:0;text-wrap:pretty;overflow-wrap:break-word}
 /* sheet + toast */
 dialog.sheet{border:0;padding:0;margin:auto auto 0;width:100%;max-width:560px;max-height:90svh;border-radius:20px 20px 0 0;background:var(--surface);color:var(--ink);overflow-y:auto;overscroll-behavior:contain}
 dialog.sheet::backdrop{background:var(--scrim)}
-.sheet-in{padding:18px 16px max(20px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+.sheet-in{padding:16px 16px max(20px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
 .sheet-h{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .opts{display:flex;flex-wrap:wrap;gap:8px}
 .opt{min-height:44px;border-radius:var(--r-pill);border:2px solid var(--ink-2);background:transparent;padding:0 14px;font-weight:600;font-size:15px}
 .opt[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--canvas)}
 /* finish moment */
-.cele{position:fixed;inset:0;z-index:60;background:var(--navy);display:grid;place-items:center;padding:16px;animation:cele-in 160ms ease-out both;cursor:pointer}
-.cele.out{animation:cele-out 260ms ease-in forwards}
+.cele{position:fixed;inset:0;z-index:60;background:var(--navy);display:grid;place-items:center;padding:16px;animation:cele-in 160ms var(--ease-out) both;cursor:pointer}
+.cele.out{animation:cele-out 260ms var(--ease-out) forwards}
 .cele canvas{position:absolute;inset:0;width:100%;height:100%}
 .cele-in{position:relative;text-align:center;color:var(--on-navy);display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:-6svh}
 .cele-medal{color:var(--on-navy)}
 .cele-medal svg{width:124px;height:auto;display:block;animation:medal-pop 560ms cubic-bezier(.2,1.5,.4,1) both}
-.cele-word{font-family:var(--f-display);font-weight:900;font-size:76px;line-height:.9;text-transform:uppercase;animation:rise 320ms 160ms ease-out both}
-.cele-sub{font-weight:700;font-size:20px;color:var(--medal);animation:rise 320ms 260ms ease-out both}
+.cele-word{font-family:var(--f-display);font-weight:900;font-size:76px;line-height:.9;text-transform:uppercase;animation:rise 320ms 160ms var(--ease-out) both}
+.cele-sub{font-weight:700;font-size:20px;color:var(--medal);animation:rise 320ms 260ms var(--ease-out) both}
 @keyframes cele-in{from{opacity:0}}
 @keyframes cele-out{to{opacity:0}}
 @keyframes medal-pop{from{transform:scale(.2) rotate(-18deg);opacity:0}}
 @keyframes rise{from{transform:translateY(14px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.cele,.cele *,.cele.out{animation:none!important}}
 .medalbtn{display:block;margin:0 auto 6px;background:none;border:0;padding:4px;min-width:48px;min-height:48px;cursor:pointer;border-radius:12px}
-.medalbtn svg{width:58px;height:auto;display:block;color:#14244A}
+.medalbtn svg{width:58px;height:auto;display:block;color:var(--bib-band)}
 .medalbtn:active{transform:scale(.97)}
 .toast{position:fixed;left:16px;right:16px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:30;background:var(--ink);color:var(--canvas);border-radius:12px;padding:12px 14px;font-weight:600;font-size:15px;max-width:528px;margin:0 auto}
 .banner{background:var(--surface);border-radius:12px;padding:10px 14px;font-size:15px;display:flex;gap:8px;align-items:center}
 .banner.warn{color:var(--warn)}
 
 /* organizer */
-.orgstop{display:flex;flex-direction:column;gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.orgstop{display:flex;flex-direction:column;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.orgstop.tight{gap:8px}
 .orgstop:first-of-type{border-top:0}
-.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.orgacts{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
 .grid2>*,.row2>*{min-width:0}
+.grid2.end{align-items:end}
+.grid2.mid{align-items:center}
+.btn.spread{justify-content:space-between}
+.tiny.b{font-weight:700}
 .small-in{min-width:0;max-width:100%;min-height:48px;border-radius:10px;border:2px solid var(--ink-2);background:var(--canvas);padding:0 10px;width:100%}
 .tiny{font-size:14px;color:var(--ink-2)}
 .loccheck{display:flex;flex-direction:column;gap:8px}
-.practice{margin:12px 16px 0;padding:8px 8px 8px 14px;border-radius:12px;background:var(--bar-soft);color:var(--bar-ink);display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px}
+.practice{margin:12px 16px 0;padding:8px 8px 8px 14px;border-radius:12px;background:var(--bar-soft);color:var(--bar-ink);display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}
 .practice .btn{border-color:var(--bar-ink);color:var(--bar-ink)}
 .check{display:flex;align-items:center;gap:12px;min-height:48px;font-size:16px;cursor:pointer}
 .check input{width:24px;height:24px;margin:0;accent-color:var(--action);flex:none}
@@ -274,6 +292,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
 .maplibregl-map{font:12px/20px Helvetica Neue,Arial,Helvetica,sans-serif;overflow:hidden;position:relative;-webkit-tap-highlight-color:rgb(0,0,0,0)}.maplibregl-canvas{left:0;position:absolute;top:0}.maplibregl-canvas-container.maplibregl-interactive.maplibregl-track-pointer{cursor:pointer}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-canvas-container.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:pinch-zoom}.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan,.maplibregl-canvas-container.maplibregl-touch-zoom-rotate.maplibregl-touch-drag-pan .maplibregl-canvas{touch-action:none}.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures,.maplibregl-canvas-container.maplibregl-touch-drag-pan.maplibregl-cooperative-gestures .maplibregl-canvas{touch-action:pan-x pan-y}.maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right,.maplibregl-ctrl-top-left,.maplibregl-ctrl-top-right{pointer-events:none;position:absolute;z-index:2}.maplibregl-ctrl-top-left{left:0;top:0}.maplibregl-ctrl-top-right{right:0;top:0}.maplibregl-ctrl-bottom-left{bottom:0;left:0}.maplibregl-ctrl-bottom-right{bottom:0;right:0}.maplibregl-ctrl{clear:both;pointer-events:auto;transform:translate(0)}.maplibregl-ctrl-top-left .maplibregl-ctrl{float:left;margin:10px 0 0 10px}.maplibregl-ctrl-top-right .maplibregl-ctrl{float:right;margin:10px 10px 0 0}.maplibregl-ctrl-bottom-left .maplibregl-ctrl{float:left;margin:0 0 10px 10px}.maplibregl-ctrl-bottom-right .maplibregl-ctrl{float:right;margin:0 10px 10px 0}.maplibregl-ctrl button::-moz-focus-inner{border:0;padding:0}.maplibregl-ctrl button:disabled{cursor:not-allowed}.maplibregl-ctrl button:not(:disabled):active{background-color:rgba(0,0,0,.05)}.maplibregl-ctrl.maplibregl-ctrl-attrib{background-color:hsla(0,0%,100%,.5);margin:0;padding:0 5px}.maplibregl-ctrl-attrib a{color:rgba(0,0,0,.75);text-decoration:none}.maplibregl-ctrl-attrib a:hover{color:inherit;text-decoration:underline}.maplibregl-popup{display:flex;left:0;pointer-events:none;position:absolute;top:0;will-change:transform}.maplibregl-popup-anchor-top,.maplibregl-popup-anchor-top-left,.maplibregl-popup-anchor-top-right{flex-direction:column}.maplibregl-popup-anchor-bottom,.maplibregl-popup-anchor-bottom-left,.maplibregl-popup-anchor-bottom-right{flex-direction:column-reverse}.maplibregl-popup-anchor-left{flex-direction:row}.maplibregl-popup-anchor-right{flex-direction:row-reverse}.maplibregl-popup-tip{border:10px solid transparent;height:0;width:0;z-index:1}.maplibregl-popup-anchor-top .maplibregl-popup-tip{align-self:center;border-bottom-color:var(--surface);border-top:none}.maplibregl-popup-anchor-top-left .maplibregl-popup-tip{align-self:flex-start;border-bottom-color:var(--surface);border-left:none;border-top:none}.maplibregl-popup-anchor-top-right .maplibregl-popup-tip{align-self:flex-end;border-bottom-color:var(--surface);border-right:none;border-top:none}.maplibregl-popup-anchor-bottom .maplibregl-popup-tip{align-self:center;border-bottom:none;border-top-color:var(--surface)}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip{align-self:flex-start;border-bottom:none;border-left:none;border-top-color:var(--surface)}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip{align-self:flex-end;border-bottom:none;border-right:none;border-top-color:var(--surface)}.maplibregl-popup-anchor-left .maplibregl-popup-tip{align-self:center;border-left:none;border-right-color:var(--surface)}.maplibregl-popup-anchor-right .maplibregl-popup-tip{align-self:center;border-left-color:var(--surface);border-right:none}.maplibregl-popup-close-button{background-color:transparent;border:0;border-radius:0 3px 0 0;cursor:pointer;position:absolute;right:0;top:0}.maplibregl-popup-close-button:hover{background-color:rgba(0,0,0,.05)}.maplibregl-popup-content{background:var(--surface);border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.1);padding:15px 10px;pointer-events:auto;position:relative}.maplibregl-popup-anchor-top-left .maplibregl-popup-content{border-top-left-radius:0}.maplibregl-popup-anchor-top-right .maplibregl-popup-content{border-top-right-radius:0}.maplibregl-popup-anchor-bottom-left .maplibregl-popup-content{border-bottom-left-radius:0}.maplibregl-popup-anchor-bottom-right .maplibregl-popup-content{border-bottom-right-radius:0}.maplibregl-popup-track-pointer{display:none}.maplibregl-popup-track-pointer *{pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.maplibregl-map:hover .maplibregl-popup-track-pointer{display:flex}.maplibregl-map:active .maplibregl-popup-track-pointer{display:none}.maplibregl-marker{left:0;position:absolute;top:0;transition:opacity .2s;will-change:transform}.maplibregl-user-location-dot,.maplibregl-user-location-dot:before{background-color:#1da1f2;border-radius:50%;height:15px;width:15px}.maplibregl-user-location-dot:before{animation:maplibregl-user-location-dot-pulse 2s infinite;content:"";position:absolute}.maplibregl-user-location-dot:after{border:2px solid var(--surface);border-radius:50%;box-shadow:0 0 3px rgba(0,0,0,.35);box-sizing:border-box;content:"";height:19px;left:-2px;position:absolute;top:-2px;width:19px}.maplibregl-user-location-dot-stale{background-color:#aaa}.maplibregl-user-location-dot-stale:after{display:none}.maplibregl-user-location-accuracy-circle{background-color:#1da1f233;border-radius:100%;height:1px;width:1px}
 /* street map */
 .rmap{position:relative;width:100%;border-radius:14px;overflow:hidden;border:1.5px solid var(--line);background:var(--surface-2)}
+.rmap.inline{aspect-ratio:1.1}
 .rmap .lf{position:absolute;inset:0}
 .rmap-tools{position:absolute;top:10px;left:10px;right:10px;z-index:500;display:flex;gap:8px;justify-content:space-between;pointer-events:none}
 .mapbtn{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;border-radius:999px;border:1.5px solid var(--ink-2);background:var(--surface);color:var(--ink);font:700 15px var(--f-body);box-shadow:0 1px 6px rgba(0,0,0,.18)}
@@ -284,18 +303,18 @@ dialog.sheet::backdrop{background:var(--scrim)}
 .rmap .maplibregl-popup-close-button{width:36px;height:36px;font-size:24px;color:var(--ink-2);border-radius:0 14px 0 10px}
 .rmap .maplibregl-ctrl-attrib{font-size:11px;line-height:16px;background:color-mix(in srgb,var(--surface) 75%,transparent);color:var(--ink-2)}
 .rmap .maplibregl-ctrl-attrib a{color:var(--ink-2)}
-.rmap .maplibregl-cooperative-gesture-screen{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;padding:16px;text-align:center;font:700 16px var(--f-body);color:#FFFFFF;background:rgba(14,22,40,.55);opacity:0;pointer-events:none;transition:opacity 200ms ease-out}
+.rmap .maplibregl-cooperative-gesture-screen{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;padding:16px;text-align:center;font:700 16px var(--f-body);color:#FFFFFF;background:rgba(14,22,40,.55);opacity:0;pointer-events:none;transition:opacity 200ms var(--ease-out)}
 .rmap .maplibregl-cooperative-gesture-screen.maplibregl-show{opacity:1}
 .rmap .maplibregl-desktop-message{display:none}
 .rmap-zoom{position:absolute;right:10px;bottom:28px;z-index:500;display:flex;flex-direction:column;gap:6px}
 .rmap-zoom .mapbtn{width:44px;padding:0;justify-content:center;font-size:22px}
 .medot{display:block;width:18px;height:18px;border-radius:50%;background:#2F6FEB;border:3px solid #FFFFFF;box-shadow:0 0 0 6px rgba(47,111,235,.22),0 1px 4px rgba(0,0,0,.35)}
 .pin{cursor:pointer;padding:0;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--surface);color:var(--ink);border:3px solid var(--ink);font:900 17px/1 var(--f-display);box-shadow:0 1px 5px rgba(0,0,0,.35)}
-.pin svg{width:20px;height:20px}
+.pin svg{width:18px;height:18px}
 .pin.done{background:var(--ink);color:var(--canvas)}
 .pin.now{border-color:var(--action);color:var(--action)}
 .pin.here{background:var(--bar);border-color:var(--bar);color:#1A1204}
-.pin.sel{background:var(--action);border-color:var(--action);color:#FFFFFF;transform:scale(1.15)}
+.pin.sel{background:var(--action);border-color:var(--action);color:var(--on-action);transform:scale(1.15)}
 .pop{display:flex;flex-direction:column;gap:3px;min-width:200px}
 .pop b{font-family:var(--f-display);font-weight:900;font-size:22px;line-height:1;text-transform:uppercase;padding-right:18px}
 .pop .ad{color:var(--ink-2)}
@@ -314,7 +333,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
 .howto li b{display:block}
 .howto li span{color:var(--ink-2);font-size:15px}
 .map{display:block;width:100%;height:auto;aspect-ratio:1.2;border-radius:12px;border:1.5px solid var(--line);touch-action:manipulation;cursor:crosshair}
-.taprow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);font-size:15px}
+.taprow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--line);font-size:15px}
 @media (hover:hover) and (pointer:fine){.btn:hover,.opt:hover{border-color:var(--ink)}.big:hover{background:var(--action-press)}}
 </style>
 </head>
@@ -780,20 +799,20 @@ dialog.sheet::backdrop{background:var(--scrim)}
     async unlockRunner(id) { const { error } = await this.sb.rpc('admin_unlock_runner', { p_id: id }); if (error) throw cloudErr(error); },
   };
 
-  /* ---------------- Icons (one family: 2px strokes) ---------------- */
+  /* ---------------- Icons (one family: 2px strokes; 18px inline, 22px in the tabs and the strip) ---------------- */
   const SHOE_D = ['M2.5 16.5h16.2a2.8 2.8 0 0 0 2.8-2.8c0-1.2-.8-2.2-2-2.5l-4.4-1.1-2.6-3.6H9.8L8.6 8.4H6.2L4.8 6.5H2.5z', 'M2.5 13.5h19', 'M10.4 9.3l1.4 1.3M12.2 8.1l1.4 1.3'];
   const BEER_D = ['M5.5 9h10v10a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2z', 'M15.5 11.5h1.8a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1.8', 'M5.5 9a2.6 2.6 0 0 1 2.8-3.4A3.2 3.2 0 0 1 13.9 5a2.6 2.6 0 0 1 1.6 4', 'M9 12.5v5M12 12.5v5'];
-  const line = d => html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d.map(x => html`<path d=${x} />`)}</svg>`;
+  const line = d => html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d.map(x => html`<path d=${x} />`)}</svg>`;
   const I = {
     flag: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></svg>`,
     map: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4L3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg>`,
     list: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>`,
-    check: html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`,
-    dot: html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>`,
+    check: html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>`,
+    dot: html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="7"/></svg>`,
     /* strip icons: a running shoe, a pint, and the finish medal (same 2px stroke family) */
     shoe: line(SHOE_D),
     beer: line(BEER_D),
-    medal: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="15.5" r="5"/><path d="M9 11.2L6.5 3h4l1.5 4.5L13.5 3h4L15 11.2"/></svg>`,
+    medal: html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="15.5" r="5"/><path d="M9 11.2L6.5 3h4l1.5 4.5L13.5 3h4L15 11.2"/></svg>`,
     pin: html`<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>`,
   };
 
@@ -820,7 +839,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     return html`<button class="stripbtn" onClick=${onOpen} aria-label=${'Your legs: ' + p.reached + ' of ' + n + ' bars reached. Open details.'}>${inner}</button>`;
   }
   function Schedule({ p }) {
-    return html`<div class="card"><h2 class="h2" style="font-size:22px;margin-bottom:6px">Schedule</h2><div class="sched">
+    return html`<div class="card stack"><h2 class="h3">Schedule</h2><div class="sched">
       ${S.stops.map((s, i) => html`<div class=${p && p.target === i ? 'cur' : ''}><span>${i === 0 ? 'Start · ' : i + '. '}${s.name}</span><span class="num">${i === 0 ? (S.event.goMs ? 'opened ' + clock(S.event.goMs) : 'opens ' + clock(S.event.startMs)) : s.leaveBy ? 'leave by ' + clock(s.leaveBy) : 'finish'}</span></div>`)}
     </div></div>`;
   }
@@ -865,7 +884,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
       setTimeout(() => setPhase({ k: 'idle' }), 900);
     }
     const busy = phase.k === 'locating';
-    return html`<div style="display:flex;flex-direction:column;gap:12px">
+    return html`<div class="stack">
       ${phase.k === 'saved'
         ? html`<button class="big saved" disabled><span class="l1">Checked in</span><span class="l2">${s.short} · ${clock(now())}</span></button>`
         : html`<button class="big" onClick=${go} aria-disabled=${busy ? 'true' : 'false'}>
@@ -916,7 +935,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
         <${Countdown} at=${S.event.startMs} plain=${true} label="Start opens in" done="Any minute" doneSub="Waiting for the organizer's GO" />
         <a class="btn full" href=${dirUrl(s0)} target="_blank" rel="noopener">${I.pin}Directions to the start</a>
         <${LocationCheck} />
-        ${practiceAllowed() ? html`<div class="card" style="display:flex;flex-direction:column;gap:10px"><h2 class="h2" style="font-size:22px">Try it before race day</h2>
+        ${practiceAllowed() ? html`<div class="card stack"><h2 class="h3">Try it before race day</h2>
           <p class="tiny">Opens the start on this phone only, so you can tap Start, check in at a real bar and see how it works. Practice check-ins are cleared before the race.</p>
           <button class="btn full" onClick=${() => { setPractice(true); say('Practice run: the start is open on this phone.'); }}>Start a practice run</button></div>` : null}
         <${Schedule} p=${p} />
@@ -944,7 +963,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
         <${Strip} p=${p} onOpen=${open} />${sheet}
         <div class="where"><p class="step">At the bar · ${p.target} of ${n}</p><h1 class="barname">${s.name}</h1>
           ${(() => { const l = p.legs.find(x => x.i === p.target); return l && l.pace ? html`<p class="meta"><span>Last leg <b class="num">${pace(l.pace)}/mi</b></span></p>` : null; })()}</div>
-        <${Countdown} at=${leaveBy} label="Group leaves in" done="Time to go" doneSub=${leaveBy ? 'The group left at ' + clockAP(leaveBy) : ''} />
+        <${Countdown} at=${leaveBy} label="Group leaves in" done="Time to go" doneSub=${leaveBy ? 'The group left at ' + clock(leaveBy) : ''} />
         <${LeaveButton} stop=${p.target} />
         <${Status} t=${last && last.runnerId === S.me.id ? last : null} />
         <${AlreadyNext} p=${p} />
@@ -961,16 +980,17 @@ dialog.sheet::backdrop{background:var(--scrim)}
       <div class="row2"><a class="btn" href=${dirUrl(s)} target="_blank" rel="noopener" aria-label=${'Walking directions to ' + s.short + ' in ' + MAPS}>${I.pin}Directions</a><${UndoLast} /></div>
     </div>`;
   }
-  /* A ticking countdown to the start or to the group's leave time. Over an hour out it shows the clock time instead. */
+  /* A ticking countdown to the start or to the group's leave time. Over an hour out it shows the clock time instead.
+     Times on the runner screens never carry AM/PM, so one screen never mixes "9:47" and "9:46 PM". */
   function Countdown({ at, label, done, doneSub, plain }) {
-    const style = plain ? 'background:var(--surface);color:var(--ink)' : null;
+    const cls = 'atpanel' + (plain ? ' plain' : '');
     if (!at) return null;
     const left = (at - now()) / 1000;
-    if (left <= 0) return html`<div class="atpanel" style=${style} role="status"><span class="count">${done}</span>${doneSub ? html`<span class="sub">${doneSub}</span>` : null}</div>`;
-    if (left > 3600) return html`<div class="atpanel" style=${style}><span class="lbl">${plain ? 'Starts at' : 'Group leaves at'}</span><span class="bigt num">${clockAP(at)}</span><span class="sub num">${left > 86400 ? new Date(at).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: TZ }) : 'in ' + mins(at - now())}</span></div>`;
-    return html`<div class=${'atpanel' + (!plain && left <= 300 ? ' soon' : '')} style=${style} role="timer" aria-label=${label + ' ' + mins(at - now())}>
+    if (left <= 0) return html`<div class=${cls} role="status"><span class="count">${done}</span>${doneSub ? html`<span class="sub">${doneSub}</span>` : null}</div>`;
+    if (left > 3600) return html`<div class=${cls}><span class="lbl">${plain ? 'Starts at' : 'Group leaves at'}</span><span class="bigt num">${clock(at)}</span><span class="sub num">${left > 86400 ? new Date(at).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', timeZone: TZ }) : 'in ' + mins(at - now())}</span></div>`;
+    return html`<div class=${cls + (!plain && left <= 300 ? ' soon' : '')} role="timer" aria-label=${label + ' ' + mins(at - now())}>
       <span class="lbl">${label}</span><span class="count num" aria-hidden="true">${dur(left)}</span>
-      <span class="sub num">at ${clockAP(at)}${!plain && left <= 300 ? ' · finish up' : ''}</span></div>`;
+      <span class="sub num">at ${clock(at)}${!plain && left <= 300 ? ' · finish up' : ''}</span></div>`;
   }
   /* "Test my location": a website can't keep location on in the background (and this one doesn't need to: it reads
      location only on a check-in tap). This proves, before race day, that the phone will give a good reading when asked.
@@ -998,7 +1018,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
           : html`Nearest stop: ${ts.short}, ${meters(t.m)} away${inside ? ', close enough to check in.' : '.'}`}</span></p>`;
     }
     return html`<div class="loccheck">
-      <button class="btn full" onClick=${test} aria-disabled=${busy ? 'true' : 'false'}>${I.pin}${busy ? 'Checking…' : stop != null ? 'Test a check-in at ' + S.stops[stop].short : 'Test my location'}</button>
+      <button class="btn full" onClick=${test} aria-disabled=${busy ? 'true' : 'false'}>${busy ? 'Checking…' : stop != null ? 'Test a check-in at ' + S.stops[stop].short : 'Test my location'}</button>
       ${!fix && perm === 'denied' ? html`<p class="tiny">Location is blocked for this site. ${HOW_ON()}</p>` : null}
       ${!fix && perm === 'prompt' && stop == null ? html`<p class="tiny">Your phone will ask to use your location. Tap Allow.</p>` : null}
       ${msg}
@@ -1045,7 +1065,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     const rows = board(), mine = rows.find(x => x.r.id === S.me.id), count = rows.filter(x => x.rank).length;
     return html`<dialog class="sheet" ref=${ref} onClose=${onClose} aria-labelledby="mlh">
       <div class="sheet-in">
-        <div class="sheet-h"><h2 id="mlh" class="h2" style="font-size:24px">Your legs</h2><button class="btn small" onClick=${() => ref.current.close()}>Done</button></div>
+        <div class="sheet-h"><h2 id="mlh" class="h3">Your legs</h2><button class="btn small" onClick=${() => ref.current.close()}>Done</button></div>
         ${p.timed ? html`<div class="hi">
           <div><span>Average pace</span><b class="num">${pace(p.avg)}/mi</b><span>${p.timed} of ${n} legs timed</span></div>
           <div><span>Place</span><b class="num">${mine && mine.rank ? ordinal(mine.rank) : '–'}</b><span>of ${count} so far</span></div>
@@ -1118,15 +1138,15 @@ dialog.sheet::backdrop{background:var(--scrim)}
           </div></div></div>
       <p class="sub2">Medals are at ${S.stops[n].name}. Get some water.</p>
       <p class="sub2"><b>Getting home.</b> ${HOME_NOTE}</p>
-      <div class="card">
-        <h2 class="h2" style="font-size:22px;margin-bottom:10px">Your night</h2>
+      <div class="card stack">
+        <h2 class="h3">Your night</h2>
         <${NightBar} nt=${nt} p=${p} />
         ${fast || long ? html`<div class="hi">
           ${fast ? html`<div><span>Fastest leg</span><b class="num">${pace(fast.pace)}/mi</b><span>to ${S.stops[fast.i].short}</span></div>` : null}
           ${long ? html`<div><span>Longest stop</span><b class="num">${stay(long.sec)}</b><span>at ${S.stops[long.i].short}</span></div>` : null}
         </div>` : null}
         <${Splits} p=${p} nt=${nt} />
-        <p class="tiny" style="margin-top:8px">Ranked on running pace only. ${p.timed < n ? p.timed + ' of ' + n + ' legs timed.' : ''}</p>
+        <p class="tiny">Ranked on running pace only. ${p.timed < n ? p.timed + ' of ' + n + ' legs timed.' : ''}</p>
       </div>
       <${UndoLast} />
     </div>`;
@@ -1144,7 +1164,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
     const [open, setOpen] = useState(null);
     function jump() { const el = document.getElementById('row-me'); if (el) { el.scrollIntoView({ block: 'center' }); el.focus(); } }
     return html`<div class="page">
-      <div class="lbhead"><div><h1 class="h2">Leaderboard</h1><p class="sub2" style="margin-top:6px">Running pace. Bar time doesn't count.</p></div>
+      <div class="lbhead"><div class="stack tight"><h1 class="h2">Leaderboard</h1><p class="sub2">Running pace. Bar time doesn't count.</p></div>
         <button class="btn small" onClick=${jump}>Jump to me</button></div>
       ${S.loadFailed ? html`<div class="alert" role="alert"><p><b>Couldn't load the leaderboard.</b> Check your signal.</p><button class="btn" onClick=${() => S.api.reload()}>Retry</button></div>` : null}
       ${stale && !S.loadFailed ? html`<p class="banner warn" role="status">${I.dot}Last updated ${mins(now() - S.lastSync)} ago.</p>` : null}
@@ -1207,20 +1227,20 @@ dialog.sheet::backdrop{background:var(--scrim)}
     const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
     const android = /Android/i.test(navigator.userAgent);
     return html`<section class="howto" aria-labelledby="hth">
-      <div class="card howto"><h2 id="hth" class="h2" style="font-size:22px">How it works</h2>
+      <div class="card howto"><h2 id="hth" class="h3">How it works</h2>
         <ol>
           <li><span class="node" aria-hidden="true">${I.shoe}</span><div><b>Tap Start when you set off.</b><span>Go whenever you're ready once the start opens. Run or walk.</span></div></li>
-          <li><span class="node" aria-hidden="true">${I.beer}</span><div><b>Tap "I'm at" as you walk into each bar.</b><span>Allow location when asked, so the app can confirm you made it.</span></div></li>
-          <li><span class="node" aria-hidden="true">${I.beer}</span><div><b>Tap "Leaving" on your way out.</b><span>A countdown shows when the group leaves. Bar time never counts.</span></div></li>
+          <li><span class="node" aria-hidden="true">${I.beer}</span><div><b>Tap “I'm at” as you walk into each bar.</b><span>Allow location when asked, so the app can confirm you made it.</span></div></li>
+          <li><span class="node" aria-hidden="true">${I.beer}</span><div><b>Tap “Leaving” on your way out.</b><span>A countdown shows when the group leaves. Bar time never counts.</span></div></li>
           <li><span class="node" aria-hidden="true">${I.medal}</span><div><b>Finish at ${S.stops.length ? S.stops[S.stops.length - 1].name : 'Walnut Garden'}.</b><span>Grab your medal and see your whole night.</span></div></li>
         </ol></div>
-      <div class="card howto"><h2 class="h2" style="font-size:22px">Race day</h2>
+      <div class="card howto"><h2 class="h3">Race day</h2>
         <p><b>Bring a light layer.</b> ${LAYER_NOTE}</p>
         <p><b>Getting home.</b> ${HOME_NOTE}</p></div>
-      ${standalone ? null : html`<div class="card howto"><h2 class="h2" style="font-size:22px">Put it on your Home Screen</h2>
+      ${standalone ? null : html`<div class="card howto"><h2 class="h3">Put it on your Home Screen</h2>
         <p>${android ? html`In Chrome, tap the ⋮ menu, then <b>Add to Home screen</b>.` : APPLE ? html`In Safari, tap <b>Share</b>, then <b>Add to Home Screen</b>.` : html`On iPhone: Safari, Share, Add to Home Screen. On Android: Chrome, ⋮ menu, Add to Home screen.`}</p>
         <p class="tiny">Do it before race day. It opens full screen, works on bad signal, and keeps you signed in.</p></div>`}
-      ${S.stops.length ? html`<div class="card howto"><h2 class="h2" style="font-size:22px">The route</h2><${RouteMap} mode="join" /></div>` : null}
+      ${S.stops.length ? html`<div class="card howto"><h2 class="h3">The route</h2><${RouteMap} mode="join" /></div>` : null}
     </section>`;
   }
 
@@ -1295,8 +1315,8 @@ dialog.sheet::backdrop{background:var(--scrim)}
       '<span class="wh">' + esc(stopWhen(i)) + '</span><div class="pop-links">' +
       links.map((l, k) => '<a class="' + (k ? '' : 'first') + '" href="' + esc(l[0]) + '" target="_blank" rel="noopener">' + l[1] + '</a>').join('') + '</div></div>';
   }
-  const svgStr = d => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d.map(x => '<path d="' + x + '"/>').join('') + '</svg>';
-  const MEDAL_STR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="15.5" r="5"/><path d="M9 11.2L6.5 3h4l1.5 4.5L13.5 3h4L15 11.2"/></svg>';
+  const svgStr = d => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d.map(x => '<path d="' + x + '"/>').join('') + '</svg>';
+  const MEDAL_STR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="15.5" r="5"/><path d="M9 11.2L6.5 3h4l1.5 4.5L13.5 3h4L15 11.2"/></svg>';
 
   /* mode "runner": your progress colors the pins. "org": the picked stop is red and check-in circles show at real size.
      "join": the route before you've joined. Pins open details; nothing on the map moves a bar. */
@@ -1385,7 +1405,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
       c.map.easeTo({ center: ll, zoom: Math.max(c.map.getZoom(), 16), duration: 500 });
     }
     const zoomBy = d => { const c = st.current; if (c.map) c.map.zoomTo(c.map.getZoom() + d, { duration: 200 }); };
-    return html`<div class=${'rmap ' + (cls || '')} style=${cls ? null : 'aspect-ratio:1.1'}>
+    return html`<div class=${'rmap ' + (cls || 'inline')}>
       <div class="lf" ref=${box} role="region" aria-label="Course map. Tap a bar for details and directions."></div>
       <div class="rmap-tools"><button class="mapbtn" onClick=${() => fit(true)}>Whole course</button>${mode === 'join' ? null : html`<button class="mapbtn" onClick=${findMe}>${I.pin}Where am I</button>`}</div>
       <div class="rmap-zoom"><button class="mapbtn" aria-label="Zoom in" onClick=${() => zoomBy(1)}>+</button><button class="mapbtn" aria-label="Zoom out" onClick=${() => zoomBy(-1)}>−</button></div>
@@ -1395,7 +1415,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
   function MapScreen() {
     useTick(30000);
     const p = S.me ? progress(S.me.id) : null;
-    return html`<div class="page" style="padding-bottom:0">
+    return html`<div class="page mappage">
       <${RouteMap} mode="runner" p=${p} cls="mapscreen" />
       <p class="tiny">Tap a bar for its address, leave time and directions.</p>
     </div>`;
@@ -1506,35 +1526,35 @@ dialog.sheet::backdrop{background:var(--scrim)}
     return html`<div class="page">
       <div class="lbhead"><h1 class="h2">Organizer</h1><button class="btn small" onClick=${back}>Back to the race</button></div>
 
-      <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div class="card stack">
         ${S.event.goMs == null
           ? html`<p><b>Not started.</b> Scheduled for ${clockAP(S.event.startMs)}.</p><button class="big" onClick=${doGo}><span class="l1">GO</span><span class="l2">Opens the start. Everyone starts their own clock</span></button>`
           : html`<p><b>Start opened at ${clockAP(S.event.goMs)}.</b> Runners start their own clock with the Start button, whenever they set off.</p>
             ${goUndo ? html`<button class="btn red full" onClick=${async () => { await S.api.setGo(null); setGoUndo(false); say('GO undone.'); }}>Undo GO</button>` : null}`}
       </div>
 
-      <div class="card" style="display:flex;flex-direction:column;gap:12px">
-        <h2 class="h2" style="font-size:22px">Course</h2>
+      <div class="card stack">
+        <h2 class="h3">Course</h2>
         <div class="opts" role="group" aria-label="Pick a stop">${S.stops.map((x, i) => html`<button class="opt" aria-pressed=${i === si ? 'true' : 'false'} onClick=${() => { setSel(i); setHits(null); }}><span class="num">${i === 0 ? 'S' : i}</span> ${x.short}</button>`)}</div>
         <${RouteMap} mode="org" sel=${si} onSelect=${i => { setSel(i); setHits(null); }} />
         <div class="field"><label class="tiny" for="sn">Name</label><input id="sn" class="small-in" value=${st.name} onChange=${e => rename(e.target.value.trim() || st.name)} /></div>
         <form class="field" onSubmit=${search}><label class="tiny" for="gq">Find ${st.short} by name or address</label>
-          <div class="row2" style="grid-template-columns:minmax(0,1fr) auto"><input id="gq" class="small-in" type="search" enterkeyhint="search" placeholder="e.g. McGillin's or 1310 Drury St" value=${q} onInput=${e => setQ(e.target.value)} /><button class="btn small" type="submit" aria-disabled=${qBusy ? 'true' : 'false'}>${qBusy ? 'Searching…' : 'Search'}</button></div>
+          <div class="row2 inputrow"><input id="gq" class="small-in" type="search" enterkeyhint="search" placeholder="e.g. McGillin's or 1310 Drury St" value=${q} onInput=${e => setQ(e.target.value)} /><button class="btn small" type="submit" aria-disabled=${qBusy ? 'true' : 'false'}>${qBusy ? 'Searching…' : 'Search'}</button></div>
           ${hits && hits.length ? html`<div class="geo-results">${hits.map(h => html`<button type="button" class="btn small full" onClick=${async () => { await place({ lat: h.lat, lng: h.lng }, h); setHits(null); setQ(''); }}><b>${h.name || h.addr}</b><span>${[h.name && h.addr !== h.name ? h.addr : '', h.label.split(', ').slice(-5, -3).join(', ')].filter(Boolean).join(' · ')}</span></button>`)}</div>` : null}
           ${hits && !hits.length ? html`<p class="tiny">Nothing found in Philadelphia. Try the street address.</p>` : null}</form>
-        <div><p class="tiny" style="margin-bottom:6px">Check-in radius</p><div class="opts">${[75, 120, 150, 200].map(r => html`<button class="opt" aria-pressed=${st.radius === r ? 'true' : 'false'} onClick=${() => setRadius(r)}>${r} m</button>`)}</div></div>
+        <div class="stack tight"><p class="tiny">Check-in radius</p><div class="opts">${[75, 120, 150, 200].map(r => html`<button class="opt" aria-pressed=${st.radius === r ? 'true' : 'false'} onClick=${() => setRadius(r)}>${r} m</button>`)}</div></div>
         <div class="row2"><button class="btn small" onClick=${setHere}>${I.pin}Use my location</button><a class="btn small" href=${pinUrl(st)} target="_blank" rel="noopener">Check in ${APPLE ? 'Apple' : 'Google'}</a></div>
         <${LocationCheck} stop=${si} />
         <div class="field"><label class="tiny" for="pc">Or paste coordinates from Google or Apple Maps</label>
-          <div class="row2" style="grid-template-columns:1fr auto"><input id="pc" class="small-in num" inputmode="decimal" placeholder="39.95016, -75.16204" value=${coord} onInput=${e => setCoord(e.target.value)} /><button class="btn small" onClick=${pasteCoord}>Place</button></div>
+          <div class="row2 inputrow"><input id="pc" class="small-in num" inputmode="decimal" placeholder="39.95016, -75.16204" value=${coord} onInput=${e => setCoord(e.target.value)} /><button class="btn small" onClick=${pasteCoord}>Place</button></div>
           ${cErr ? html`<p class="err" role="alert">${cErr}</p>` : null}</div>
         <p class="tiny num">${st.addr ? st.addr + ' · ' : ''}${st.lat.toFixed(5)}, ${st.lng.toFixed(5)}${si ? ' · leg ' + si + ' is about ' + km(st.km) + ' on foot' : ''}</p>
         ${structLocked ? html`<p class="tiny">Adding and removing bars is locked once anyone has checked in. Names, pins and times can still change.</p>`
           : html`<div class="row2">${si < n ? html`<button class="btn small" onClick=${addAfter}>Add a bar after this</button>` : html`<span></span>`}${si > 0 && n > 1 ? html`<button class="btn small red" onClick=${remove}>Remove this bar</button>` : html`<span></span>`}</div>`}
       </div>
 
-      <div class="card" style="display:flex;flex-direction:column;gap:12px">
-        <h2 class="h2" style="font-size:22px">Times</h2>
+      <div class="card stack">
+        <h2 class="h3">Times</h2>
         <div class="grid2">
           <div class="field"><label class="tiny" for="rd">Race date</label><input id="rd" class="small-in num" type="date" value=${nyDate(S.event.startMs)} onChange=${e => e.target.value && setStart(e.target.value, nyTime(S.event.startMs))} /></div>
           <div class="field"><label class="tiny" for="rs">Start opens</label><input id="rs" class="small-in num" type="time" step="300" value=${nyTime(S.event.startMs)} onChange=${e => e.target.value && setStart(nyDate(S.event.startMs), e.target.value)} /></div>
@@ -1545,7 +1565,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
           const wv = window_(i);
           const short = wv && wv.walkBar != null && wv.walkBar < 15;
           return html`<div class="orgstop">
-            <div class="grid2" style="align-items:end">
+            <div class="grid2 end">
               <p><b>${i}. ${x.short}</b><br /><span class="tiny num">${wv ? 'arrive ' + clock(wv.run) + '–' + clock(wv.walk) : ''}</span></p>
               ${i < n ? html`<div class="field"><label class="tiny" for=${'lv' + i}>Leave by</label><input id=${'lv' + i} class="small-in num" type="time" step="300" value=${x.leaveBy ? nyTime(x.leaveBy) : ''} onChange=${e => setLeave(i, e.target.value)} /></div>` : html`<p class="tiny">Finish · medals</p>`}
             </div>
@@ -1554,14 +1574,14 @@ dialog.sheet::backdrop{background:var(--scrim)}
         })}
       </div>
 
-      <div class="card" style="display:flex;flex-direction:column;gap:12px">
-        <h2 class="h2" style="font-size:22px">Rain plan</h2>
+      <div class="card stack">
+        <h2 class="h3">Rain plan</h2>
         <p class="tiny">If Friday's forecast looks wet, swap an outdoor stop for its indoor backup. Leave times stay the same and the legs update.</p>
         ${RAIN.map(r => {
           const wetOn = S.stops.some(x => x.name === r.wet.name), dryOn = S.stops.some(x => x.name === r.dry);
           if (!wetOn && !dryOn) return null;
           const x = rainStops(r, !wetOn), legs = x ? [legKm(x.stops[x.i - 1], x.stops[x.i]), x.stops[x.i + 1] ? legKm(x.stops[x.i], x.stops[x.i + 1]) : null] : null;
-          return html`<div class="orgstop" style="display:flex;flex-direction:column;gap:8px">
+          return html`<div class="orgstop tight">
             <p><b>${wetOn ? r.wet.name : r.dry}</b><br /><span class="tiny">${wetOn ? 'Indoor backup, in use now' : 'Outdoors'}</span></p>
             <button class="btn small full" onClick=${() => swapRain(r, !wetOn)}>${wetOn ? 'Back to ' + r.dry : 'Swap in ' + r.wet.name}</button>
             ${legs ? html`<p class="tiny num">${wetOn ? '' : r.wet.addr + '. '}After the swap the legs in and out are ${km(legs[0])}${legs[1] != null ? ' and ' + km(legs[1]) : ''}.</p>` : null}
@@ -1569,28 +1589,28 @@ dialog.sheet::backdrop{background:var(--scrim)}
         })}
       </div>
 
-      <div class="card" style="display:flex;flex-direction:column;gap:12px">
-        <h2 class="h2" style="font-size:22px">Calling the bars</h2>
+      <div class="card stack">
+        <h2 class="h3">Calling the bars</h2>
         <p class="tiny">${callScript('[time]')}</p>
         <p class="tiny">The time is when the first runners walk in, at 8:00/mi. Walkers come in about 10 minutes later.</p>
         ${S.stops.map((x, i) => {
           const wv = i ? window_(i) : null;
           if (!wv) return null;
-          return html`<div class="orgstop"><div class="grid2" style="align-items:center">
+          return html`<div class="orgstop"><div class="grid2 mid">
             <p><b>${i}. ${x.short}</b><br /><span class="tiny num">around ${around(wv.run)}</span></p>
             <button class="btn small" onClick=${() => copyScript(i)}>Copy script</button>
           </div></div>`;
         })}
       </div>
 
-      <div class="card"><h2 class="h2" style="font-size:22px">Runners · ${runners.length}</h2>
+      <div class="card"><h2 class="h3">Runners · ${runners.length}</h2>
         ${runners.map(r => {
           const ts = Object.values(S.taps).filter(t => t.runnerId === r.id).sort((a, b) => a.at - b.at);
           return html`<div class="orgstop">
-            <button class="btn full" style="justify-content:space-between" aria-expanded=${open === r.id ? 'true' : 'false'} onClick=${() => setOpen(open === r.id ? null : r.id)}><span class="num">${r.bib} · ${r.name}${r.sample ? ' (sample)' : ''}${r.hidden ? ' (hidden)' : ''}</span><span class="tiny">${ts.length} taps ›</span></button>
+            <button class="btn full spread" aria-expanded=${open === r.id ? 'true' : 'false'} onClick=${() => setOpen(open === r.id ? null : r.id)}><span class="num">${r.bib} · ${r.name}${r.sample ? ' (sample)' : ''}${r.hidden ? ' (hidden)' : ''}</span><span class="tiny">${ts.length} taps ›</span></button>
             ${open === r.id ? html`<div>${ts.map(t => html`<div class="taprow num"><span>${t.kind === 'arrive' ? 'At' : 'Left'} ${S.stops[t.stop] ? S.stops[t.stop].short : 'stop ' + t.stop} · ${clock(t.at)}${t.kind === 'arrive' && !t.verified ? ' · not GPS' : ''}</span><button class="btn small red" onClick=${() => S.api.deleteTap(t.id).then(() => say('Tap removed.'))}>Remove tap</button></div>`)}
-              <button class="btn small full" style="margin-top:10px" onClick=${() => S.api.unlockRunner(r.id).then(() => say('Bib ' + r.bib + ' can move to a new phone. Taps kept.'))}>Let bib ${r.bib} move to a new phone</button>
-              <button class="btn small red full" style="margin-top:10px" onClick=${() => S.api.removeRunner(r.id).then(() => say('Bib ' + r.bib + ' released.'))}>Release bib ${r.bib} and delete its taps</button></div>` : null}
+              <div class="orgacts"><button class="btn small full" onClick=${() => S.api.unlockRunner(r.id).then(() => say('Bib ' + r.bib + ' can move to a new phone. Taps kept.'))}>Let bib ${r.bib} move to a new phone</button>
+              <button class="btn small red full" onClick=${() => S.api.removeRunner(r.id).then(() => say('Bib ' + r.bib + ' released.'))}>Release bib ${r.bib} and delete its taps</button></div></div>` : null}
           </div>`;
         })}
       </div>
@@ -1610,7 +1630,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
       setArm(false);
       try { await S.api.clearTaps(); say('Check-ins cleared. Bibs kept.'); } catch (e) { say("Couldn't clear. Check your signal and try again."); }
     }
-    return html`<div class="card" style="display:flex;flex-direction:column;gap:10px"><h2 class="h2" style="font-size:22px">After a practice run</h2>
+    return html`<div class="card stack"><h2 class="h3">After a practice run</h2>
       <p class="tiny">Clears every check-in and the GO so race day starts clean. Runners keep their bibs.</p>
       <button class="btn red full" onClick=${go} disabled=${n === 0 && !S.event.goMs}>${arm ? 'Tap again to delete ' + n + ' check-ins' : n ? 'Clear all ' + n + ' check-ins' : 'Nothing to clear'}</button></div>`;
   }
@@ -1633,13 +1653,13 @@ dialog.sheet::backdrop{background:var(--scrim)}
     return html`<button class="prev-btn" onClick=${() => setOpenS(true)}>${CFG ? 'Demo' : 'Preview'}</button>
       <dialog class="sheet" ref=${ref} onClose=${() => setOpenS(false)} aria-labelledby="pvh">
         <div class="sheet-in">
-          <div class="sheet-h"><h2 id="pvh" class="h2" style="font-size:24px">Preview</h2><button class="btn small" onClick=${() => setOpenS(false)}>Done</button></div>
+          <div class="sheet-h"><h2 id="pvh" class="h3">Preview</h2><button class="btn small" onClick=${() => setOpenS(false)}>Done</button></div>
           <p class="sub2">Runners marked Sample and your location are simulated here, and nothing is saved. On race day the app uses real GPS and real runners.</p>
-          <p class="tiny" style="font-weight:700">Jump to</p>
+          <p class="tiny b">Jump to</p>
           <div class="opts">${opt(S.demo.scene, 'join', 'Join screen', () => scene('join'))}${opt(S.demo.scene, 'pre', 'Before the start', () => scene('pre'))}${opt(S.demo.scene, 'ready', 'Start is open', () => scene('ready'))}${opt(S.demo.scene, 'live', 'Running to a bar', () => scene('live'))}${opt(S.demo.scene, 'atbar', 'At a bar', () => scene('atbar'))}${opt(S.demo.scene, 'finished', 'Finished', () => scene('finished'))}</div>
-          <p class="tiny" style="font-weight:700">Your location</p>
+          <p class="tiny b">Your location</p>
           <div class="opts">${opt(S.demo.loc, 'here', 'At the bar', () => { S.demo.loc = 'here'; emit(); })}${opt(S.demo.loc, 'far', '640 m away', () => { S.demo.loc = 'far'; emit(); })}${opt(S.demo.loc, 'off', 'Location off', () => { S.demo.loc = 'off'; emit(); })}</div>
-          <p class="tiny" style="font-weight:700">Signal</p>
+          <p class="tiny b">Signal</p>
           <div class="opts">${opt(S.demo.net, 'on', 'Signal', () => { S.demo.net = 'on'; emit(); flush(); })}${opt(S.demo.net, 'off', 'No signal', () => { S.demo.net = 'off'; emit(); })}</div>
           <button class="btn full" onClick=${() => { setOpenS(false); onOrg(); }}>Open the organizer view</button>
         </div>
@@ -1658,13 +1678,13 @@ dialog.sheet::backdrop{background:var(--scrim)}
     const header = html`<header class="top"><a class="mark" href="about.html" aria-label="About the race">5BAR<b>5K</b></a>${S.mode === 'demo' ? html`<${Preview} onOrg=${() => setOrg(true)} />` : null}
       ${S.me ? html`<span class="bibchip" aria-label=${'Bib ' + S.me.bib + ', ' + S.me.name}><span class="num">${S.me.bib}</span><span>${S.me.name}</span></span>` : null}</header>`;
     const toast = html`${S.toast ? html`<div class="toast" role="status">${S.toast}</div>` : html`<div class="toast" role="status" hidden></div>`}${S.celebrate && S.me ? html`<${Celebrate} />` : null}`;
-    if (org) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Organizer} back=${() => { setOrg(false); if (location.hash === '#organizer' || location.search) history.replaceState(null, '', location.pathname); }} /></main>${toast}</div>`;
-    if (!S.me) return html`<div class="shell" style="padding-bottom:24px">${header}<main><${Join} /></main>${toast}</div>`;
-    if (!S.stops.length) return html`<div class="shell" style="padding-bottom:24px">${header}<main><div class="page"><div class="alert" role="alert"><p><b>Couldn't load the race.</b> Check your signal.</p><button class="btn" onClick=${() => S.api.reload()}>Retry</button></div></div></main>${toast}</div>`;
+    if (org) return html`<div class="shell notabs">${header}<main><${Organizer} back=${() => { setOrg(false); if (location.hash === '#organizer' || location.search) history.replaceState(null, '', location.pathname); }} /></main>${toast}</div>`;
+    if (!S.me) return html`<div class="shell notabs">${header}<main><${Join} /></main>${toast}</div>`;
+    if (!S.stops.length) return html`<div class="shell notabs">${header}<main><div class="page"><div class="alert" role="alert"><p><b>Couldn't load the race.</b> Check your signal.</p><button class="btn" onClick=${() => S.api.reload()}>Retry</button></div></div></main>${toast}</div>`;
     const offline = queue().some(t => !inFlight(t)) || (S.mode === 'demo' ? S.demo.net === 'off' : !S.online);
     const practicing = S.practice && S.event.goMs == null;
     return html`<div class="shell">${header}
-      ${offline ? html`<p class="banner warn" style="margin:12px 16px 0" role="status">${I.dot}No signal. Taps save on this phone and sync later.</p>` : null}
+      ${offline ? html`<p class="banner warn" role="status">${I.dot}No signal. Taps save on this phone and sync later.</p>` : null}
       ${practicing ? html`<${PracticeBar} />` : null}
       <main>${tab === 'race' ? html`<${Race} />` : tab === 'map' ? html`<${MapScreen} />` : html`<${Board} />`}</main>
       <nav class="tabs" aria-label="Sections">
