@@ -28,6 +28,6 @@ Ranking rule: moving pace only, meaning the time from "Leaving" one bar (or the 
 
 Success signal: every runner who reaches the finish has 5 check-ins, most have 5 timed legs, and nobody asks the organizer "did it get me?".
 
-Event: WRTC, Sunday Oct 25, 2026, 2:00 PM start at Rittenhouse Square, about 30 runners, $5 members and $12 others, one beer included. Route: PHS Pop Up Garden, McGillin's, Independence Beer Garden, The Plough & the Stars, finish at Morgan's Pier, leaving each stop every 30 minutes.
+Event: WRTC, Sunday Oct 25, 2026, 2:00 PM start at Rittenhouse Square, about 30 runners, $5 members and $12 others, one beer included. Route as raced: PHS Pop Up Garden, McGillin's, Con Murphy's, Bonner's, finish at Walnut Garden, leaving each stop about every 30 minutes. About 11 runners on the day (DECISIONS.md, Oct 25). The plan ended at Morgan's Pier via Independence Beer Garden and The Plough & the Stars; the last three stops moved mid-race.
 
-Open questions: whether Independence Beer Garden is still open on Oct 25 (seasonal, not confirmed); each bar's yes to about 30 runners at its arrival time; rain call on Friday (indoor backups: Misconduct Tavern for PHS Garden, Red Owl Tavern for Independence Beer Garden). None of these block the app: bars, times and GO are organizer-editable.
+Before the race the open questions were Independence Beer Garden's season, each bar's yes to about 30 runners, and the rain call. The race ran on Oct 25 (sunny, about 67°F). Bars, times and GO stay organizer-editable for the next one.

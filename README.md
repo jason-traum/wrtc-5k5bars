@@ -1,6 +1,6 @@
 # 5 Bar 5K
 
-The race-day app for the WRTC (Wharton Roadrunners & Triathletes) 5 Bar 5K, Sunday Oct 25, 2026, 2:00 PM: about 1 km runs between five bars, from Rittenhouse Square to Morgan's Pier. Runners join with their bib and first name. They tap Start, tap "I'm at <bar>" when they walk in (checked against the phone's location), and tap "Leaving <bar>" when they walk out. The leaderboard ranks everyone by running pace, and time at the bars never counts.
+The race-day app for the WRTC (Wharton Roadrunners & Triathletes) 5 Bar 5K, Sunday Oct 25, 2026, 2:00 PM: about 1 km runs between five bars, from Rittenhouse Square, finishing at Walnut Garden, one block away (the route as raced; the plan ended at Morgan's Pier). Runners join with their bib and first name. They tap Start, tap "I'm at <bar>" when they walk in (checked against the phone's location), and tap "Leaving <bar>" when they walk out. The leaderboard ranks everyone by running pace, and time at the bars never counts.
 
 One HTML file, no build step. Hosted on GitHub Pages, with data in its own Supabase project.
 
@@ -61,5 +61,5 @@ Before race day:
 
 11. Open the site on your phone, join with your bib, sign in at `#organizer`, check the date, start time and leave-by times, and walk to a bar to check "Use my location" and the check-in radius.
 
-The route: Rittenhouse Square (start), PHS Pop Up Garden, McGillin's, Independence Beer Garden, The Plough & the Stars, Morgan's Pier (finish). About 5.0 km on the street grid, leaving each stop every 30 minutes (2:00, 2:30, 3:00, 3:30, 4:00). If Friday's forecast is wet, the organizer screen's **Rain plan** swaps PHS Garden for Misconduct Tavern and Independence Beer Garden for Red Owl Tavern (both indoors). **Calling the bars** gives each bar's arrival time and copies the call script.
+The route as raced on Oct 25: Rittenhouse Square (start), PHS Pop Up Garden, McGillin's, Con Murphy's, Bonner's, Walnut Garden (finish). The plan was PHS Pop Up Garden, McGillin's, Independence Beer Garden, The Plough & the Stars and Morgan's Pier; mid-race the finish and then the last three stops moved to loop back west, because people wanted to end closer to Rittenhouse (DECISIONS.md, Oct 25). Leave times are set per stop (the group started at 2:11 and left each stop about every 30 minutes). If the forecast is wet, the organizer screen's **Rain plan** swaps outdoor stops for indoor ones. **Calling the bars** gives each bar's arrival time and copies the call script.
 12. Do a practice run with a few friends, then use **After a practice run > Clear all check-ins**.
