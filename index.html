@@ -333,14 +333,15 @@ dialog.sheet::backdrop{background:var(--scrim)}
   const MI = 1.609344;
   const TZ = 'America/New_York';
 
-  /* ---------------- The route. Organizer can edit names, times and locations. ---------------- */
+  /* ---------------- The route. Organizer can edit names, times and locations. ----------------
+     The demo runs the route as raced on Oct 25 (DECISIONS.md, 3:14 PM): back west after McGillin's, finish at Walnut Garden. */
   const DEFAULT_STOPS = [
     { ord: 0, name: 'Rittenhouse Square', short: 'Rittenhouse', addr: 'Start, 18th & Walnut', lat: 39.9495, lng: -75.1719, radius: 150, km: 0, leaveMin: 0 },
     { ord: 1, name: 'PHS Pop Up Garden', short: 'PHS Garden', addr: '1438 South St', lat: 39.94368, lng: -75.16623, radius: 120, km: 1.14, leaveMin: 30 },
     { ord: 2, name: "McGillin's Olde Ale House", short: "McGillin's", addr: '1310 Drury St', lat: 39.95016, lng: -75.16204, radius: 120, km: 1.0, leaveMin: 60 },
-    { ord: 3, name: 'Independence Beer Garden', short: 'Indy Beer Garden', addr: '100 S Independence Mall W', lat: 39.95028, lng: -75.15076, radius: 150, km: 1.12, leaveMin: 90 },
-    { ord: 4, name: 'The Plough & the Stars', short: 'Plough & Stars', addr: '123 Chestnut St (enter on 2nd St)', lat: 39.94862, lng: -75.1439, radius: 120, km: 0.7, leaveMin: 120 },
-    { ord: 5, name: "Morgan's Pier", short: "Morgan's Pier", addr: '221 N Columbus Blvd', lat: 39.9549, lng: -75.13891, radius: 150, km: 1.07, leaveMin: null },
+    { ord: 3, name: "Con Murphy's Irish Pub", short: "Con Murphy's", addr: '1700 Benjamin Franklin Pkwy', lat: 39.95569, lng: -75.16799, radius: 120, km: 1.08, leaveMin: 90 },
+    { ord: 4, name: "Bonner's Irish Pub", short: "Bonner's", addr: '120 S 23rd St', lat: 39.95203, lng: -75.17849, radius: 120, km: 1.36, leaveMin: 120 },
+    { ord: 5, name: 'Walnut Garden', short: 'Walnut Garden', addr: '1708 Walnut St', lat: 39.94984, lng: -75.16966, radius: 150, km: 0.9, leaveMin: null },
   ];
   /* Rain plan: two stops are outdoors. The organizer can swap in the indoor backup (leave times stay, leg distances update). */
   const RAIN = [
@@ -533,13 +534,16 @@ dialog.sheet::backdrop{background:var(--scrim)}
     ['Inés', 95, 610, [13, 12, 16, 10]], ['Marcus', 101, 650, [18, 16, 15, 14]], ['Kelly', 135, 700, [17, 15, 14, 12]], ['Chris', 142, 900, [12, 11, 10, 9]],
     ['Grace', 160, 1150, [9, 9, 8, 7]], ['Ben', 1188, 1200, [8, 8, 7, 6]],
   ];
+  /* Nobody holds one pace all night: each leg swings a few seconds per mile around the runner's pace. Each pattern
+     evens out over the route (within a second), so overall paces, and so the order on the leaderboard, stay put. */
+  const SWING = [[-9, 8, -4, 12, -14], [6, -11, 13, 4, -16], [-14, 5, 9, -6, 8], [10, -5, -12, 9, -4], [-6, 14, -8, 5, -8]];
   function demoStops(startMs) { return DEFAULT_STOPS.map(s => Object.assign({}, s, { leaveBy: s.leaveMin == null ? null : startMs + s.leaveMin * 60000 })); }
   function demoTimeline(go, paceSec, dwell, opts) {
-    const stops = S.stops; let t = go + (opts.delay || 0) * 60000;
+    const stops = S.stops, swing = opts.swing || []; let t = go + (opts.delay || 0) * 60000;
     if (t > now()) return [];
     const out = [{ stop: 0, kind: 'leave', at: t, verified: true }];
     for (let i = 1; i < stops.length; i++) {
-      const arrive = t + stops[i].km / MI * paceSec * 1000;
+      const arrive = t + stops[i].km / MI * (paceSec + (swing[i - 1] || 0)) * 1000;
       if (arrive > now()) break;
       out.push({ stop: i, kind: 'arrive', at: arrive, verified: !(opts.unverified === i) });
       if (i < stops.length - 1) {
@@ -560,19 +564,20 @@ dialog.sheet::backdrop{background:var(--scrim)}
       const id = 'sample-' + bib;
       /* people set off over a few minutes, and one walker starts late */
       const delay = idx === 12 ? 14 : (idx % 4) * 1.5;
-      demoTimeline(go, p, dwell, { delay, forget: idx === 5 ? 2 : null, unverified: idx === 3 ? 3 : null }).forEach((x, j) => {
+      demoTimeline(go, p, dwell, { delay, swing: SWING[idx % SWING.length], forget: idx === 5 ? 2 : null, unverified: idx === 3 ? 3 : null }).forEach((x, j) => {
         const tid = id + '-' + j; S.taps[tid] = Object.assign({ id: tid, runnerId: id, created: x.at, source: 'gps' }, x);
       });
     });
   }
   /* So someone can tap through the whole race in a minute: "I'm at" skips ahead to when you'd walk in at about
-     8:50/mi, and "Leaving" skips ahead to the group's leave time. The sample runners move along with the clock. */
-  const DEMO_PACE = 530;
+     8:50/mi (a little faster or slower each leg: 8:38, 8:56, 8:44, 9:03, 8:36), and "Leaving" skips ahead to the
+     group's leave time. The sample runners move along with the clock. */
+  const DEMO_PACES = [518, 536, 524, 543, 516];
   function demoAdvance(stop, kind) {
     if (!S.me) return;
     const p = progress(S.me.id), s = S.stops[stop];
     let target = null;
-    if (kind === 'arrive' && stop > 0 && p.lv[stop - 1]) target = p.lv[stop - 1].at + s.km / MI * DEMO_PACE * 1000;
+    if (kind === 'arrive' && stop > 0 && p.lv[stop - 1]) target = p.lv[stop - 1].at + s.km / MI * (DEMO_PACES[stop - 1] || 530) * 1000;
     if (kind === 'leave' && stop > 0 && s.leaveBy) target = s.leaveBy - 20000;
     const jump = target == null ? 0 : target - now();
     if (jump > 60000) {
@@ -602,10 +607,11 @@ dialog.sheet::backdrop{background:var(--scrim)}
     }
     if (scene === 'atbar') mine.push({ stop: 2, kind: 'arrive', at: go + 35.6 * 60000 });
     if (scene === 'finished') {
+      /* legs at 8:53, 9:01, 8:47, 8:45 and 8:35 per mile: 8:49 overall, 6th of 15 */
       mine.push({ stop: 2, kind: 'arrive', at: go + 35.1 * 60000 }, { stop: 2, kind: 'leave', at: go + 59.5 * 60000 },
-        { stop: 3, kind: 'arrive', at: go + 65.6 * 60000 }, { stop: 3, kind: 'leave', at: go + 89.5 * 60000 },
-        { stop: 4, kind: 'arrive', at: go + 93.4 * 60000 }, { stop: 4, kind: 'leave', at: go + 119.5 * 60000 },
-        { stop: 5, kind: 'arrive', at: go + 125.2 * 60000 });
+        { stop: 3, kind: 'arrive', at: go + 65.4 * 60000 }, { stop: 3, kind: 'leave', at: go + 89.5 * 60000 },
+        { stop: 4, kind: 'arrive', at: go + 96.9 * 60000 }, { stop: 4, kind: 'leave', at: go + 119.5 * 60000 },
+        { stop: 5, kind: 'arrive', at: go + 124.3 * 60000 });
     }
     mine.forEach((x, j) => { const tid = 'me-' + j; S.taps[tid] = Object.assign({ id: tid, runnerId: 'me', created: x.at - 1, verified: true, source: 'gps' }, x); });
     emit();
@@ -1206,7 +1212,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
           <li><span class="node" aria-hidden="true">${I.shoe}</span><div><b>Tap Start when you set off.</b><span>Go whenever you're ready once the start opens. Run or walk.</span></div></li>
           <li><span class="node" aria-hidden="true">${I.beer}</span><div><b>Tap "I'm at" as you walk into each bar.</b><span>Allow location when asked, so the app can confirm you made it.</span></div></li>
           <li><span class="node" aria-hidden="true">${I.beer}</span><div><b>Tap "Leaving" on your way out.</b><span>A countdown shows when the group leaves. Bar time never counts.</span></div></li>
-          <li><span class="node" aria-hidden="true">${I.medal}</span><div><b>Finish at ${S.stops.length ? S.stops[S.stops.length - 1].name : "Morgan's Pier"}.</b><span>Grab your medal and see your whole night.</span></div></li>
+          <li><span class="node" aria-hidden="true">${I.medal}</span><div><b>Finish at ${S.stops.length ? S.stops[S.stops.length - 1].name : 'Walnut Garden'}.</b><span>Grab your medal and see your whole night.</span></div></li>
         </ol></div>
       <div class="card howto"><h2 class="h2" style="font-size:22px">Race day</h2>
         <p><b>Bring a light layer.</b> ${LAYER_NOTE}</p>
@@ -1550,7 +1556,7 @@ dialog.sheet::backdrop{background:var(--scrim)}
 
       <div class="card" style="display:flex;flex-direction:column;gap:12px">
         <h2 class="h2" style="font-size:22px">Rain plan</h2>
-        <p class="tiny">Two stops are outdoors. If Friday's forecast looks wet, swap in the indoor backup. Leave times stay the same and the legs update.</p>
+        <p class="tiny">If Friday's forecast looks wet, swap an outdoor stop for its indoor backup. Leave times stay the same and the legs update.</p>
         ${RAIN.map(r => {
           const wetOn = S.stops.some(x => x.name === r.wet.name), dryOn = S.stops.some(x => x.name === r.dry);
           if (!wetOn && !dryOn) return null;
