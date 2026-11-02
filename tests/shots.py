@@ -53,8 +53,10 @@ async def main():
                 await pg.click(".tabs >> text=Leaderboard"); await pg.wait_for_timeout(200); await shot("board")
                 await pg.click(".lbrow >> nth=1"); await pg.wait_for_timeout(200); await shot("board-open")
                 await pg.click(".tabs >> text=Race")
-                await scene(pg, "Finished"); await pg.wait_for_timeout(450); await pg.screenshot(path=f"{OUT}celebrate-{tag}.png")
+                # check the finish moment before its screenshot: it closes itself after about 2.4 s, and a slow screenshot outlasted it
+                await scene(pg, "Finished"); await pg.wait_for_timeout(450)
                 if not await pg.is_visible(".cele"): problems.append(f"no finish moment {tag}")
+                await pg.screenshot(path=f"{OUT}celebrate-{tag}.png")
                 await pg.wait_for_timeout(2600)
                 if await pg.is_visible(".cele"): problems.append(f"finish moment did not close {tag}")
                 await shot("finished")
