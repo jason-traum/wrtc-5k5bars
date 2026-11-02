@@ -12,10 +12,13 @@ Direction and its source: a race bib. Bibs are what these runners already read o
 | --ink | #0F1A2E | #E6ECF5 | Text |
 | --ink-2 | #45506A | #A9B5CB | Secondary text, input borders. Secondary, never faint |
 | --line | #C9D1DE | #34425F | Decorative hairlines only |
-| --action | #C41E2A | #C81E2A | The one accent: the big button, focus, your current bar |
+| --action | #C41E2A | #C81E2A | The one accent: the big button, focus, your current bar. For red text use --action-text |
+| --action-text | #C41E2A | #FF6B74 | Red text and red outlines: errors, red outline buttons, your own bib on the leaderboard. Dark --action as text is under 3:1 |
 | --on-action | #FFFFFF | #FFFFFF | Label on the big button |
 | --focus | #C41E2A | #FF6B74 | :focus-visible outline |
 | --navy | #14244A | #1B2D5A | Bib band header |
+| --on-navy-red | #FF6B74 | #FF6B74 | The red "5K" in the wordmark on the navy band |
+| --bib, --bib-ink, --bib-ink-2, --bib-line, --bib-band, --bib-red | #FFFFFF, #0F1A2E, #45506A, #C9D1DE, #14244A, #C41E2A | same | The printed bib (join card, finish card, header chip) stays white in both themes |
 | --bar | #A8680E | #F0A53A | Bar markers on the route strip (non-text) |
 | --bar-soft / --bar-ink | #FDEFD6 / #6B4308 | #3A2C12 / #FFD99A | "At the bar" panel |
 | --ok | #1F7A4D | #5FD39A | Saved, GPS-checked |
@@ -34,7 +37,10 @@ Contrast (WCAG 2): ink on canvas 14.8 / 15.2; ink-2 on surface 8.1 / 7.7; label 
 - Secondary actions are outlined, 48px tall. Nothing tappable is plain text.
 - Two tabs, Race and Leaderboard, fixed to the bottom, labeled.
 - Radius roles: 20 big button, 14 cards, 999 chips. Shadows: none on canvas items; sheets get one soft shadow.
-- Your leaderboard row: full-surface tint (--surface-2) plus "You" chip. No colored side borders.
+- Your leaderboard row: full-surface tint (--surface-2) plus "You" chip, and only your bib number is red. Other bibs are ink. No colored side borders.
+- Card titles: one `.h3` (Big Shoulders 900, 22px, uppercase), sheets included. Spacing on the 4px grid: 16 card padding, 12 gaps.
+- Icons: one family, 2px strokes; 18px inline, 22px in the tabs and the strip.
+- Finish card: place, pace and running time as one result line on the bib with hairline dividers, not tiles.
 - Progress strip (Jason's idea): six icons, a shoe for the start, a pint for each bar, a medal for the finish; the runs are the lines between them (red while you're on it). Outline = ahead, filled ink with the icon inverted = done, red ring = running to it now, amber fill = at this bar. Each has a spoken label. A ten-icon version (shoe per run) was tried and cut as too busy.
 
 ## Motion
